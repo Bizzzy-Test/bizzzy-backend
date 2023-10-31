@@ -1,6 +1,7 @@
 const express = require('express');
 const api = express.Router();
 
+//Router define
 const routes = [
     `auth`,
     `country`,
