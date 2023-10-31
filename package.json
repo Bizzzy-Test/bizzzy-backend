@@ -1,14 +1,12 @@
 {
-  "name": "buzzy",
+  "name": "bizzzy",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "nodemon src/index.js",
     "dev": "nodemon src/index.js",
-    "deploy": "nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node build"
+    "deploy": "nodemon src/index.js"
   },
   "author": "Buzzy",
   "license": "ISC",
