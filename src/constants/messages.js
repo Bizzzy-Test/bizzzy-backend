@@ -71,7 +71,15 @@ const messageConstants = {
     EMAIL_ALREADY_VERIFIED: 'Email is already verified',
     EMAIL_VERIFICATION_SENT: 'Verification email has been sent',
     EMAIL_VERIFICATION_FAILED: 'Email verification failed. Please try again.',
-    NOT_SENT_INVITE : 'Not allowed to send invite'
+    NOT_SENT_INVITE : 'Not allowed to send invite',
+
+    // ===
+    JOB_CREATED_SUCCESSFULLY: 'Job created successfully',
+    SOMETHING_WENT_WRONG: 'Something went wrong',
+    JOB_DELETED_SUCCESSFULLY: 'Job deleted successfully',
+    JOB_UPDATED_SUCCESSFULLY: 'Job updated successfully',
+
+    // ===
 }
 
 module.exports = messageConstants;
