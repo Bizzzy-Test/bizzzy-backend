@@ -9,4 +9,6 @@ module.exports = (app) => {
     app.get(urlConstants.GET_JOB_BY_USERID, api.getJobPostByUserId);
     app.patch(urlConstants.UPDATE_JOB, jsonWebToken.validateToken, api.updateJobPost);
     app.delete(urlConstants.DELETE_JOB, jsonWebToken.validateToken, api.deleteJobPost);
+    app.get(urlConstants.GET_SINGEL_JOB, jsonWebToken.validateToken, api.getSingleJobPost);
+    app.get(urlConstants.JOB_SEARCH, jsonWebToken.validateToken, api.searchJobPost);
 }

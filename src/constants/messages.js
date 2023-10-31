@@ -78,6 +78,7 @@ const messageConstants = {
     SOMETHING_WENT_WRONG: 'Something went wrong',
     JOB_DELETED_SUCCESSFULLY: 'Job deleted successfully',
     JOB_UPDATED_SUCCESSFULLY: 'Job updated successfully',
+    JOB_FETCHED_SUCCESSFULLY: 'Job fetched successfully',
 
     // ===
 }
