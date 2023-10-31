@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "engines": {
-    "node": "18.x.x",
-    "npm": "^9.x.x"
+    "node": "14.x.x",
+    "npm": "^6.0.0"
   },
   "dependencies": {
     "@googleapis/calendar": "^9.3.1",
