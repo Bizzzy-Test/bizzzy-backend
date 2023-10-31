@@ -1,6 +1,7 @@
 const JobService = require("../../service/job/index.js");
 const { messageConstants } = require('../../constants/index.js');
 const { logger } = require('../../utils/index.js');
+const { uploadFile } = require("../../middleware/aws/aws.js");
 
 // ==== create job post ==== controller
 // const createJobPost = async (req, res) => {
@@ -27,18 +28,29 @@ const { logger } = require('../../utils/index.js');
 const createJobPost = async (req, res) => {
     try {
         const userToken = req.headers.token;
-        const file = req.file;
+        const file = req.file.buffer;
         const jobData = req.body;
 
+        // Upload the file to S3 and get its access URL
+        const fileUrl = await uploadFile(file);
 
-        const response = await JobService.createJobPost(userToken);
+        // Add the file URL to the jobData object
+        jobData.fileUrl = fileUrl;
+
+        console.log("jobData:", jobData);
+
+        console.log("fileUrl:", fileUrl);
+
+        console.log("file:", file);
+
+        const response = await JobService.createJobPost(jobData, userToken);
         res.status(200).json({
             data: response,
             success: true,
             message: messageConstants.JOB_CREATED_SUCCESSFULLY,
         });
     } catch (error) {
-        logger.error(`Job ${messageConstants.API_FAILED} ${error}`);
+        console.error("Error creating job post:", error);
         res.status(500).json({
             data: error,
             success: false,

@@ -28,15 +28,27 @@ const jwt = require('jsonwebtoken');
 
 
 const createJobPost = async (payload, userToken) => {
-    const user = jwt.decode(userToken);
+    try {
+        const user = jwt.decode(userToken);
 
-    if (user.role !== 'client') {
-        throw new Error(`${messageConstants.USER_NOT_AUTHORIZED}`);
+        if (user.role !== 'client') {
+            throw new Error(`${messageConstants.USER_NOT_AUTHORIZED}`);
+        } else {
+            payload.userId = user._id;
+
+            if (payload.fileUrl) {
+                payload.fileUrl = payload.fileUrl;
+            } else {
+                payload.fileUrl = null;
+            }
+            const jobData = new JobSchema(payload);
+            const data = await jobData.save();
+            return data;
+        }
+    } catch (error) {
+        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
+        return error
     }
-
-    const jobData = new JobSchema(payload);
-    const data = await jobData.save();
-    return data;
 };
 
 // ==== get all job post ==== service
