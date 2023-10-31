@@ -46,7 +46,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 app.use('/', routesWithoutAPI);
-// Comment Socket
+
+
 require('./socket')(io);
 const port = process.env.PORT || 5001;
 
