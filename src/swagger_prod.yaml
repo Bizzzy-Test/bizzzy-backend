@@ -1,0 +1,2935 @@
+openapi: 3.0.0
+info:
+  title: Advisor-Bioldout API Document
+  description: |-
+    description
+  contact:
+    email: abc@gmail.com
+  version: 1.0.11
+externalDocs:
+  description: Advisor-Bioldout
+  url: fagsfagsf
+servers:
+  - url: "https://advisor-backend-server-5eb1114326a5.herokuapp.com/api"
+tags:
+  - name: User
+    description: Everything about user
+  - name: Payment
+    description: Everything about payment
+  - name: Message
+    description: Everything about message
+  - name: Notification
+    description: Everything about notification
+  - name: Filter
+    description: Everything about filter
+  - name: Invitation
+    description: Everything about invitations
+  - name: Comment
+    description: Everything about comment
+  - name: Session
+    description: Everything about session
+  - name: Board
+    description: Everything about board
+
+paths:
+  # User API
+
+  /register:
+    post:
+      tags:
+        - User
+      summary: User Register
+      description: User register API
+      requestBody:
+        description: Create User Object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegister"
+      responses:
+        200:
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserRegister200"
+        403:
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/403"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+
+  /login:
+    post:
+      tags:
+        - User
+      summary: User signin
+      description: User signin API
+      requestBody:
+        description: Signup user
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLogin"
+      responses:
+        200:
+          description: User loggedin successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserLogin200"
+        401:
+          description: Email or password is incorrect
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+
+  /profile:
+    post:
+      tags:
+        - User
+      summary: User Profile
+      description: User profile API
+      requestBody:
+        description: Profile of user
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfile"
+      responses:
+        200:
+          description: User profile created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile200"
+
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+
+  /upload/image:
+    post:
+      tags:
+        - User
+      summary: User Profile
+      description: User profile API
+      requestBody:
+        description: Profile image upload
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UserProfileImage"
+      responses:
+        200:
+          description: Profile image updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfileImage200"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /reset-password:
+    post:
+      tags:
+        - User
+      summary: User Reset Password
+      description: User Reset Password API
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Reset password for user object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPassword"
+      responses:
+        200:
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResetPassword200"
+        403:
+          description: Old password not matched
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/403"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+  /forgot-password:
+    post:
+      tags:
+        - User
+      summary: User Forgot Password
+      description: User Forgot Password API
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Forgot password for user object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPassword"
+      responses:
+        200:
+          description: Password forgotted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForgotPassword200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        404:
+          description: User not found!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+  /change-password:
+    post:
+      tags:
+        - User
+      summary: User Change Password
+      description: User Forgot change Password API
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Change password for user object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePassword"
+      responses:
+        200:
+          description: Password forgot successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChangePassword200"
+        403:
+          description: Password forgot unsuccessful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/403"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+
+  /payment/details:
+    post:
+      tags:
+        - Payment
+      security:
+        - BearerAuth: []
+      summary: Payment details
+      description: Payment details API
+      requestBody:
+        description: Payment details
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentDetails"
+      responses:
+        200:
+          description: Payment details added successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentDetails200"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+
+  /users/list:
+    get:
+      tags:
+        - User
+      summary: Retrive user
+      description: User List
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: User list retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserList200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        404:
+          description: User list not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /user/session:
+    get:
+      tags:
+        - Session
+      summary: Retrive Session list of Founder
+      description: Session List
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Get Founder Session list retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetUserSessionList200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /paid/user/session:
+    get:
+      tags:
+        - Session
+      summary: Retrive Paid Session list of Founder
+      description: Paid Session List
+      parameters:
+        - in: query
+          name: user_id
+          schema:
+            type: string
+      responses:
+        200:
+          description: Get Paid Session list retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetPaidSessionList200"
+        204:
+          description: Session list not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/204"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /users/profile:
+    get:
+      tags:
+        - User
+      summary: Retrive user profile details
+      description: User profile
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: User details list fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfileList200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        404:
+          description: User list not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /comment/list:
+    get:
+      tags:
+        - Comment
+      summary: Retrive Comment list
+      description: Comment List
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Comment list retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetCommentList200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        404:
+          description: Comment list not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+  # Payment API
+  /subscription/plan:
+    get:
+      tags:
+        - Payment
+      security:
+        - BearerAuth: []
+      summary: Get Subscription List
+      description: Subscription List API
+      responses:
+        200:
+          description: Subscription plan retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionListResponse"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+
+  /create/subscription:
+    post:
+      tags:
+        - Payment
+      security:
+        - BearerAuth: []
+      summary: Create a subscription and generate client secret
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscribeRequestBody"
+
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscribeResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /create/payment/intent:
+    post:
+      tags:
+        - Payment
+      security:
+        - BearerAuth: []
+      summary: Create a payment intent and generate client secret
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePaymentRequestBody"
+
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreatePaymentIntentResponse"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /payment-checkout:
+    post:
+      tags:
+        - Payment
+      security:
+        - BearerAuth: []
+      summary: Payment checkout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentCheckout"
+
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentCheckout200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /delete/notification:
+    post:
+      tags:
+        - Notification
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: notification_ids
+          schema:
+            type: string
+      summary: Delete Notification
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteNotification200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        404:
+          description: Notification not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /read/notification:
+    post:
+      tags:
+        - Notification
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: notification_ids
+          schema:
+            type: string
+      summary: Delete Notification
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadNotification200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        404:
+          description: Notification not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /message/list:
+    get:
+      tags:
+        - Message
+      summary: Retrive messages
+      description: Messages List
+      parameters:
+        - in: query
+          name: user_id
+          schema:
+            type: string
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Message list retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetMessageList200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        404:
+          description: Message list not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /advisors/filter:
+    get:
+      tags:
+        - Filter
+      summary: Retrive filtered data
+      description: Filtered data List
+      parameters:
+        - in: query
+          name: industry
+          schema:
+            type: string
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Filtered user list retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FilterUserList200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        404:
+          description: Filtered user list not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /chat/user/list:
+    get:
+      tags:
+        - Message
+      summary: Retrive chat user list
+      description: Chat user List
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Chat user list retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetChatUserList200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        404:
+          description: Chat user list not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /notification/list:
+    get:
+      tags:
+        - Notification
+      summary: Retrive notification
+      description: Notification List
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Notification list retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetNotificationList200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        404:
+          description: Notification list not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /send/invitation:
+    post:
+      tags:
+        - Invitation
+      security:
+        - BearerAuth: []
+      summary: Send invitations to the advisor to join board
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendInvitation"
+
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/sendInvitation200"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+
+  /remove/advisor:
+    delete:
+      tags:
+        - Board
+      security:
+        - BearerAuth: []
+      summary: Remove advisor from the board
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/removeAdvisorFromBoard"
+
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/removeAdvisorFromBoard200"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Unauthorize error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /list/board/memeber:
+    get:
+      tags:
+        - Board
+      security:
+        - BearerAuth: []
+      summary: Retrive advisor list
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getboardUserList200"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Unauthorize error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /comment:
+    post:
+      tags:
+        - Comment
+      security:
+        - BearerAuth: []
+      summary: post comment in the user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Comment"
+
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment200"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /reply-comment:
+    post:
+      tags:
+        - Comment
+      security:
+        - BearerAuth: []
+      summary: post replay comment in the user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReplyComment"
+
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplayComment200"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+  /create-session:
+    post:
+      tags:
+        - Session
+      security:
+        - BearerAuth: []
+      summary: post replay comment in the user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createSession"
+
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateSession200"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+  /book-session:
+    post:
+      tags:
+        - Session
+      summary: Session Booking
+      description: Session Booking API
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Session Booking object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookSession"
+      responses:
+        200:
+          description: Session booked successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookSession200"
+        403:
+          description: Session not Booked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/403"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+
+  /session:
+    get:
+      tags:
+        - Session
+      summary: Retrive session slot
+      description: Session slot List
+      parameters:
+        - in: query
+          name: advisor_id
+          schema:
+            type: string
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Session slots list fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetSessionSlotList200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        204:
+          description: Session list not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/204"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /invitation/status:
+    put:
+      tags:
+        - Invitation
+      security:
+        - BearerAuth: []
+      summary: Update invitations status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateInvitation"
+
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateInvitation200"
+        404:
+          description: Invitation not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Unauthorize error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /list/invitations:
+    get:
+      tags:
+        - Invitation
+      security:
+        - BearerAuth: []
+      summary: Retrive invitations for the advisor
+
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetInvitatonList200"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Unauthorize error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+components:
+  schemas:
+    UserRegister:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    UserRegister200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+            password:
+              type: string
+            status:
+              type: string
+            is_deleted:
+              type: boolean
+            _id:
+              type: string
+              format: uuid
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            _v:
+              type: string
+
+    UserLogin:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    UserLogin200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+            password:
+              type: string
+            status:
+              type: string
+            is_deleted:
+              type: boolean
+            _id:
+              type: string
+              format: uuid
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            _v:
+              type: string
+            token:
+              type: string
+
+    UserProfile:
+      type: object
+      properties:
+        user_id:
+          type: string
+        name:
+          type: string
+        role:
+          type: number
+          enum:
+            - 1
+            - 2
+          x-enum-descriptions:
+            1: Advisor User
+            2: Founder User
+        company_name:
+          type: string
+        industry:
+          type: string
+        position:
+          type: string
+        location:
+          type: string
+        stage:
+          type: string
+        seeking_help:
+          type: array
+          items:
+            type: string
+        provide_help:
+          type: array
+          items:
+            type: string
+        bio:
+          type: string
+        profile_image:
+          type: string
+    UserProfile200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            _id:
+              type: string
+            user_id:
+              type: string
+            name:
+              type: string
+            role:
+              type: string
+            company_name:
+              type: string
+            industry:
+              type: string
+            location:
+              type: string
+            stage:
+              type: string
+            seeking_help:
+              type: array
+              items:
+                type: string
+            provide_help:
+              type: array
+              items:
+                type: string
+            bio:
+              type: string
+            profile_image:
+              type: string
+            status:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            is_deleted:
+              type: boolean
+
+    ResetPassword:
+      type: object
+      properties:
+        old_password:
+          type: string
+        new_password:
+          type: string
+
+    ChangePassword:
+      type: object
+      properties:
+        new_password:
+          type: string
+
+    ForgotPassword:
+      type: object
+      properties:
+        email:
+          type: string
+
+    ResetPassword200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+
+    ChangePassword200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+
+    ForgotPassword200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+
+    FilterUserList200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            _id:
+              type: string
+            user_id:
+              type: string
+            name:
+              type: string
+            role:
+              type: string
+            company_name:
+              type: string
+            industry:
+              type: string
+            location:
+              type: string
+            stage:
+              type: string
+            seeking_help:
+              type: array
+              items:
+                type: string
+            provide_help:
+              type: array
+              items:
+                type: string
+            bio:
+              type: string
+            profile_image:
+              type: string
+            status:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            is_deleted:
+              type: boolean
+
+    UserProfileImage:
+      type: object
+      properties:
+        profileImage:
+          type: string
+          format: binary
+    UserProfileImage200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            message:
+              type: string
+            imageurl:
+              type: string
+              format: uri
+
+    PaymentDetails:
+      type: object
+      properties:
+        payment_method:
+          type: string
+        payment_type:
+          type: string
+        plan_id:
+          type: string
+        address:
+          type: object
+          properties:
+            line1:
+              type: string
+            line2:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            postal_code:
+              type: string
+            country:
+              type: string
+    PaymentDetails200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          properties:
+            _id:
+              type: string
+            name:
+              type: string
+            email:
+              type: boolean
+            payment_method:
+              type: string
+            payment_type:
+              type: string
+            plan_id:
+              type: string
+            address:
+              $ref: "#/components/schemas/Payment"
+            is_deleted:
+              type: boolean
+            status:
+              type: number
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            __v:
+              type: string
+
+    Subscription:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            id:
+              type: string
+            object:
+              type: string
+            active:
+              type: boolean
+            attributes:
+              type: array
+              items:
+                type: string
+            created:
+              type: integer
+            default_price:
+              $ref: "#/components/schemas/Price"
+            description:
+              type: string
+            images:
+              type: array
+              items:
+                type: string
+            livemode:
+              type: boolean
+            metadata:
+              type: object
+            name:
+              type: string
+            package_dimensions:
+              type: string
+            shippable:
+              type: string
+            statement_descriptor:
+              type: string
+            tax_code:
+              type: boolean
+            type:
+              type: string
+            unit_label:
+              type: string
+            updated:
+              type: integer
+            url:
+              type: string
+    Price:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+        active:
+          type: boolean
+        billing_scheme:
+          type: string
+        created:
+          type: integer
+        currency:
+          type: string
+        custom_unit_amount:
+          type: string
+        livemode:
+          type: boolean
+        lookup_key:
+          type: string
+        metadata:
+          type: object
+        nickname:
+          type: string
+        product:
+          type: string
+        recurring:
+          $ref: "#/components/schemas/Recurring"
+        tax_behavior:
+          type: string
+        tiers_mode:
+          type: string
+        transform_quantity:
+          type: string
+        type:
+          type: string
+        unit_amount:
+          type: integer
+        unit_amount_decimal:
+          type: string
+
+    Payment:
+      type: object
+      properties:
+        line1:
+          type: string
+        line2:
+          type: string
+        city:
+          type: boolean
+        state:
+          type: string
+        postal_code:
+          type: integer
+        country:
+          type: string
+    Recurring:
+      type: object
+      properties:
+        aggregate_usage:
+          type: string
+        interval:
+          type: string
+        interval_count:
+          type: integer
+        trial_period_days:
+          type: string
+        usage_type:
+          type: string
+    SubscriptionListResponse:
+      type: object
+      properties:
+        success:
+          type: integer
+        code:
+          type: integer
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            object:
+              type: string
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/Subscription"
+            has_more:
+              type: boolean
+            url:
+              type: string
+
+    SubscribeRequestBody:
+      type: object
+      properties:
+        email:
+          type: string
+          description: Customer's email address
+        name:
+          type: string
+          description: Customer's name
+        address:
+          type: object
+          properties:
+            line1:
+              type: string
+            line2:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            postal_code:
+              type: string
+            country:
+              type: string
+        payment_method:
+          type: string
+          description: Payment method ID
+        plan_id:
+          type: string
+          description: ID of the subscription plan
+
+    SubscribeResponse:
+      type: object
+      properties:
+        success:
+          type: integer
+        code:
+          type: integer
+        msg:
+          type: string
+        body:
+          $ref: "#/components/schemas/SubscribeData"
+
+    SubscribeData:
+      type: object
+      properties:
+        clientSecret:
+          type: string
+          description: Client secret for payment confirmation
+        subscriptionId:
+          type: string
+          description: ID of the created subscription
+
+    CreatePaymentRequestBody:
+      type: object
+      properties:
+        currency:
+          type: string
+          description: Currency type
+        amount:
+          type: string
+          description: Amount data
+        description:
+          type: string
+          description: Desription of plan
+
+    PaymentCheckout:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date-time
+        time:
+          type: string
+        advisorName:
+          type: string
+        description:
+          type: string
+        rate:
+          type: number
+
+    CreatePaymentIntentResponse:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          $ref: "#/components/schemas/CreatePaymentData"
+    CreatePaymentData:
+      type: object
+      properties:
+        client_secret:
+          type: string
+          description: Client secret for payment confirmation
+
+    SendInvitation:
+      type: object
+      properties:
+        receiver_id:
+          type: string
+        message_id:
+          type: string
+
+    removeAdvisorFromBoard:
+      type: object
+      properties:
+        advisor_id:
+          type: string
+        message_id:
+          type: string
+
+    sendInvitation200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            invitation:
+              type: object
+              properties:
+                _id:
+                  type: string
+                  format: uuid
+                sender_id:
+                  type: string
+                receiver_id:
+                  type: string
+                message_id:
+                  type: string
+                status:
+                  type: string
+                created_at:
+                  type: string
+                  format: date-time
+                updated_at:
+                  type: string
+                  format: date-time
+                is_deleted:
+                  type: boolean
+                __v:
+                  type: string
+            board:
+              type: object
+              properties:
+                _id:
+                  type: string
+                  format: uuid
+                user_id:
+                  type: string
+                advisor_id:
+                  type: string
+                created_at:
+                  type: string
+                  format: date-time
+                __v:
+                  type: string
+
+    getboardUserList200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            _id:
+              type: string
+              format: uuid
+            user_id:
+              type: string
+            advisor_id:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+            __v:
+              type: string
+            advisor_details:
+              type: object
+              properties:
+                _id:
+                  type: string
+                  format: uuid
+                name:
+                  type: string
+                profile_image:
+                  type: string
+            invitation_details:
+              type: object
+              properties:
+                _id:
+                  type: string
+                  format: uuid
+                sender_id:
+                  type: string
+                receiver_id:
+                  type: string
+                status:
+                  type: string
+
+    removeAdvisorFromBoard200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+
+    Comment:
+      type: object
+      properties:
+        user_id:
+          type: string
+        comment:
+          type: string
+    ReplyComment:
+      type: object
+      properties:
+        comment_id:
+          type: string
+        comment:
+          type: string
+
+    createSession:
+      type: object
+      properties:
+        session_slots:
+          type: array
+          items:
+            properties:
+              date:
+                type: string
+                format: date-time
+              time_slots:
+                type: array
+                items:
+                  type: string
+
+    BookSession:
+      type: object
+      properties:
+        advisor_id:
+          type: string
+        date:
+          type: string
+          format: date-time
+        time:
+          type: string
+        payment_status:
+          type: string
+        amount:
+          type: string
+
+    BookSession200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            user_id:
+              type: string
+            advisor_id:
+              type: string
+            date:
+              type: string
+              format: date-time
+            time:
+              type: string
+              format: time
+            is_deleted:
+              type: boolean
+            status:
+              type: string
+            _id:
+              type: string
+              format: uuid
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            __v:
+              type: string
+
+    PaymentCheckout200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            url:
+              type: string
+
+    Comment200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            _id:
+              type: string
+              format: uuid
+            commenter_id:
+              type: string
+            user_id:
+              type: string
+            comment:
+              type: string
+            status:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            is_deleted:
+              type: boolean
+            __v:
+              type: string
+
+    ReplayComment200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            _id:
+              type: string
+              format: uuid
+            comment_id:
+              type: string
+            user_id:
+              type: string
+            comment:
+              type: string
+            status:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            is_deleted:
+              type: boolean
+            __v:
+              type: string
+
+    GetUserSessionList200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: array
+          items:
+            properties:
+              _id:
+                type: string
+                format: uuid
+              user_id:
+                type: string
+              advisor_id:
+                type: string
+              date:
+                type: string
+                format: date-time
+              time:
+                type: string
+                format: time
+              status:
+                type: string
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+              is_deleted:
+                type: boolean
+              __v:
+                type: string
+
+    GetPaidSessionList200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: array
+          items:
+            properties:
+              _id:
+                type: string
+                format: uuid
+              user_id:
+                type: string
+              advisor_id:
+                type: string
+              date:
+                type: string
+                format: date-time
+              time:
+                type: string
+                format: time
+              amount:
+                type: number
+              payment_status:
+                type: string
+              status:
+                type: string
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+              is_deleted:
+                type: boolean
+              __v:
+                type: string
+              advisor_details:
+                type: array
+                items:
+                  properties:
+                    _id:
+                      type: string
+                      format: uuid
+                    user_id:
+                      type: string
+                      format: uuid
+                    name:
+                      type: string
+              founder_details:
+                type: array
+                items:
+                  properties:
+                    _id:
+                      type: string
+                      format: uuid
+                    user_id:
+                      type: string
+                      format: uuid
+                    name:
+                      type: string
+
+    CreateSession200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            _id:
+              type: string
+              format: uuid
+            advisor_id:
+              type: string
+            session_slots:
+              type: array
+              items:
+                properties:
+                  _id:
+                    type: string
+                    format: uuid
+                  date:
+                    format: date-time
+                  time_slots:
+                    type: array
+                    items:
+                      type: string
+            status:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            is_deleted:
+              type: boolean
+            __v:
+              type: string
+
+    GetSessionSlotList200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                format: uuid
+              advisor_id:
+                type: string
+              session_slots:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    data:
+                      type: string
+                      format: date-time
+                    time_slots:
+                      type: array
+                      items:
+                        type: string
+                    _id:
+                      type: string
+                      format: uuid
+              is_deleted:
+                type: boolean
+              status:
+                type: string
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+              __v:
+                type: string
+              advisor_details:
+                type: array
+                items:
+                  properties:
+                    _id:
+                      type: string
+                      format: uuid
+                    user_id:
+                      type: string
+                    name:
+                      type: string
+                    profile_image:
+                      type: string
+
+    GetCommentList200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: array
+          items:
+            type: object
+            properties:
+              commenter_id:
+                type: string
+              user_id:
+                type: string
+              comment:
+                type: string
+              is_deleted:
+                type: boolean
+              status:
+                type: string
+              _id:
+                type: string
+                format: uuid
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+              __v:
+                type: string
+              commenter_details:
+                type: array
+                items:
+                  properties:
+                    _id:
+                      type: string
+                      format: uuid
+                    name:
+                      type: string
+                    email:
+                      type: string
+              reply_comments:
+                type: array
+                items:
+                  properties:
+                    _id:
+                      type: string
+                      format: uuid
+                    comment:
+                      type: string
+                    is_deleted:
+                      type: boolean
+                    status:
+                      type: string
+                    user_details:
+                      type: array
+                      items:
+                        properties:
+                          _id:
+                            type: string
+                            format: uuid
+                          name:
+                            type: string
+                          email:
+                            type: string
+
+    UpdateInvitation:
+      type: object
+      properties:
+        message_id:
+          type: string
+        status:
+          type: number
+          enum:
+            - 0
+            - 1
+            - 2
+          x-enum-descriptions:
+            0: Pending
+            1: Accept
+            2: Reject
+    UpdateInvitation200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            _id:
+              type: string
+              format: uuid
+            sender_id:
+              type: string
+            receiver_id:
+              type: string
+            message_id:
+              type: string
+            status:
+              type: number
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            is_deleted:
+              type: boolean
+            __v:
+              type: string
+
+    GetInvitatonList200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            _id:
+              type: string
+              format: uuid
+            sender_id:
+              type: string
+            receiver_id:
+              type: string
+            message_id:
+              type: string
+            status:
+              type: number
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            is_deleted:
+              type: boolean
+            __v:
+              type: string
+
+    UserList200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                format: uuid
+              firstname:
+                type: string
+              lastname:
+                type: string
+              email:
+                type: string
+    UserProfileList200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              email:
+                type: string
+              profile_details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    user_id:
+                      type: string
+                    name:
+                      type: string
+                    role:
+                      type: string
+                    company_name:
+                      type: string
+                    industry:
+                      type: string
+                    location:
+                      type: string
+                    stage:
+                      type: string
+                    seeking_help:
+                      type: array
+                      items:
+                        type: string
+                    provide_help:
+                      type: array
+                      items:
+                        type: string
+                    bio:
+                      type: string
+                    profile_image:
+                      type: string
+                    status:
+                      type: string
+                    created_at:
+                      type: string
+                      format: date-time
+                    updated_at:
+                      type: string
+                      format: date-time
+                    is_deleted:
+                      type: boolean
+              is_subscription:
+                type: boolean
+    GetMessageList200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: array
+          items:
+            type: object
+            properties:
+              sender_id:
+                type: string
+              receiver_id:
+                type: string
+              message:
+                type: string
+              message_type:
+                type: string
+              is_deleted:
+                type: boolean
+              status:
+                type: string
+              _id:
+                type: string
+                format: uuid
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+              __v:
+                type: string
+              sender_details:
+                type: array
+                items:
+                  properties:
+                    _id:
+                      type: string
+                      format: uuid
+                    firstname:
+                      type: string
+                    lastname:
+                      type: string
+                    email:
+                      type: string
+              receiver_details:
+                type: array
+                items:
+                  properties:
+                    _id:
+                      type: string
+                      format: uuid
+                    firstname:
+                      type: string
+                    lastname:
+                      type: string
+                    email:
+                      type: string
+    GetNotificationList200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: array
+          items:
+            type: object
+            properties:
+              sender_id:
+                type: string
+              receiver_id:
+                type: string
+              is_read:
+                type: string
+              notification_type:
+                type: string
+              is_deleted:
+                type: boolean
+              status:
+                type: string
+              _id:
+                type: string
+                format: uuid
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+              __v:
+                type: string
+              sender_details:
+                type: array
+                items:
+                  properties:
+                    name:
+                      type: string
+                    profile_image:
+                      type: string
+
+    DeleteNotification200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+
+    ReadNotification200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            updated_notification:
+              type: array
+              items:
+                type: object
+                properties:
+                  sender_id:
+                    type: string
+                  receiver_id:
+                    type: string
+                  is_read:
+                    type: string
+                  notification_type:
+                    type: string
+                  is_deleted:
+                    type: boolean
+                  status:
+                    type: string
+                  _id:
+                    type: string
+                    format: uuid
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+                  __v:
+                    type: string
+            already_read_notification:
+              type: array
+              items:
+                type: object
+                properties:
+                  sender_id:
+                    type: string
+                  receiver_id:
+                    type: string
+                  is_read:
+                    type: string
+                  notification_type:
+                    type: string
+                  is_deleted:
+                    type: boolean
+                  status:
+                    type: string
+                  _id:
+                    type: string
+                    format: uuid
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+                  __v:
+                    type: string
+
+    GetChatUserList200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+              chatId:
+                type: string
+              lastMessage:
+                type: string
+              timestamp:
+                type: string
+              user_profile_details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      format: uuid
+                    name:
+                      type: string
+                    profile_image:
+                      type: string
+
+    400:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+
+    401:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: string
+
+    403:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+
+    404:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+
+    500:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+
+    204:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+
+  securitySchemes:
+    BearerAuth:
+      type: apiKey
+      in: header
+      name: token

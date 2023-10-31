@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="x-apple-disable-message-reformatting">
+  <title></title>
+  <style>
+    table,
+    td,
+    div,
+    h1,
+    p {
+      font-family: Poppins, sans-serif;
+    }
+    a{
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body style="margin:0;padding:0;">
+  <table role="presentation" style="width:100%;border-collapse:collapse;border:0;background: #F5F9FF; padding: 2rem;">
+    <tr style="padding: 1rem">
+      <td align="center" style="padding:0;">
+        <table role="presentation"
+          style="width:652px;border-collapse:collapse;border-spacing:0;text-align:left; border:1px solid #0080FF; background: linear-gradient(180deg, rgba(14, 110, 255, 0.10) 0%, rgba(14, 110, 255, 0.00) 100%);">
+          <tr>
+            <td align="center" style="padding:40px 0 30px 0;background:#ffffff;">
+              <img src="https://cfl-advisory.vercel.app/assets/images/newLogo.png" alt="" width="300"
+                style="height:auto;display:block;" />
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:36px 30px 0px 30px;">
+              <table role="presentation" style="width:100%;border-collapse:collapse;border:0;border-spacing:0;">
+                <tr>
+                  <td style="padding:0 0 36px 0;color:#153643;">
+                    <h1 style="font-size:24px;margin:0 0 20px 0;font-family:Poppins,sans-serif;">Hello, <%=
+                        content.name %>
+                    </h1>
+                        <p style="margin:3rem 0; font-size:17px; line-height:24px; font-family:Poppins,sans-serif; text-align: center;">
+                          You have an invitation to accept.
+                        </p>
+                        <p style="margin:0 0 12px 0; text-align: center; font-size:16px;line-height:24px;font-family:Poppins,sans-serif;">
+                          <%= content.message %> has sent a request to add you as an advisor. Please click the link below to accept or reject the invite.
+                        </p>
+                        <p style="margin:0; font-size:17px; line-height:24px;font-family:Poppins,sans-serif; text-align: center; border: 0.1px solid #0080FF; border-radius: 10px; padding: 0.7rem 0; margin-bottom: 2rem; width: 75%; margin-left: auto; margin-right: auto;">
+                          <a href="<%= content.link %>"
+                            style="color:#0080FF;text-decoration:none; font-size: 17px;">
+                            Click here to Accept to Reject.
+                          </a>
+                        </p>
+                    <!-- <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Poppins,sans-serif;"></p> -->
+                      <br/>
+                    <!-- <p style="margin:0;font-size:16px;font-family:Poppins,sans-serif;"><a
+                        href="https://cfl-advisory.vercel.app/" style="color:#0a0c0c;text-decoration:none;">Advisor Buildout</a></p> -->
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:30px;background:#CEE0FF;">
+              <table role="presentation"
+                style="width:100%;border-collapse:collapse;border:0;border-spacing:0;font-size:9px;font-family:Poppins,sans-serif;">
+                <tr>
+                  <td style="padding:0;width:50%;" align="left">
+                    <p style="margin:0;font-size:14px;line-height:16px;font-family:Poppins,sans-serif;color:#030303;">
+                      &reg; Someone, Somewhere 2021<br /><a href="http://www.example.com"
+                        style="color:#000000;text-decoration:none;">Unsubscribe</a>
+                    </p>
+                  </td>
+                  <td style="padding:0;width:50%;" align="right">
+                    <table role="presentation" style="border-collapse:collapse;border:0;border-spacing:0;">
+                      <tr>
+                        <td style="padding:0 0 0 10px;width:25px;">
+                          <a href="http://www.twitter.com/" style="color:#00bbff;"><img
+                              src="https://www.iconsdb.com/icons/preview/white/twitter-xxl.png" alt="Twitter" width="38"
+                              style="height:auto;display:block;border:0;" /></a>
+                        </td>
+                        <td style="padding:0 0 0 10px;width:25px;">
+                          <a href="http://www.facebook.com/" style="color:#120075;"><img
+                              src="https://www.iconsdb.com/icons/preview/white/facebook-xxl.png" alt="Facebook"
+                              width="38" style="height:auto;display:block;border:0;" /></a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+
+</html>

@@ -1,0 +1,788 @@
+openapi: 3.0.0
+info:
+  title: Advisor-Bioldout API Document
+  description: |-
+    description
+  contact:
+    email: abc@gmail.com
+  version: 1.0.11
+externalDocs:
+  description: Advisor-Bioldout
+  url: fagsfagsf
+servers:
+  - url: "http://localhost:5001/api"
+tags:
+  - name: User
+    description: Everything about user
+  - name: Payment
+    description: Everything about payment
+  - name: Message
+    description: Everything about message
+  - name: Notification
+    description: Everything about notification
+  - name: Filter
+    description: Everything about filter
+  - name: Invitation
+    description: Everything about invitations
+  - name: Comment
+    description: Everything about comment
+  - name: Session
+    description: Everything about session
+  - name: Board
+    description: Everything about board
+
+paths:
+  # User API
+
+  /register:
+    post:
+      tags:
+        - User
+      summary: User Register
+      description: User register API
+      requestBody:
+        description: Create User Object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegister"
+      responses:
+        200:
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserRegister200"
+        403:
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/403"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+
+  /login:
+    post:
+      tags:
+        - User
+      summary: User signin
+      description: User signin API
+      requestBody:
+        description: Signup user
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLogin"
+      responses:
+        200:
+          description: User loggedin successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserLogin200"
+        401:
+          description: Email or password is incorrect
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+
+  /profile:
+    post:
+      tags:
+        - User
+      summary: User Profile
+      description: User profile API
+      requestBody:
+        description: Profile of user
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfile"
+      responses:
+        200:
+          description: User profile created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile200"
+
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+
+  /upload/image:
+    post:
+      tags:
+        - User
+      summary: User Profile
+      description: User profile API
+      requestBody:
+        description: Profile image upload
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UserProfileImage"
+      responses:
+        200:
+          description: Profile image updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfileImage200"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /reset-password:
+    post:
+      tags:
+        - User
+      summary: User Reset Password
+      description: User Reset Password API
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Reset password for user object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPassword"
+      responses:
+        200:
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResetPassword200"
+        403:
+          description: Old password not matched
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/403"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+  /forgot-password:
+    post:
+      tags:
+        - User
+      summary: User Forgot Password
+      description: User Forgot Password API
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Forgot password for user object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPassword"
+      responses:
+        200:
+          description: Password forgotted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForgotPassword200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        404:
+          description: User not found!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+  /change-password:
+    post:
+      tags:
+        - User
+      summary: User Change Password
+      description: User Forgot change Password API
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Change password for user object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePassword"
+      responses:
+        200:
+          description: Password forgot successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChangePassword200"
+        403:
+          description: Password forgot unsuccessful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/403"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+
+components:
+  schemas:
+    UserRegister:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    UserRegister200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+            password:
+              type: string
+            status:
+              type: string
+            is_deleted:
+              type: boolean
+            _id:
+              type: string
+              format: uuid
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            _v:
+              type: string
+
+    UserLogin:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    UserLogin200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+            password:
+              type: string
+            status:
+              type: string
+            is_deleted:
+              type: boolean
+            _id:
+              type: string
+              format: uuid
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            _v:
+              type: string
+            token:
+              type: string
+
+    UserProfile:
+      type: object
+      properties:
+        user_id:
+          type: string
+        name:
+          type: string
+        role:
+          type: number
+          enum:
+            - 1
+            - 2
+          x-enum-descriptions:
+            1: Advisor User
+            2: Founder User
+        company_name:
+          type: string
+        industry:
+          type: string
+        position:
+          type: string
+        location:
+          type: string
+        stage:
+          type: string
+        seeking_help:
+          type: array
+          items:
+            type: string
+        provide_help:
+          type: array
+          items:
+            type: string
+        bio:
+          type: string
+        profile_image:
+          type: string
+    UserProfile200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            _id:
+              type: string
+            user_id:
+              type: string
+            name:
+              type: string
+            role:
+              type: string
+            company_name:
+              type: string
+            industry:
+              type: string
+            location:
+              type: string
+            stage:
+              type: string
+            seeking_help:
+              type: array
+              items:
+                type: string
+            provide_help:
+              type: array
+              items:
+                type: string
+            bio:
+              type: string
+            profile_image:
+              type: string
+            status:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            is_deleted:
+              type: boolean
+
+    ResetPassword:
+      type: object
+      properties:
+        old_password:
+          type: string
+        new_password:
+          type: string
+
+    ChangePassword:
+      type: object
+      properties:
+        new_password:
+          type: string
+
+    ForgotPassword:
+      type: object
+      properties:
+        email:
+          type: string
+
+    ResetPassword200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+
+    ChangePassword200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+
+    ForgotPassword200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+
+    FilterUserList200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            _id:
+              type: string
+            user_id:
+              type: string
+            name:
+              type: string
+            role:
+              type: string
+            company_name:
+              type: string
+            industry:
+              type: string
+            location:
+              type: string
+            stage:
+              type: string
+            seeking_help:
+              type: array
+              items:
+                type: string
+            provide_help:
+              type: array
+              items:
+                type: string
+            bio:
+              type: string
+            profile_image:
+              type: string
+            status:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            is_deleted:
+              type: boolean
+
+    UserProfileImage:
+      type: object
+      properties:
+        profileImage:
+          type: string
+          format: binary
+    UserProfileImage200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            message:
+              type: string
+            imageurl:
+              type: string
+              format: uri
+
+    PaymentDetails:
+      type: object
+      properties:
+        payment_method:
+          type: string
+        payment_type:
+          type: string
+        plan_id:
+          type: string
+        address:
+          type: object
+          properties:
+            line1:
+              type: string
+            line2:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            postal_code:
+              type: string
+            country:
+              type: string
+    PaymentDetails200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          properties:
+            _id:
+              type: string
+            name:
+              type: string
+            email:
+              type: boolean
+            payment_method:
+              type: string
+            payment_type:
+              type: string
+            plan_id:
+              type: string
+            address:
+              $ref: "#/components/schemas/Payment"
+            is_deleted:
+              type: boolean
+            status:
+              type: number
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            __v:
+              type: string
+
+    Subscription:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            id:
+              type: string
+            object:
+              type: string
+            active:
+              type: boolean
+            attributes:
+              type: array
+              items:
+                type: string
+            created:
+              type: integer
+            default_price:
+              $ref: "#/components/schemas/Price"
+            description:
+              type: string
+            images:
+              type: array
+              items:
+                type: string
+            livemode:
+              type: boolean
+            metadata:
+              type: object
+            name:
+              type: string
+            package_dimensions:
+              type: string
+            shippable:
+              type: string
+            statement_descriptor:
+              type: string
+            tax_code:
+              type: boolean
+            type:
+              type: string
+            unit_label:
+              type: string
+            updated:
+              type: integer
+            url:
+              type: string
+
+    400:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+
+    401:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: string
+
+    403:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+
+    404:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+
+    500:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+
+    204:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+
+  securitySchemes:
+    BearerAuth:
+      type: apiKey
+      in: header
+      name: token
