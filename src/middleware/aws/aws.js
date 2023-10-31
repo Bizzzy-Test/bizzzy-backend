@@ -1,11 +1,64 @@
-const AWS = require('aws-sdk');
+// const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3")
+// const { v4: uuidv4 } = require("uuid")
 
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+// const s3 = new S3Client({
+//   credentials: {
+//     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+//     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+//   },
+//   region: process.env.AWS_REGION,
+// })
+
+// const uploadFile = async (file) => {
+//   const fileStream = file.createReadStream()
+//   const uploadParams = {
+//     Bucket: process.env.AWS_BUCKET_NAME,
+//     Body: fileStream,
+//     Key: `${uuidv4()}-${file.filename}`,
+//   }
+//   const command = new PutObjectCommand(uploadParams)
+//   return s3.send(command)
+// }
+
+// module.exports = {
+//   uploadFile,
+// }
+
+
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { v4: uuidv4 } = require("uuid");
+
+const s3 = new S3Client({
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
   region: process.env.AWS_REGION,
 });
 
-const s3 = new AWS.S3();
+const uploadFile = async (file) => {
+  const fileStream = file.createReadStream();
+  const key = `${uuidv4()}-${file.originalname}`;
+  const uploadParams = {
+    Bucket: process.env.AWS_BUCKET_NAME,
+    Body: fileStream,
+    Key: key,
+  };
 
-module.exports = s3;
+  try {
+    const command = new PutObjectCommand(uploadParams);
+    await s3.send(command);
+
+    // Get the access URL of the uploaded file
+    const fileUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${key}`;
+
+    return fileUrl;
+  } catch (error) {
+    console.error("Error uploading file to S3:", error);
+    throw error;
+  }
+};
+
+module.exports = {
+  uploadFile,
+};

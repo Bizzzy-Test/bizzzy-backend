@@ -27,8 +27,11 @@ const { logger } = require('../../utils/index.js');
 const createJobPost = async (req, res) => {
     try {
         const userToken = req.headers.token;
+        const file = req.file;
+        const jobData = req.body;
 
-        const response = await JobService.createJobPost( userToken);
+
+        const response = await JobService.createJobPost(userToken);
         res.status(200).json({
             data: response,
             success: true,
