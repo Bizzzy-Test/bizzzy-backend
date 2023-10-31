@@ -55,6 +55,16 @@ const urlConstants = {
     GET_JOB_PROPOSALS_BY_JOB_ID: '/job-proposal-by-job-id/:jobId',
 
     POST_FEEDBACK: '/add/feedback',
+
+    // = Job post url =
+    ADD_JOB: '/job/create',
+    GET_JOB: '/job/get-all',
+    GET_SINGEL_JOB: '/job/get/:job-id',
+    GET_JOB_BY_USERID: '/job/get-by-userId/:user-id',
+    DELETE_JOB: '/job/delete/:id',
+    UPDATE_JOB: '/job/update/:id',
+    // = Job post url =
+  
 }
 
 module.exports = urlConstants;
