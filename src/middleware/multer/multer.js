@@ -1,6 +1,6 @@
 const path = require("path");
 const multer = require("multer");
-import fs from "fs";
+const fs = require("fs");
 
 const uploadDestination = "./uploads/";
 
@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
     cb(null, uploadDestination);
   },
   filename: function (req, file, cb) {
-    const extName = path.extname(file.originalname); 
+    const extName = path.extname(file.originalname);
     const fileName =
       file.originalname
         .replace(extName, "")
@@ -26,10 +26,13 @@ const storage = multer.diskStorage({
         .join("-") +
       "-" +
       Date.now();
-    cb(null, fileName + extName); 
+    cb(null, fileName + extName);
   },
 });
 
+
 const upload = multer({ storage: storage });
 
-module.exports = upload;
+module.exports = {
+  upload,
+}
