@@ -8,7 +8,7 @@ const signUpValidation = (req, res, next) => {
         email: Joi.string().required(),
         password: Joi.string().required(),
         country: Joi.string().required(),
-        role: Joi.string().valid('freelancer', 'client').required(),
+        role: Joi.number().valid(1, 2).required(),
         has_accepted_terms: Joi.boolean().required()
     })
     validateRequest(req, res, schema, next);

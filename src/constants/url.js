@@ -1,6 +1,9 @@
 const urlConstants = {
     USER_REGISTER: '/register',
     VERIFY_EMAIL: '/verify-email',
+    //==
+    RESEND_VERIFY_EMAIL: '/resend-verify-email',
+    // ===
     USER_PROFILE: '/profile',
     USER_LOGIN: '/login',
     REFRESH_TOKEN: '/token',
@@ -9,6 +12,7 @@ const urlConstants = {
     CREATE_SUBSCRIPTION: '/create/subscription',
     MESSAGE_LIST: '/message-list',
     GET_USER_LIST: '/users/list',
+    GET_OPTIONS_LIST:"/getOptionsList",
     GET_USER_PROFILE: '/users/profile',
     SAVE_PAYMENT_DETAILS: '/save-payment-details',
     CHAT_USER_LIST: '/user-chat-list',
@@ -39,7 +43,7 @@ const urlConstants = {
     CREATE_SESSION: '/create-session',
     GET_SESSION_LIST: '/session',
     BOOK_SESSION: '/book-session',
-    LIST_COUNTRIES: '/getAllCountries',
+    LIST_COUNTRIES: '/get-countries',
     ADD_ADVISOR_RATE: '/addAdvisorRate',
     GET_ADVISOR_RATE: '/getAdvisorRate',
     GET_USER_SESSION_LIST: '/user/session',
@@ -59,10 +63,11 @@ const urlConstants = {
     // = Job post url =
     ADD_JOB: '/job/create',
     GET_JOB: '/job/get-all',
-    GET_SINGEL_JOB: '/job/get/:job-id',
-    GET_JOB_BY_USERID: '/job/get-by-userId/:user-id',
+    GET_SINGEL_JOB: '/job/get/:id',
+    GET_JOB_BY_USERID: '/job/get-by-user-id/:id',
     DELETE_JOB: '/job/delete/:id',
     UPDATE_JOB: '/job/update/:id',
+    JOB_SEARCH: '/job/search',
     // = Job post url =
   
 }

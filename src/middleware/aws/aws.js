@@ -1,5 +1,6 @@
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require("uuid");
+const fs = require("fs");
 
 const s3 = new S3Client({
   credentials: {
@@ -9,12 +10,11 @@ const s3 = new S3Client({
   region: process.env.AWS_REGION,
 });
 
-const uploadFile = async (file) => {
-  const fileStream = file.createReadStream();
-  const key = `${uuidv4()}-${file.originalname}`;
+const uploadFile = async (fileBuffer, originalname) => {
+  const key = `${uuidv4()}-${originalname}`;
   const uploadParams = {
     Bucket: process.env.AWS_BUCKET_NAME,
-    Body: fileStream,
+    Body: fileBuffer,
     Key: key,
   };
 

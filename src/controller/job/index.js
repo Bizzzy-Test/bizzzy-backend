@@ -4,44 +4,17 @@ const { logger } = require('../../utils/index.js');
 const { uploadFile } = require("../../middleware/aws/aws.js");
 
 // ==== create job post ==== controller
-// const createJobPost = async (req, res) => {
-//     try {
-//         const userToken = req.headers.token;
-
-//         const response = await JobService.createJobPost(req.body, userToken);
-
-//         res.status(200).json({
-//             data: response,
-//             success: true,
-//             message: messageConstants.JOB_CREATED_SUCCESSFULLY
-//         })
-//     } catch (error) {
-//         logger.error(`Job ${messageConstants.API_FAILED} ${err}`);
-//         res.status(500).json({
-//             data: error,
-//             success: false,
-//             message: messageConstants.INTERNAL_SERVER_ERROR
-//         })
-//     }
-// }
-
 const createJobPost = async (req, res) => {
     try {
         const userToken = req.headers.token;
-        const file = req.file.buffer;
+        const fileBuffer = req.file.buffer;
         const jobData = req.body;
 
-        // Upload the file to S3 and get its access URL
-        const fileUrl = await uploadFile(file);
+        // Upload the file buffer to S3 and get its access URL
+        const fileUrl = await uploadFile(fileBuffer, req.file.originalname);
 
         // Add the file URL to the jobData object
         jobData.fileUrl = fileUrl;
-
-        console.log("jobData:", jobData);
-
-        console.log("fileUrl:", fileUrl);
-
-        console.log("file:", file);
 
         const response = await JobService.createJobPost(jobData, userToken);
         res.status(200).json({
@@ -58,6 +31,7 @@ const createJobPost = async (req, res) => {
         });
     }
 };
+
 
 // ==== get all job post ==== controller
 const getAllJobPost = async (req, res) => {
@@ -80,37 +54,117 @@ const getAllJobPost = async (req, res) => {
     }
 }
 
+// ===== search job post ==== controller
+
+const searchJobPost = async (req, res) => {
+    try {
+        const userToken = req.headers.token;
+        const searchQuery = req.query.query;
+        const response = await JobService.searchJobPost({
+            searchQuery,
+            budget: req.query.budget,
+            experience: req.query.experience,
+            sort: req.query.sort,
+        }, userToken);
+        logger.info(`${messageConstants.RESPONSE_FROM} Job API`, JSON.stringify(response));
+        res.status(200).json({
+            data: response,
+            success: true,
+            message: messageConstants.JOB_FETCHED_SUCCESSFULLY
+        });
+    } catch (error) {
+        logger.error(`Job ${messageConstants.API_FAILED} ${error}`);
+        res.status(500).json({
+            data: error,
+            success: false,
+            message: messageConstants.INTERNAL_SERVER_ERROR
+        });
+    }
+};
+
 
 // ==== get job post by userId ==== controller
 
 const getJobPostByUserId = async (req, res) => {
     try {
-        const userId = req.params.userId;
-        const response = await JobService.getJobPostByUserId(userId, res);
-        logger.info(`${messageConstants.RESPONSE_FROM} Job API`, JSON.stringify(response));
-        res.send(response);
+        const userId = req.params.id;
+        const response = await JobService.getJobPostByUserId(userId);
+
+        res.status(200).json({
+            data: response,
+            success: true,
+            message: messageConstants.JOB_FETCHED_SUCCESSFULLY
+        });
+
     } catch (error) {
         logger.error(`Job ${messageConstants.API_FAILED} ${error}`);
-        res.send(error);
+        res.status(500).json({
+            data: error,
+            success: false,
+            message: messageConstants.INTERNAL_SERVER_ERROR
+        })
+    }
+
+}
+
+// ==== get single job post ==== controller
+const getSingleJobPost = async (req, res) => {
+    try {
+        const jobId = req.params.id;
+        const response = await JobService.getSingleJobPost(jobId);
+        res.status(200).json({
+            data: response,
+            success: true,
+            message: messageConstants.JOB_FETCHED_SUCCESSFULLY
+        });
+    } catch (error) {
+        logger.error(`Job ${messageConstants.API_FAILED} ${error}`);
+        res.status(500).json({
+            data: error,
+            success: false,
+            message: messageConstants.INTERNAL_SERVER_ERROR
+        })
     }
 
 }
 
 
 // ==== update job post ==== controller
-
 const updateJobPost = async (req, res) => {
     try {
         const userToken = req.headers.token;
-        const response = await JobService.updateJobPost(req.body, res, userToken);
-        logger.info(`${messageConstants.RESPONSE_FROM} Job API`, JSON.stringify(response));
-        res.send(response);
+        const jobId = req.params.id;
+        const jobData = req.body;
+
+        // Check if a new file was uploaded in the request
+        if (req.file) {
+            const fileBuffer = req.file.buffer;
+            // Upload the new file buffer to S3 and get its access URL
+            const fileUrl = await uploadFile(fileBuffer, req.file.originalname);
+            // Add the new file URL to the jobData object
+            jobData.fileUrl = fileUrl;
+        } else {
+            // If no new file was uploaded, keep the existing file URL in jobData
+            const existingJob = await JobService.getSingleJobPost(jobId);
+            jobData.fileUrl = existingJob.fileUrl;
+        }
+
+        const response = await JobService.updateJobPost(jobData, jobId, userToken);
+        res.status(200).json({
+            data: response,
+            success: true,
+            message: messageConstants.JOB_UPDATED_SUCCESSFULLY,
+        });
     } catch (error) {
         logger.error(`Job ${messageConstants.API_FAILED} ${error}`);
-        res.send(error);
+        res.status(500).json({
+            data: error,
+            success: false,
+            message: messageConstants.INTERNAL_SERVER_ERROR,
+        });
     }
+};
 
-}
 
 // ==== delete job post ==== controller
 
@@ -125,7 +179,7 @@ const deleteJobPost = async (req, res) => {
             data: response,
             success: true,
             message: messageConstants.JOB_DELETED_SUCCESSFULLY
-        }); // Send the response here
+        });
 
     } catch (error) {
         logger.error(`Job ${messageConstants.API_FAILED} ${error}`);
@@ -143,5 +197,7 @@ module.exports = {
     getAllJobPost,
     getJobPostByUserId,
     updateJobPost,
-    deleteJobPost
+    deleteJobPost,
+    searchJobPost,
+    getSingleJobPost
 };

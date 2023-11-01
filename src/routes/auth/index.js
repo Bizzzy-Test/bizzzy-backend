@@ -8,12 +8,14 @@ const upload = require('../../middleware/image_upload');
 module.exports = (app) => {
     app.post(urlConstants.USER_REGISTER, authValidator.signUpValidation, api.signUp);
     app.post(urlConstants.VERIFY_EMAIL, authValidator.emailVerifyValidation, api.verifyEmail);
+    app.post(urlConstants.RESEND_VERIFY_EMAIL, authValidator.emailVerifyValidation, api.resendEmailVerification);
     app.post(urlConstants.USER_LOGIN, authValidator.signInValidation, api.signIn);
     //TODO Refresh Token
     app.post(urlConstants.REFRESH_TOKEN, authValidator.signInValidation, api.signIn);
     app.post(urlConstants.USER_PROFILE, authValidator.profileValidation, profileAPI.userProfile);
     app.post(urlConstants.UPLOAD_IMAGE + "/:user_id", upload.single('image'), userAPI.uploadImage);
     app.get(urlConstants.GET_USER_LIST, jsonWebToken.validateToken, userAPI.getUserList);
+    app.get(urlConstants.GET_OPTIONS_LIST, jsonWebToken.validateToken, userAPI.getOptionsList);
     app.get(urlConstants.GET_USER_PROFILE, jsonWebToken.validateToken, profileAPI.getUserProfile);
     app.post(urlConstants.FORGOT_PASSWORD, authValidator.forgotPasswordValidation, userAPI.forgotPassword);
     app.post(urlConstants.CHANGE_PASSWORD, jsonWebToken.validateToken, authValidator.changePasswordValidation, userAPI.changePassword);

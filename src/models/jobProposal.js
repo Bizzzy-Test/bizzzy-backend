@@ -3,11 +3,7 @@ const mongoose = require('mongoose');
 const { userType } = require('../constants');
 
 const jobProposalSchema = mongoose.Schema({
-    _id: {
-        type: String,
-        default: () => uuid.v4().replace(/\-/g, ""),
-        required: true
-    },
+
     jobId: {
         type: String,
         required: true,

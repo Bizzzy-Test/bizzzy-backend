@@ -2,11 +2,7 @@ const uuid = require('uuid');
 const mongoose = require('mongoose');
 
 const sessionSlotsSchema = mongoose.Schema({
-    _id: {
-        type: String,
-        default: () => uuid.v4().replace(/\-/g, ""),
-        required: true
-    },
+    
     advisor_id: {
         type: String,
         required: true

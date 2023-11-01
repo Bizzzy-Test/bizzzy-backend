@@ -14,6 +14,7 @@ const signUp = async (req, res) => {
         res.send(err);
     }
 }
+
 const signIn = async (req, res) => {
     try {
         const response = await authService.signIn(req.body, res);
@@ -24,6 +25,7 @@ const signIn = async (req, res) => {
         res.send(err);
     }
 }
+
 const verifyEmail = async (req, res) => {
     try {
         const response = await authService.verifyEmail(req.body, res);
@@ -34,6 +36,27 @@ const verifyEmail = async (req, res) => {
         res.send(err);
     }
 }
+
+// ==== Resend Email Verification ==== controller
+const resendEmailVerification = async (req, res) => {
+    try {
+        const email = req.body.email;
+        const response = await authService.resendEmailVerification(email);
+        res.status(200).json({
+            data: response,
+            success: true,
+            message: messageConstants.EMAIL_RESENT_FOR_VERIFICATION
+        });
+    } catch (error) {
+        res.status(500).json({
+            data: error,
+            success: false,
+            message: messageConstants.INTERNAL_SERVER_ERROR
+        })
+    }
+}
+
+// ==== User Profile ====
 const userProfile = async (req, res) => {
     try {
         const response = await authService.userProfile(req.body, res);
@@ -114,5 +137,7 @@ module.exports = {
     forgotPassword,
     changePassword,
     resetPassword,
-    verifyEmail
+    verifyEmail,
+    resendEmailVerification,
+
 }
