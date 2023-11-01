@@ -60,7 +60,7 @@ const urlConstants = {
     ADD_JOB: '/job/create',
     GET_JOB: '/job/get-all',
     GET_SINGEL_JOB: '/job/get/:id',
-    GET_JOB_BY_USERID: '/job/get-by-userId/:user-id',
+    GET_JOB_BY_USERID: '/job/get-by-user-id/:id',
     DELETE_JOB: '/job/delete/:id',
     UPDATE_JOB: '/job/update/:id',
     JOB_SEARCH: '/job/search',

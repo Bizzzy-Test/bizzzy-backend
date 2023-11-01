@@ -124,10 +124,8 @@ const searchJobPost = async (payload, userToken) => {
 // ==== get single job post ==== service
 const getSingleJobPost = async (jobId) => {
     try {
-
         const jobSchema = await JobSchema.findById(jobId);
         return jobSchema;
-
     } catch (error) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
         return error
@@ -139,34 +137,37 @@ const getSingleJobPost = async (jobId) => {
 const getJobPostByUserId = async (userId, res) => {
     try {
         const jobSchema = await JobSchema.find({ userId: userId });
-        logger.info(`${messageConstants.JOB_FETCHED_SUCCESSFULLY}`);
-        return responseData.success(res, jobSchema, messageConstants.JOB_FETCHED_SUCCESSFULLY);
+        return jobSchema;
     } catch (error) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
-        return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`, 500);
+        return error
     }
 }
 
 // ==== update job post ==== service
-const updateJobPost = async (body, res, userToken) => {
-    return new Promise(async () => {
+const updateJobPost = async (body, jobId, userToken) => {
+    try {
         const user = jwt.decode(userToken);
 
-        if (user.role !== 'client') {
-            logger.error(`${messageConstants.USER_NOT_AUTHORIZED}`);
-            return responseData.fail(res, `${messageConstants.USER_NOT_AUTHORIZED}`, 401);
-        } else {
-            const jobSchema = new JobSchema(body);
-            await jobSchema.save().then(result => {
-                logger.info(`${messageConstants.JOB_UPDATED_SUCCESSFULLY}`);
-                return responseData.success(res, result, messageConstants.JOB_UPDATED_SUCCESSFULLY);
-            }).catch((err) => {
-                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
-            })
+        if (user.role !== 'client' && user._id !== body.userId) {
+            throw new Error(messageConstants.USER_NOT_AUTHORIZED);
         }
-    })
-}
+
+        const updatedJob = await JobSchema.findByIdAndUpdate(jobId, body, { new: true });
+
+        if (!updatedJob) {
+            throw new Error(messageConstants.JOB_NOT_FOUND);
+        }
+
+        logger.info(messageConstants.JOB_UPDATED_SUCCESSFULLY);
+        return updatedJob;
+    } catch (error) {
+        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
+        throw new Error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
+    }
+};
+
+
 
 // ==== delete job post ==== service
 const deleteJobPost = async (jobId, userToken) => {
