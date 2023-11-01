@@ -47,14 +47,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 
-app.use('/', routesWithoutAPI);
 
 app.get("/", async (req, res) => {
   res.send("Welcome to Bizzzy API Server");
 });
 
-
-// Comment Socket
 require('./socket')(io);
 const port = process.env.PORT || 5001;
 
