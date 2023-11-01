@@ -11,13 +11,12 @@ const JobSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', 
+    user_id: {
+        type: String,
         required: true
     },
     tags: {
-        type: [String] 
+        type: [String]
     },
     budget: {
         type: String,
@@ -28,14 +27,14 @@ const JobSchema = mongoose.Schema({
         required: true
     },
     amount: {
-        type: Number, 
+        type: Number,
         required: true
     },
     file: {
         type: String
     },
     experience: {
-        type: String, 
+        type: String,
         enum: [
             experienceType.ENTRY,
             experienceType.INTERMEDIATE,
@@ -44,8 +43,8 @@ const JobSchema = mongoose.Schema({
         required: true
     },
     durations: {
-        type: String 
+        type: String
     }
 });
 
-module.exports =  mongoose.model('Job', JobSchema);
+module.exports = mongoose.model('Job', JobSchema);

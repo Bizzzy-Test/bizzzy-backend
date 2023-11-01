@@ -2,31 +2,8 @@ const { responseData, messageConstants } = require("../../constants");
 const JobSchema = require("../../models/job")
 const { logger } = require("../../utils");
 const jwt = require('jsonwebtoken');
-// const e = require("cors");
-// const uploadMiddleware = require('../../middleware/uploadMiddleware/index.js');
 
 // ==== create job post ==== service
-// const createJobPost = async (body, res, userToken) => {
-//     return new Promise(async () => {
-//         const user = jwt.decode(userToken);
-
-//         if (user.role !== 'client') {
-//             logger.error(`${messageConstants.USER_NOT_AUTHORIZED}`);
-//             return responseData.fail(res, `${messageConstants.USER_NOT_AUTHORIZED}`, 401);
-//         } else {
-//             const jobSchema = new JobSchema(body);
-//             await jobSchema.save().then(result => {
-//                 logger.info(`${messageConstants.JOB_CREATED_SUCCESSFULLY}`);
-//                 return responseData.success(res, result, messageConstants.JOB_CREATED_SUCCESSFULLY);
-//             }).catch((err) => {
-//                 logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-//                 return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
-//             })
-//         }
-//     })
-// }
-
-
 const createJobPost = async (payload, userToken) => {
     try {
         const user = jwt.decode(userToken);

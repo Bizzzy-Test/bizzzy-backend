@@ -7,20 +7,14 @@ const { uploadFile } = require("../../middleware/aws/aws.js");
 const createJobPost = async (req, res) => {
     try {
         const userToken = req.headers.token;
-        const file = req.file.buffer;
+        const fileBuffer = req.file.buffer; 
         const jobData = req.body;
 
-        // Upload the file to S3 and get its access URL
-        const fileUrl = await uploadFile(file);
+        // Upload the file buffer to S3 and get its access URL
+        const fileUrl = await uploadFile(fileBuffer, req.file.originalname);
 
         // Add the file URL to the jobData object
         jobData.fileUrl = fileUrl;
-
-        console.log("jobData:", jobData);
-
-        console.log("fileUrl:", fileUrl);
-
-        console.log("file:", file);
 
         const response = await JobService.createJobPost(jobData, userToken);
         res.status(200).json({
@@ -37,6 +31,7 @@ const createJobPost = async (req, res) => {
         });
     }
 };
+
 
 // ==== get all job post ==== controller
 const getAllJobPost = async (req, res) => {
@@ -64,12 +59,12 @@ const getAllJobPost = async (req, res) => {
 const searchJobPost = async (req, res) => {
     try {
         const userToken = req.headers.token;
-        const searchQuery = req.query.query; // Get the search query from the URL query parameter
+        const searchQuery = req.query.query; 
         const response = await JobService.searchJobPost({
             searchQuery,
-            budget: req.query.budget, // Example: Extract budget parameter
-            experience: req.query.experience, // Example: Extract experience parameter
-            sort: req.query.sort, // Example: Extract sort parameter
+            budget: req.query.budget,
+            experience: req.query.experience, 
+            sort: req.query.sort, 
         }, userToken);
         logger.info(`${messageConstants.RESPONSE_FROM} Job API`, JSON.stringify(response));
         res.status(200).json({
@@ -108,7 +103,7 @@ const getSingleJobPost = async (req, res) => {
     try {
         const jobId = req.params.id;
         const response = await JobService.getSingleJobPost(jobId, res);
-       
+
     } catch (error) {
         logger.error(`Job ${messageConstants.API_FAILED} ${error}`);
         res.send(error);
@@ -145,7 +140,7 @@ const deleteJobPost = async (req, res) => {
             data: response,
             success: true,
             message: messageConstants.JOB_DELETED_SUCCESSFULLY
-        }); // Send the response here
+        });
 
     } catch (error) {
         logger.error(`Job ${messageConstants.API_FAILED} ${error}`);

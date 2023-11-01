@@ -2,11 +2,6 @@ const uuid = require('uuid');
 const mongoose = require('mongoose');
 
 const feedbackSchema = mongoose.Schema({
-    _id: {
-        type: String,
-        default: () => uuid.v4().replace(/\-/g, ""),
-        required: true
-    },
     //This field represents the user ID of the person giving the feedback.
     user_id_giver: {
         type: String,

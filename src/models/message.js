@@ -2,11 +2,7 @@ const uuid = require('uuid');
 const mongoose = require('mongoose');
 const { messageType } = require('../constants')
 const messageSchema = mongoose.Schema({
-    _id: {
-        type: String,
-        default: () => uuid.v4().replace(/\-/g, ""),
-        required: true
-    },
+
     sender_id: {
         type: String,
         required: true

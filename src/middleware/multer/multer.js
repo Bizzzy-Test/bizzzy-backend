@@ -1,37 +1,10 @@
-const path = require("path");
 const multer = require("multer");
 const fs = require("fs");
 
-const uploadDestination = "./uploads/";
+// use memory storage to store files as buffer 
+const storage = multer.memoryStorage();
 
-if (!fs.existsSync(uploadDestination)) {
-  try {
-    fs.mkdirSync(uploadDestination, { recursive: true });
-  } catch (err) {
-    console.error("Error creating directory:", err);
-  }
-}
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDestination);
-  },
-  filename: function (req, file, cb) {
-    const extName = path.extname(file.originalname);
-    const fileName =
-      file.originalname
-        .replace(extName, "")
-        .toLowerCase()
-        .split(" ")
-        .join("-") +
-      "-" +
-      Date.now();
-    cb(null, fileName + extName);
-  },
-});
-
-
-const upload = multer({ storage: storage });
+const upload = multer({ storage: storage, });
 
 module.exports = {
   upload,
