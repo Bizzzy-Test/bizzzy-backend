@@ -56,6 +56,7 @@ const signIn = async (body, res) => {
                 logger.info(`User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
 
                 return responseData.success(res, { id: user._id, token, email: user.email, role: user.role, name: `${user.firstName} ${user.lastName}` }, `User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
+
             } else {
                 logger.error(messageConstants.EMAIL_PASS_INCORRECT);
                 return responseData.fail(res, messageConstants.EMAIL_PASS_INCORRECT, 403);
