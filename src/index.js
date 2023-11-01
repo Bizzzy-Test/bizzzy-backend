@@ -45,6 +45,7 @@ app.use('/api/v1', routes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
+
 app.get("/", async (req, res) => {
   res.send("Welcome to Bizzzy API Server");
 });
