@@ -15,11 +15,6 @@ const socialLoginSchema = mongoose.Schema({
 });
 
 const userSchema = mongoose.Schema({
-    _id: {
-        type: String,
-        default: () => uuid.v4().replace(/\-/g, ""),
-        required: true
-    },
     firstname: {
         type: String,
         required: true
@@ -38,7 +33,7 @@ const userSchema = mongoose.Schema({
         required: true
     },
     role: {
-        type: String,
+        type: Number,
         enum: [
             userType.FREELANCER,
             userType.CLIENT

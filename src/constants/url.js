@@ -39,7 +39,7 @@ const urlConstants = {
     CREATE_SESSION: '/create-session',
     GET_SESSION_LIST: '/session',
     BOOK_SESSION: '/book-session',
-    LIST_COUNTRIES: '/getAllCountries',
+    LIST_COUNTRIES: '/get-countries',
     ADD_ADVISOR_RATE: '/addAdvisorRate',
     GET_ADVISOR_RATE: '/getAdvisorRate',
     GET_USER_SESSION_LIST: '/user/session',
