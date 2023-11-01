@@ -14,6 +14,7 @@ const messageConstants = {
     CONNECTED_SUCCESSFULLY: 'connected successfully',
     MESSAGE_CREATION_FAILED: 'Message creation failed',
     LIST_FETCHED_SUCCESSFULLY: 'list fetched successfully',
+    OPTION_LIST_FETCHED_SUCCESSFULLY: 'Options list fetched successfully',
     LIST_FETCHED_GOAL: 'goal list fetched successfully',
     LIST_NOT_FOUND: 'list not found',
     NOT_FOUND: 'not found',

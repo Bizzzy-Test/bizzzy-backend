@@ -26,6 +26,17 @@ const getUserList = async (req, res) => {
     }
 }
 
+const getOptionsList = async (req, res) => {
+    try {
+        const response = await authService.getOptionsList(req, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} getOptionsList API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`Get Options List ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+}
+
 const resetPassword = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
@@ -81,5 +92,6 @@ module.exports = {
     forgotPassword,
     changePassword,
     resetPassword,
-    postFeedback
+    postFeedback,
+    getOptionsList
 }
