@@ -22,7 +22,7 @@ const messageConstants = {
     LIST_API_CALL_SUCCESSFULLY: 'List API called successfully',
     API_FAILED: 'API failed',
     RESPONSE_FROM: 'Response from',
-    LOGGEDIN_SUCCESSFULLY: 'loggedin successfully',
+    LOGGEDIN_SUCCESSFULLY: "You've LogIn successfully",
     UNAUTHORIZED: 'Unauthorized',
     RECEIVER_NOT_FOUND: 'Receiver id not found',
     MESSAGE_NOT_SENT: 'Message not sent',

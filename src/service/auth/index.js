@@ -24,7 +24,7 @@ const signUp = async (body, res) => {
                 link: link
             }
             await mail.sendMailtoUser(mailTemplateConstants.VERIFY_EMAIL_TEMPLATE, result.email, mailSubjectConstants.VERIFY_EMAIL_SUBJECT, res, mailContent);
-            return responseData.success(res, { id: result._id, email: result.email, role: result.role, name: `${result.firstname} ${result.lastname}` }, messageConstants.USER_REGISTERED);
+            return responseData.success(res, { id: result._id, email: result.email, role: result.role, name: `${result.firstName} ${result.lastName}` }, messageConstants.USER_REGISTERED);
         }).catch((err) => {
             if (err.code === 11000) {
                 logger.error(`${messageConstants.USER_ALREADY_EXIST}. Plese use another email address`);
@@ -46,20 +46,20 @@ const signIn = async (body, res) => {
         if (user) {
             if (!user.is_email_verified) {
                 logger.error(messageConstants.USER_NOT_VERIFIED);
-                return responseData.fail(res, messageConstants.USER_NOT_VERIFIED, 401);
+                return responseData.fail(res, messageConstants.USER_NOT_VERIFIED, 405);
             }
             if (user.password === body.password) {
                 const token = await jsonWebToken.createToken(user);
                 logger.info(`User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
 
-                return responseData.success(res, { id: result._id, token, email: result.email, role: result.role, name: `${result.firstName} ${result.lastName}` }, `User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
+                return responseData.success(res, { id: user._id, token, email: user.email, role: user.role, name: `${user.firstName} ${user.lastName}` }, `User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
             } else {
                 logger.error(messageConstants.EMAIL_PASS_INCORRECT);
-                return responseData.fail(res, messageConstants.EMAIL_PASS_INCORRECT, 401);
+                return responseData.fail(res, messageConstants.EMAIL_PASS_INCORRECT, 403);
             }
         } else {
             logger.error(messageConstants.EMAIL_NOT_FOUND);
-            return responseData.fail(res, messageConstants.EMAIL_NOT_FOUND, 401);
+            return responseData.fail(res, messageConstants.EMAIL_NOT_FOUND, 403);
         }
     }).catch((err) => {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
