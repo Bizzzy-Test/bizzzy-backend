@@ -15,11 +15,11 @@ const socialLoginSchema = mongoose.Schema({
 });
 
 const userSchema = mongoose.Schema({
-    firstname: {
+    firstName: {
         type: String,
         required: true
     },
-    lastname: {
+    lastName: {
         type: String,
         required: true
     },
@@ -33,7 +33,7 @@ const userSchema = mongoose.Schema({
         required: true
     },
     role: {
-        type: String,
+        type: Number,
         enum: [
             userType.FREELANCER,
             userType.CLIENT
