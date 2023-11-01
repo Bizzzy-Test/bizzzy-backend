@@ -1,5 +1,6 @@
 const uuid = require('uuid');
 const mongoose = require('mongoose');
+const { userType } = require('../constants');
 
 const reasonsSchema = mongoose.Schema({
     name: {
