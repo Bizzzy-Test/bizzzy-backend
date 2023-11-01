@@ -54,8 +54,8 @@ const signIn = async (body, res) => {
             if (user.password === body.password) {
                 const token = await jsonWebToken.createToken(user);
                 logger.info(`User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
-
                 return responseData.success(res, { id: user._id, token, email: user.email, role: user.role, name: `${user.firstName} ${user.lastName}` }, `User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
+
 
             } else {
                 logger.error(messageConstants.EMAIL_PASS_INCORRECT);
