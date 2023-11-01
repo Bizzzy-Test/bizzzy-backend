@@ -9,6 +9,7 @@ const urlConstants = {
     CREATE_SUBSCRIPTION: '/create/subscription',
     MESSAGE_LIST: '/message-list',
     GET_USER_LIST: '/users/list',
+    GET_OPTIONS_LIST:"/getOptionsList",
     GET_USER_PROFILE: '/users/profile',
     SAVE_PAYMENT_DETAILS: '/save-payment-details',
     CHAT_USER_LIST: '/user-chat-list',

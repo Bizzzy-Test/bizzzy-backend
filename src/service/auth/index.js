@@ -6,6 +6,9 @@ const { logger, mail } = require("../../utils");
 const ProfileSchema = require('../../models/profile');
 const FeedbackSchema = require('../../models/feedback');
 const mongoose = require('mongoose');
+const StrengthsSchema = require('../../models/strengths');
+const ReasonsSchema = require('../../models/reason_for_ending_contract');
+const FeedbackOptionsSchema = require('../../models/feedback_options');
 
 const signUp = async (body, res) => {
     return new Promise(async () => {
@@ -217,6 +220,26 @@ const getUserList = async (res, userData) => {
     })
 }
 
+const getOptionsList = async (req, res) => {
+    return new Promise(async () => {
+        try {
+            const strengths = await StrengthsSchema.find({});
+            const reasons = await ReasonsSchema.find({ user_type: req.query.user_type });
+            const feedbackOptions = await FeedbackOptionsSchema.find({});
+            const result = {
+                strengths: strengths,
+                reasons: reasons,
+                feedback_options: feedbackOptions
+            }
+            logger.info(messageConstants.OPTION_LIST_FETCHED_SUCCESSFULLY);
+            return responseData.success(res, result, messageConstants.OPTION_LIST_FETCHED_SUCCESSFULLY);
+        } catch (err) {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        }
+    })
+}
+
 const userProfile = async (body, res) => {
     return new Promise(async () => {
         const profileSchema = new ProfileSchema(body);
@@ -378,5 +401,6 @@ module.exports = {
     forgotPassword,
     changePassword,
     resetPassword,
-    postFeedback
+    postFeedback,
+    getOptionsList
 }
