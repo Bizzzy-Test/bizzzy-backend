@@ -20,11 +20,11 @@ const userSchema = mongoose.Schema({
         default: () => uuid.v4().replace(/\-/g, ""),
         required: true
     },
-    firstname: {
+    firstName: {
         type: String,
         required: true
     },
-    lastname: {
+    lastName: {
         type: String,
         required: true
     },
