@@ -155,8 +155,6 @@ const resendEmailVerification = async (email) => {
 }
 
 
-
-
 // ==== Reset Password ====
 const resetPassword = async (body, userData, res) => {
     return new Promise(async () => {
