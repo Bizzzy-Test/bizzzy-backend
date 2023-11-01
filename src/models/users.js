@@ -15,11 +15,11 @@ const socialLoginSchema = mongoose.Schema({
 });
 
 const userSchema = mongoose.Schema({
-    firstname: {
+    firstName: {
         type: String,
         required: true
     },
-    lastname: {
+    lastName: {
         type: String,
         required: true
     },
