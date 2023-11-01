@@ -3,11 +3,6 @@ const mongoose = require('mongoose');
 const { invitationStatus } = require('../constants');
 
 const inviteSchema = mongoose.Schema({
-    _id: {
-        type: String,
-        default: () => uuid.v4().replace(/\-/g, ""),
-        required: true
-    },
     job_id: {
         type: String,
         required: true

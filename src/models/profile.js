@@ -3,11 +3,6 @@ const mongoose = require('mongoose');
 const { userType } = require('../constants');
 
 const profileSchema = mongoose.Schema({
-    _id: {
-        type: String,
-        default: () => uuid.v4().replace(/\-/g, ""),
-        required: true
-    },
     user_id: {
         type: String,
         required: true,
