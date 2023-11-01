@@ -43,8 +43,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/v1', routes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/', routesWithoutAPI);
-// Comment Socket
+
+
+
+app.get("/", async (req, res) => {
+  res.send("Welcome to Bizzzy API Server");
+});
+
 require('./socket')(io);
 const port = process.env.PORT || 5001;
 

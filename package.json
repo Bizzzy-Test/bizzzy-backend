@@ -6,11 +6,9 @@
   "scripts": {
     "start": "nodemon src/index.js",
     "dev": "nodemon src/index.js",
-    "deploy": "nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node build"
+    "deploy": "nodemon src/index.js"
   },
-  "author": "",
+  "author": "Buzzy",
   "license": "ISC",
   "engines": {
     "node": "14.x.x",
@@ -18,6 +16,7 @@
   },
   "dependencies": {
     "@googleapis/calendar": "^9.3.2",
+    "@aws-sdk/client-s3": "^3.438.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
