@@ -129,7 +129,7 @@ const getUserProfile = async (req, userData, res) => {
                                             $expr: { $eq: [{ $toString: "$_id" }, "$$giverId"] }
                                         }
                                     },
-                                    { $project: { _id: 1, firstname: 1, lastname: 1, email: 1 } }
+                                    { $project: { _id: 1, firstName: 1, lastName: 1, email: 1 } }
                                 ],
                                 as: "feedback_giver_user_details"
                             }

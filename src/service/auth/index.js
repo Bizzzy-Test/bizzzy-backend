@@ -16,7 +16,7 @@ const signUp = async (body, res) => {
             logger.info(`${messageConstants.USER_REGISTERED}`);
             // create email Token and send email to user to verifiy email.
             const userId = result._id;
-            const name = `${result.firstname} ${result.lastname}`;
+            const name = `${result.firstName} ${result.lastName}`;
             const link = `${process.env.BASE_URL}/verify-email?id=${userId}&token=${email_verification_token}`;
             const mailContent = {
                 name,
@@ -51,7 +51,8 @@ const signIn = async (body, res) => {
             if (user.password === body.password) {
                 const token = await jsonWebToken.createToken(user);
                 logger.info(`User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
-                return responseData.success(res, { id: user._id, token, email: user.email, role: user.role, name: `${user.firstname} ${user.lastname}` }, `User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
+
+                return responseData.success(res, { id: result._id, token, email: result.email, role: result.role, name: `${result.firstName} ${result.lastName}` }, `User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
             } else {
                 logger.error(messageConstants.EMAIL_PASS_INCORRECT);
                 return responseData.fail(res, messageConstants.EMAIL_PASS_INCORRECT, 401);
