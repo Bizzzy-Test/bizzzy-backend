@@ -154,6 +154,8 @@ const resendEmailVerification = async (email) => {
     }
 }
 
+// ----resend email----
+
 
 // ==== Reset Password ====
 const resetPassword = async (body, userData, res) => {
