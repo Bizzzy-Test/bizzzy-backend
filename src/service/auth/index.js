@@ -109,6 +109,54 @@ const verifyEmail = async (body, res) => {
     })
 }
 
+// ==== Resend Email Verification ==== service
+const resendEmailVerification = async (email) => {
+    try {
+        const user = await UserSchema.findOne({ email });
+
+        console.log("user++", user);
+
+        // Check if the user exists
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        // Check if the user's email is already verified
+        if (user.is_email_verified) {
+            throw new Error('Email is already verified');
+        }
+
+        // Generate a temporary email verification token (valid for one use)
+        const temporaryEmailVerificationToken = uuid.v4().replace(/\-/g, "");
+
+        // Compose the email content with the temporary token included in the link
+        const userId = user._id;
+        const name = `${user.firstname} ${user.lastname}`;
+        const link = `${process.env.BASE_URL}/verify-email?id=${userId}&token=${temporaryEmailVerificationToken}`;
+
+        const mailContent = {
+            name,
+            email: user.email,
+            link: link
+        };
+
+        // Send the verification email with the temporary token in the link
+        await mail.sendMailtoUser(mailTemplateConstants.VERIFY_EMAIL_TEMPLATE, user.email, mailSubjectConstants.VERIFY_EMAIL_SUBJECT, mailContent);
+
+        // Log and return a success message
+        logger.info(`${messageConstants.EMAIL_RESENT_FOR_VERIFICATION} for ${user.email}`);
+        return 'Email verification link resent successfully';
+    } catch (error) {
+        // Handle any errors and log them
+        logger.error(`Resend Email Verification ${messageConstants.API_FAILED} ${error}`);
+        throw new Error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
+    }
+}
+
+
+
+
+// ==== Reset Password ====
 const resetPassword = async (body, userData, res) => {
     return new Promise(async () => {
         body['old_password'] = cryptoGraphy.encrypt(body.old_password);
@@ -402,5 +450,6 @@ module.exports = {
     changePassword,
     resetPassword,
     postFeedback,
-    getOptionsList
+    getOptionsList,
+    resendEmailVerification
 }

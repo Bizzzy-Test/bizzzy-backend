@@ -1,6 +1,9 @@
 const urlConstants = {
     USER_REGISTER: '/register',
     VERIFY_EMAIL: '/verify-email',
+    //==
+    RESEND_VERIFY_EMAIL: '/resend-verify-email',
+    // ===
     USER_PROFILE: '/profile',
     USER_LOGIN: '/login',
     REFRESH_TOKEN: '/token',
