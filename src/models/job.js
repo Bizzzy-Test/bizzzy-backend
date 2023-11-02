@@ -13,7 +13,6 @@ const JobSchema = mongoose.Schema({
     },
     userId: {
         type: String,
-        required: true
     },
     tags: {
         type: [String]
@@ -44,7 +43,12 @@ const JobSchema = mongoose.Schema({
     },
     durations: {
         type: String
-    }
+    },
+    skills: [
+        {
+            type: String
+        }
+    ]
 });
 
 module.exports = mongoose.model('Job', JobSchema);

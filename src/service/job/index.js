@@ -8,10 +8,10 @@ const createJobPost = async (payload, userToken) => {
     try {
         const user = jwt.decode(userToken);
 
-        if (user.role !== 'client') {
+        if (user.role !== 2) {
             throw new Error(`${messageConstants.USER_NOT_AUTHORIZED}`);
         } else {
-            payload.userId = user._id;
+            // payload?.userId = user?._id;
 
             if (payload.fileUrl) {
                 payload.fileUrl = payload.fileUrl;
@@ -47,14 +47,14 @@ const searchJobPost = async (payload, userToken) => {
     let baseQuery = {};
 
     // Regular filters based on user role (freelancer or client)
-    if (user.role === 'freelancer') {
+    if (user.role === 1) {
         if (budget) {
             baseQuery.budget = budget;
         }
         if (experience) {
             baseQuery.experience = experience;
         }
-    } else if (user.role === 'client') {
+    } else if (user.role === 2) {
         // Add filters for clients if needed
     }
 
@@ -149,7 +149,7 @@ const updateJobPost = async (body, jobId, userToken) => {
     try {
         const user = jwt.decode(userToken);
 
-        if (user.role !== 'client' && user._id !== body.userId) {
+        if (user.role !== 2 && user._id !== body.userId) {
             throw new Error(messageConstants.USER_NOT_AUTHORIZED);
         }
 
@@ -172,7 +172,7 @@ const updateJobPost = async (body, jobId, userToken) => {
 // ==== delete job post ==== service
 const deleteJobPost = async (jobId, userToken) => {
     const user = jwt.decode(userToken);
-    if (user.role !== 'client') {
+    if (user.role !== 2) {
         logger.error(`${messageConstants.USER_NOT_AUTHORIZED}`);
         throw new Error(`${messageConstants.USER_NOT_AUTHORIZED}`);
     } else {
