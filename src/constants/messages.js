@@ -62,6 +62,7 @@ const messageConstants = {
     JOB_DELETED_SUCCESSFULLY: 'Job deleted successfully',
     JOB_UPDATED_SUCCESSFULLY: 'Job updated successfully',
     JOB_FETCHED_SUCCESSFULLY: 'Job fetched successfully',
+    JOB_NOT_FOUND: 'Job not found',
 
     // ===
 }
