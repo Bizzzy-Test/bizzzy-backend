@@ -8,8 +8,8 @@ const { logger, mail } = require('../../utils');
 // Send user invite
 const sendInvitation = async (body, userData, res) => {
     return new Promise(async () => {
-        if(userData.role=='client'){
-            body['sender_id']=userData._id;
+        if (userData.role == 2) {
+            body['sender_id'] = userData._id;
             const find_invite = await InviteSchema.findOne(
                 {
                     $and: [
@@ -18,15 +18,15 @@ const sendInvitation = async (body, userData, res) => {
                         { job_id: body.job_id }
                     ]
                 })
-            if(find_invite){
+            if (find_invite) {
                 logger.info(messageConstants.INVITATION_ALREADY_EXIST);
                 return responseData.fail(res, `${messageConstants.INVITATION_ALREADY_EXIST}`, 403);
-            }else{
+            } else {
                 const invitationResponse = await saveInvitation(body);
                 const user = await UserSchema.findOne({ _id: body.receiver_id });
                 const mailContent = {
                     name: user.firstname,
-                    email : user.email,
+                    email: user.email,
                     message: body.message,
                     link: `${process.env.BASE_URL}/message/invitation?job_id=${body.job_id}&invite_id=${invitationResponse.invite_result._id}`,
                 };
@@ -34,9 +34,9 @@ const sendInvitation = async (body, userData, res) => {
                 logger.info(messageConstants.INVITATION_SEND_SUCCESSFULLY);
                 return responseData.success(res, {}, messageConstants.INVITATION_SEND_SUCCESSFULLY);
             }
-        }else{
-                logger.info(messageConstants.NOT_SENT_INVITE);
-                return responseData.fail(res, `${messageConstants.NOT_SENT_INVITE}. ${err}`, 401);
+        } else {
+            logger.info(messageConstants.NOT_SENT_INVITE);
+            return responseData.fail(res, `${messageConstants.NOT_SENT_INVITE}. ${err}`, 401);
         }
     })
 }
@@ -45,11 +45,11 @@ const saveInvitation = async (body) => {
     try {
         const invitationSchema = new InviteSchema(body);
         const invite_result = await invitationSchema.save();
-        body['message_type']=2;
+        body['message_type'] = 2;
         const messageSchema = new MessageSchema(body);
         const message_result = await messageSchema.save();
         logger.info(messageConstants.INVITATION_SEND_SUCCESSFULLY);
-        return {invite_result:invite_result, message_result:message_result};
+        return { invite_result: invite_result, message_result: message_result };
     } catch (err) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
         throw err;
@@ -70,11 +70,13 @@ const updateInvitationStatus = async (req, res) => {
         ).then(async (result) => {
             if (result.length !== 0) {
                 await InviteSchema.findOneAndUpdate(
-                    {  $and: [
-                        { _id : invite_id },
-                        { receiver_id: req.userId },
-                        { job_id: job_id },
-                    ] },
+                    {
+                        $and: [
+                            { _id: invite_id },
+                            { receiver_id: req.userId },
+                            { job_id: job_id },
+                        ]
+                    },
                     { $set: { status: status } },
                     { new: true }
                 ).then((result) => {
@@ -103,7 +105,7 @@ const getInvitationDetails = async (req, res,) => {
         const { job_id } = req.query;
         const query = [
             {
-                $match: {  
+                $match: {
                     $and: [
                         {
                             receiver_id: req.userId
@@ -123,7 +125,7 @@ const getInvitationDetails = async (req, res,) => {
                     localField: 'sender_id',
                     foreignField: 'user_id',
                     pipeline: [
-                        { $project: { _id: 1, user_id:1, name: 1, profile_image: 1, position: 1 } }
+                        { $project: { _id: 1, user_id: 1, name: 1, profile_image: 1, position: 1 } }
                     ],
                     as: 'client_details'
                 }

@@ -13,7 +13,8 @@ const JobSchema = mongoose.Schema({
     },
     userId: {
         type: String,
-        required: true
+        required: true,
+        ref: 'users'
     },
     tags: {
         type: [String]

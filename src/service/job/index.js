@@ -8,10 +8,10 @@ const createJobPost = async (payload, userToken) => {
     try {
         const user = jwt.decode(userToken);
 
-        if (user.role !== 'client') {
+        if (user.role !== 2) {
             throw new Error(`${messageConstants.USER_NOT_AUTHORIZED}`);
         } else {
-            payload.userId = user._id;
+            // payload.userId = user._id;
 
             if (payload.fileUrl) {
                 payload.fileUrl = payload.fileUrl;
@@ -31,7 +31,7 @@ const createJobPost = async (payload, userToken) => {
 // ==== get all job post ==== service
 const getAllJobPost = async () => {
     try {
-        const jobSchema = await JobSchema.find();
+        const jobSchema = await JobSchema.find().populate('userId');
         return jobSchema;
     } catch (error) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
@@ -47,14 +47,14 @@ const searchJobPost = async (payload, userToken) => {
     let baseQuery = {};
 
     // Regular filters based on user role (freelancer or client)
-    if (user.role === 'freelancer') {
+    if (user.role === 1) {
         if (budget) {
             baseQuery.budget = budget;
         }
         if (experience) {
             baseQuery.experience = experience;
         }
-    } else if (user.role === 'client') {
+    } else if (user.role === 2) {
         // Add filters for clients if needed
     }
 
@@ -124,7 +124,7 @@ const searchJobPost = async (payload, userToken) => {
 // ==== get single job post ==== service
 const getSingleJobPost = async (jobId) => {
     try {
-        const jobSchema = await JobSchema.findById(jobId);
+        const jobSchema = await JobSchema.findById(jobId).populate('userId');
         return jobSchema;
     } catch (error) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
@@ -149,11 +149,11 @@ const updateJobPost = async (body, jobId, userToken) => {
     try {
         const user = jwt.decode(userToken);
 
-        if (user.role !== 'client' && user._id !== body.userId) {
+        if (user.role !== 2 && user._id !== body.userId) {
             throw new Error(messageConstants.USER_NOT_AUTHORIZED);
         }
 
-        const updatedJob = await JobSchema.findByIdAndUpdate(jobId, body, { new: true });
+        const updatedJob = await JobSchema.findByIdAndUpdate(jobId, body, { new: true })
 
         if (!updatedJob) {
             throw new Error(messageConstants.JOB_NOT_FOUND);
@@ -172,7 +172,7 @@ const updateJobPost = async (body, jobId, userToken) => {
 // ==== delete job post ==== service
 const deleteJobPost = async (jobId, userToken) => {
     const user = jwt.decode(userToken);
-    if (user.role !== 'client') {
+    if (user.role !== 2) {
         logger.error(`${messageConstants.USER_NOT_AUTHORIZED}`);
         throw new Error(`${messageConstants.USER_NOT_AUTHORIZED}`);
     } else {
