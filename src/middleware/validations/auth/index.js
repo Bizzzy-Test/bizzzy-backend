@@ -3,12 +3,12 @@ const Joi = require('joi');
 
 const signUpValidation = (req, res, next) => {
     const schema = Joi.object({
-        firstname: Joi.string().required(),
-        lastname: Joi.string().required(),
+        firstName: Joi.string().required(),
+        lastName: Joi.string().required(),
         email: Joi.string().required(),
         password: Joi.string().required(),
         country: Joi.string().required(),
-        role: Joi.string().valid('freelancer', 'client').required(),
+        role: Joi.number().valid(1, 2).required(),
         has_accepted_terms: Joi.boolean().required()
     })
     validateRequest(req, res, schema, next);

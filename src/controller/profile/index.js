@@ -16,8 +16,7 @@ const userProfile = async (req, res) => {
 
 const getUserProfile = async (req, res) => {
     try {
-        const userData = await getUserData(req, res);
-        const response = await profileService.getUserProfile(req, userData, res);
+        const response = await profileService.getUserProfile(req, res);
         logger.info(`${messageConstants.RESPONSE_FROM} getUserProfile API`, JSON.stringify(jsonData));
         res.send(response);
     } catch (err) {

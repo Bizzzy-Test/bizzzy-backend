@@ -72,7 +72,7 @@ const userProfile = async (body, res) => {
     })
 }
 
-const getUserProfile = async (req, userData, res) => {
+const getUserProfile = async (req, res) => {
     return new Promise(async () => {
         // const query = [
         //     {
@@ -106,7 +106,7 @@ const getUserProfile = async (req, userData, res) => {
         const query = [
             {
                 $match: {
-                    _id: new ObjectId(req.query.user_id) || new ObjectId(userData._id)
+                    _id: new ObjectId(req.query.user_id)
                 }
             },
             {
@@ -129,7 +129,7 @@ const getUserProfile = async (req, userData, res) => {
                                             $expr: { $eq: [{ $toString: "$_id" }, "$$giverId"] }
                                         }
                                     },
-                                    { $project: { _id: 1, firstname: 1, lastname: 1, email: 1 } }
+                                    { $project: { _id: 1, firstName: 1, lastName: 1, email: 1 } }
                                 ],
                                 as: "feedback_giver_user_details"
                             }

@@ -25,8 +25,8 @@ const sendInvitation = async (body, userData, res) => {
                 const invitationResponse = await saveInvitation(body);
                 const user = await UserSchema.findOne({ _id: body.receiver_id });
                 const mailContent = {
-                    name: user.firstname,
-                    email: user.email,
+                    name: user.firstName,
+                    email : user.email,
                     message: body.message,
                     link: `${process.env.BASE_URL}/message/invitation?job_id=${body.job_id}&invite_id=${invitationResponse.invite_result._id}`,
                 };

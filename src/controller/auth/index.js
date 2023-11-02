@@ -38,7 +38,6 @@ const verifyEmail = async (req, res) => {
 }
 
 // ==== Resend Email Verification ==== controller
-
 const resendEmailVerification = async (req, res) => {
     try {
         const email = req.body.email;
@@ -56,7 +55,6 @@ const resendEmailVerification = async (req, res) => {
         })
     }
 }
-
 
 // ==== User Profile ====
 const userProfile = async (req, res) => {
@@ -140,5 +138,6 @@ module.exports = {
     changePassword,
     resetPassword,
     verifyEmail,
-    resendEmailVerification
+    resendEmailVerification,
+
 }
