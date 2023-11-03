@@ -1,4 +1,4 @@
-const { responseData, messageConstants } = require("../../constants");
+const { messageConstants } = require("../../constants");
 const JobSchema = require("../../models/job")
 const { logger } = require("../../utils");
 const jwt = require('jsonwebtoken');
@@ -8,16 +8,9 @@ const createJobPost = async (payload, userToken) => {
     try {
         const user = jwt.decode(userToken);
 
-        if (user.role !== 2) {
+        if (user.role !== "2") {
             throw new Error(`${messageConstants.USER_NOT_AUTHORIZED}`);
         } else {
-            // payload.userId = user._id;
-
-            if (payload.fileUrl) {
-                payload.fileUrl = payload.fileUrl;
-            } else {
-                payload.fileUrl = null;
-            }
             const jobData = new JobSchema(payload);
             const data = await jobData.save();
             return data;
@@ -149,7 +142,7 @@ const updateJobPost = async (body, jobId, userToken) => {
     try {
         const user = jwt.decode(userToken);
 
-        if (user.role !== 2 && user._id !== body.client_detail) {
+        if (user.role !== "2" && user._id !== body.client_detail) {
             throw new Error(messageConstants.USER_NOT_AUTHORIZED);
         }
 
@@ -171,7 +164,7 @@ const updateJobPost = async (body, jobId, userToken) => {
 // ==== delete job post ==== service
 const deleteJobPost = async (jobId, userToken) => {
     const user = jwt.decode(userToken);
-    if (user.role !== 2) {
+    if (user.role !== "2") {
         logger.error(`${messageConstants.USER_NOT_AUTHORIZED}`);
         throw new Error(`${messageConstants.USER_NOT_AUTHORIZED}`);
     } else {
