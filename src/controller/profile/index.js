@@ -19,6 +19,8 @@ const getUserProfile = async (req, res) => {
         const userData = await getUserData(req, res);
         const response = await profileService.getUserProfile(userData, res);
         logger.info(`${messageConstants.RESPONSE_FROM} Get User Profile API`, JSON.stringify(jsonData));
+
+ 
         res.send(response);
     } catch (err) {
         logger.error(`GetUserProfile ${messageConstants.API_FAILED} ${err}`);

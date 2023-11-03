@@ -1,6 +1,11 @@
 const urlConstants = {
     USER_REGISTER: '/register',
     VERIFY_EMAIL: '/verify-email',
+
+    //==
+    RESEND_VERIFY_EMAIL: '/resend-verify-email',
+    // ===
+    USER_PROFILE: '/profile',
     USER_LOGIN: '/login',
     GET_USER_PROFILE: '/get-user-profile',
     PROFILE_DETAILS: '/profile-details',
@@ -10,6 +15,10 @@ const urlConstants = {
     CREATE_SUBSCRIPTION: '/create/subscription',
     MESSAGE_LIST: '/message-list',
     GET_USER_LIST: '/users/list',
+
+    GET_OPTIONS_LIST:"/getOptionsList",
+    GET_USER_PROFILE: '/users/profile',
+
     SAVE_PAYMENT_DETAILS: '/save-payment-details',
     CHAT_USER_LIST: '/user-chat-list',
     CREATE_PAYMENT_INTENT: '/create/payment/intent',
@@ -59,10 +68,11 @@ const urlConstants = {
     // = Job post url =
     ADD_JOB: '/job/create',
     GET_JOB: '/job/get-all',
-    GET_SINGEL_JOB: '/job/get/:job-id',
-    GET_JOB_BY_USERID: '/job/get-by-userId/:user-id',
+    GET_SINGEL_JOB: '/job/get-job/:id',
+    GET_JOB_BY_USERID: '/job/get-by-user-id/:id',
     DELETE_JOB: '/job/delete/:id',
     UPDATE_JOB: '/job/update/:id',
+    JOB_SEARCH: '/job/search',
     // = Job post url =
   
 }

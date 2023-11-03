@@ -1,4 +1,3 @@
-const uuid = require('uuid');
 const mongoose = require('mongoose');
 const { budgetType, experienceType } = require('../constants/enum');
 
@@ -11,13 +10,13 @@ const JobSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', 
-        required: true
+    client_detail: {
+        type: String,
+        required: true,
+        ref: 'users'
     },
     tags: {
-        type: [String] 
+        type: [String]
     },
     budget: {
         type: String,
@@ -28,14 +27,14 @@ const JobSchema = mongoose.Schema({
         required: true
     },
     amount: {
-        type: Number, 
+        type: Number,
         required: true
     },
     file: {
         type: String
     },
     experience: {
-        type: String, 
+        type: String,
         enum: [
             experienceType.ENTRY,
             experienceType.INTERMEDIATE,
@@ -44,8 +43,22 @@ const JobSchema = mongoose.Schema({
         required: true
     },
     durations: {
-        type: String 
+        type: String
+    },
+    skills: [
+        {
+            type: String
+        }
+    ],
+    created_at: {
+        type: Date,
+        default: Date.now
+    },
+    updated_at: {
+        type: Date,
+        default: Date.now
     }
+
 });
 
-module.exports =  mongoose.model('Job', JobSchema);
+module.exports = mongoose.model('Job', JobSchema);

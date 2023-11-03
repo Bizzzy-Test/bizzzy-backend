@@ -3,6 +3,22 @@ const mongoose = require('mongoose');
 const { userType } = require('../constants');
 
 const experienceSchema = mongoose.Schema({
+    user_id: {
+        type: String,
+        required: true,
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    role: {
+        type: Number,
+        required: true,
+        enum: [
+            userType.FREELANCER,
+            userType.CLIENT
+        ],
+    },
     company_name: {
         type: String
     },

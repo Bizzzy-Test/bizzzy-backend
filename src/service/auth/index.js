@@ -6,6 +6,9 @@ const { logger, mail } = require("../../utils");
 const ProfileSchema = require('../../models/profile');
 const FeedbackSchema = require('../../models/feedback');
 const mongoose = require('mongoose');
+const StrengthsSchema = require('../../models/strengths');
+const ReasonsSchema = require('../../models/reason_for_ending_contract');
+const FeedbackOptionsSchema = require('../../models/feedback_options');
 
 const signUp = async (body, res) => {
     return new Promise(async () => {
@@ -16,7 +19,7 @@ const signUp = async (body, res) => {
             logger.info(`${messageConstants.USER_REGISTERED}`);
             // create email Token and send email to user to verifiy email.
             const userId = result._id;
-            const name = `${result.firstname} ${result.lastname}`;
+            const name = `${result.firstName} ${result.lastName}`;
             const link = `${process.env.BASE_URL}/verify-email?id=${userId}&token=${email_verification_token}`;
             const mailContent = {
                 name,
@@ -24,7 +27,7 @@ const signUp = async (body, res) => {
                 link: link
             }
             await mail.sendMailtoUser(mailTemplateConstants.VERIFY_EMAIL_TEMPLATE, result.email, mailSubjectConstants.VERIFY_EMAIL_SUBJECT, res, mailContent);
-            return responseData.success(res, { id: result._id, email: result.email, role: result.role, name: `${result.firstname} ${result.lastname}` }, messageConstants.USER_REGISTERED);
+            return responseData.success(res, { id: result._id, email: result.email, role: result.role, name: `${result.firstName} ${result.lastName}` }, messageConstants.USER_REGISTERED);
         }).catch((err) => {
             if (err.code === 11000) {
                 logger.error(`${messageConstants.USER_ALREADY_EXIST}. Plese use another email address`);
@@ -46,19 +49,21 @@ const signIn = async (body, res) => {
         if (user) {
             if (!user.is_email_verified) {
                 logger.error(messageConstants.USER_NOT_VERIFIED);
-                return responseData.fail(res, messageConstants.USER_NOT_VERIFIED, 401);
+                return responseData.fail(res, messageConstants.USER_NOT_VERIFIED, 405);
             }
             if (user.password === body.password) {
                 const token = await jsonWebToken.createToken(user);
                 logger.info(`User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
-                return responseData.success(res, { id: user._id, token, email: user.email, role: user.role, name: `${user.firstname} ${user.lastname}` }, `User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
+                return responseData.success(res, { id: user._id, token, email: user.email, role: user.role, name: `${user.firstName} ${user.lastName}` }, `User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
+
+
             } else {
                 logger.error(messageConstants.EMAIL_PASS_INCORRECT);
-                return responseData.fail(res, messageConstants.EMAIL_PASS_INCORRECT, 401);
+                return responseData.fail(res, messageConstants.EMAIL_PASS_INCORRECT, 403);
             }
         } else {
             logger.error(messageConstants.EMAIL_NOT_FOUND);
-            return responseData.fail(res, messageConstants.EMAIL_NOT_FOUND, 401);
+            return responseData.fail(res, messageConstants.EMAIL_NOT_FOUND, 403);
         }
     }).catch((err) => {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
@@ -105,6 +110,54 @@ const verifyEmail = async (body, res) => {
     })
 }
 
+// ==== Resend Email Verification ==== service
+const resendEmailVerification = async (email) => {
+    try {
+        const user = await UserSchema.findOne({ email });
+
+        console.log("user++", user);
+
+        // Check if the user exists
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        // Check if the user's email is already verified
+        if (user.is_email_verified) {
+            throw new Error('Email is already verified');
+        }
+
+        // Generate a temporary email verification token (valid for one use)
+        const temporaryEmailVerificationToken = uuid.v4().replace(/\-/g, "");
+
+        // Compose the email content with the temporary token included in the link
+        const userId = user._id;
+        const name = `${user.firstname} ${user.lastname}`;
+        const link = `${process.env.BASE_URL}/verify-email?id=${userId}&token=${temporaryEmailVerificationToken}`;
+
+        const mailContent = {
+            name,
+            email: user.email,
+            link: link
+        };
+
+        // Send the verification email with the temporary token in the link
+        await mail.sendMailtoUser(mailTemplateConstants.VERIFY_EMAIL_TEMPLATE, user.email, mailSubjectConstants.VERIFY_EMAIL_SUBJECT, mailContent);
+
+        // Log and return a success message
+        logger.info(`${messageConstants.EMAIL_RESENT_FOR_VERIFICATION} for ${user.email}`);
+        return 'Email verification link resent successfully';
+    } catch (error) {
+        // Handle any errors and log them
+        logger.error(`Resend Email Verification ${messageConstants.API_FAILED} ${error}`);
+        throw new Error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
+    }
+}
+
+// ----resend email----
+
+
+// ==== Reset Password ====
 const resetPassword = async (body, userData, res) => {
     return new Promise(async () => {
         body['old_password'] = cryptoGraphy.encrypt(body.old_password);
@@ -213,6 +266,26 @@ const getUserList = async (res, userData) => {
             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
             return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
         })
+    })
+}
+
+const getOptionsList = async (req, res) => {
+    return new Promise(async () => {
+        try {
+            const strengths = await StrengthsSchema.find({});
+            const reasons = await ReasonsSchema.find({ user_type: req.query.user_type });
+            const feedbackOptions = await FeedbackOptionsSchema.find({});
+            const result = {
+                strengths: strengths,
+                reasons: reasons,
+                feedback_options: feedbackOptions
+            }
+            logger.info(messageConstants.OPTION_LIST_FETCHED_SUCCESSFULLY);
+            return responseData.success(res, result, messageConstants.OPTION_LIST_FETCHED_SUCCESSFULLY);
+        } catch (err) {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        }
     })
 }
 
@@ -377,5 +450,7 @@ module.exports = {
     forgotPassword,
     changePassword,
     resetPassword,
-    postFeedback
+    postFeedback,
+    getOptionsList,
+    resendEmailVerification
 }

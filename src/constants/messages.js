@@ -14,6 +14,7 @@ const messageConstants = {
     CONNECTED_SUCCESSFULLY: 'connected successfully',
     MESSAGE_CREATION_FAILED: 'Message creation failed',
     LIST_FETCHED_SUCCESSFULLY: 'list fetched successfully',
+    OPTION_LIST_FETCHED_SUCCESSFULLY: 'Options list fetched successfully',
     LIST_FETCHED_GOAL: 'goal list fetched successfully',
     LIST_NOT_FOUND: 'list not found',
     NOT_FOUND: 'not found',
@@ -22,7 +23,7 @@ const messageConstants = {
     LIST_API_CALL_SUCCESSFULLY: 'List API called successfully',
     API_FAILED: 'API failed',
     RESPONSE_FROM: 'Response from',
-    LOGGEDIN_SUCCESSFULLY: 'loggedin successfully',
+    LOGGEDIN_SUCCESSFULLY: "You've LogIn successfully",
     UNAUTHORIZED: 'Unauthorized',
     RECEIVER_NOT_FOUND: 'Receiver id not found',
     MESSAGE_NOT_SENT: 'Message not sent',
@@ -53,12 +54,15 @@ const messageConstants = {
     EMAIL_VERIFICATION_SENT: 'Verification email has been sent',
     EMAIL_VERIFICATION_FAILED: 'Email verification failed. Please try again.',
     NOT_SENT_INVITE : 'Not allowed to send invite',
+    EMAIL_RESENT_FOR_VERIFICATION: 'Email resent for verification',
 
     // ===
     JOB_CREATED_SUCCESSFULLY: 'Job created successfully',
     SOMETHING_WENT_WRONG: 'Something went wrong',
     JOB_DELETED_SUCCESSFULLY: 'Job deleted successfully',
     JOB_UPDATED_SUCCESSFULLY: 'Job updated successfully',
+    JOB_FETCHED_SUCCESSFULLY: 'Job fetched successfully',
+    JOB_NOT_FOUND: 'Job not found',
 
     // ===
 }
