@@ -5,19 +5,22 @@ const { getUserData } = require('../../middleware');
 
 const userProfile = async (req, res) => {
     try {
-        const response = await profileService.userProfile(req.body, res);
-        logger.info(`${messageConstants.RESPONSE_FROM} userProfile API`, JSON.stringify(response));
+        const response = await profileService.freelencerProfile(req, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} Freelencer Profile API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
-        logger.error(`UserProfile ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`Freelencer Profile ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 }
 
 const getUserProfile = async (req, res) => {
     try {
-        const response = await profileService.getUserProfile(req, res);
-        logger.info(`${messageConstants.RESPONSE_FROM} getUserProfile API`, JSON.stringify(jsonData));
+        const userData = await getUserData(req, res);
+        const response = await profileService.getUserProfile(userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} Get User Profile API`, JSON.stringify(jsonData));
+
+ 
         res.send(response);
     } catch (err) {
         logger.error(`GetUserProfile ${messageConstants.API_FAILED} ${err}`);

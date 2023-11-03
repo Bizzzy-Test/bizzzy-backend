@@ -12,7 +12,7 @@ module.exports = (app) => {
     app.post(urlConstants.USER_LOGIN, authValidator.signInValidation, api.signIn);
     //TODO Refresh Token
     app.post(urlConstants.REFRESH_TOKEN, authValidator.signInValidation, api.signIn);
-    app.post(urlConstants.USER_PROFILE, authValidator.profileValidation, profileAPI.userProfile);
+    app.post(urlConstants.PROFILE_DETAILS, jsonWebToken.validateToken, upload.single("file"), profileAPI.userProfile);
     app.post(urlConstants.UPLOAD_IMAGE + "/:user_id", upload.single('image'), userAPI.uploadImage);
     app.get(urlConstants.GET_USER_LIST, jsonWebToken.validateToken, userAPI.getUserList);
     app.get(urlConstants.GET_OPTIONS_LIST, jsonWebToken.validateToken, userAPI.getOptionsList);
