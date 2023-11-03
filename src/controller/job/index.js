@@ -87,8 +87,8 @@ const searchJobPost = async (req, res) => {
 
 const getJobPostByUserId = async (req, res) => {
     try {
-        const userId = req.params.id;
-        const response = await JobService.getJobPostByUserId(userId);
+        const client_detail = req.params.id;
+        const response = await JobService.getJobPostByUserId(client_detail);
 
         res.status(200).json({
             data: response,

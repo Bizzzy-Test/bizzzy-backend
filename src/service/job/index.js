@@ -31,7 +31,7 @@ const createJobPost = async (payload, userToken) => {
 // ==== get all job post ==== service
 const getAllJobPost = async () => {
     try {
-        const jobSchema = await JobSchema.find().populate('userId');
+        const jobSchema = await JobSchema.find().populate('client_detail');
         return jobSchema;
     } catch (error) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
@@ -124,7 +124,7 @@ const searchJobPost = async (payload, userToken) => {
 // ==== get single job post ==== service
 const getSingleJobPost = async (jobId) => {
     try {
-        const jobSchema = await JobSchema.findById(jobId).populate('userId');
+        const jobSchema = await JobSchema.findById(jobId).populate('client_detail');
         return jobSchema;
     } catch (error) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
@@ -134,9 +134,9 @@ const getSingleJobPost = async (jobId) => {
 
 
 // ==== get job post by user id ==== service
-const getJobPostByUserId = async (userId, res) => {
+const getJobPostByUserId = async (userId) => {
     try {
-        const jobSchema = await JobSchema.find({ userId: userId });
+        const jobSchema = await JobSchema.find({ client_detail: userId });
         return jobSchema;
     } catch (error) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
@@ -149,7 +149,7 @@ const updateJobPost = async (body, jobId, userToken) => {
     try {
         const user = jwt.decode(userToken);
 
-        if (user.role !== 2 && user._id !== body.userId) {
+        if (user.role !== 2 && user._id !== body.client_detail) {
             throw new Error(messageConstants.USER_NOT_AUTHORIZED);
         }
 
