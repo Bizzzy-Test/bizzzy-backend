@@ -11,7 +11,7 @@ const createJobPost = async (payload, userToken) => {
         if (user.role !== 2) {
             throw new Error(`${messageConstants.USER_NOT_AUTHORIZED}`);
         } else {
-            // payload?.userId = user?._id;
+
 
             if (payload.fileUrl) {
                 payload.fileUrl = payload.fileUrl;
@@ -31,7 +31,7 @@ const createJobPost = async (payload, userToken) => {
 // ==== get all job post ==== service
 const getAllJobPost = async () => {
     try {
-        const jobSchema = await JobSchema.find();
+        const jobSchema = await JobSchema.find().populate('userId');
         return jobSchema;
     } catch (error) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
@@ -124,7 +124,7 @@ const searchJobPost = async (payload, userToken) => {
 // ==== get single job post ==== service
 const getSingleJobPost = async (jobId) => {
     try {
-        const jobSchema = await JobSchema.findById(jobId);
+        const jobSchema = await JobSchema.findById(jobId).populate('userId');
         return jobSchema;
     } catch (error) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
@@ -153,7 +153,7 @@ const updateJobPost = async (body, jobId, userToken) => {
             throw new Error(messageConstants.USER_NOT_AUTHORIZED);
         }
 
-        const updatedJob = await JobSchema.findByIdAndUpdate(jobId, body, { new: true });
+        const updatedJob = await JobSchema.findByIdAndUpdate(jobId, body, { new: true })
 
         if (!updatedJob) {
             throw new Error(messageConstants.JOB_NOT_FOUND);
