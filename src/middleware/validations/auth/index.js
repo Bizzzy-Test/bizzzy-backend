@@ -28,14 +28,6 @@ const signInValidation = (req, res, next) => {
     })
     validateRequest(req, res, schema, next);
 }
-const profileValidation = (req, res, next) => {
-    const schema = Joi.object({
-        user_id: Joi.string().required(),
-        // role: Joi.number().valid(1, 2).required(),
-        // name: Joi.string().required(),
-    })
-    validateRequest(req, res, schema, next);
-}
 
 const forgotPasswordValidation = (req, res, next) => {
     const schema = Joi.object({
@@ -62,7 +54,6 @@ const resetPasswordValidation = (req, res, next) => {
 module.exports = {
     signUpValidation,
     signInValidation,
-    profileValidation,
     forgotPasswordValidation,
     changePasswordValidation,
     resetPasswordValidation,

@@ -4,155 +4,133 @@ const ProfileSchema = require('../../models/profile');
 const { logger } = require("../../utils");
 const path = require('path');
 const fs = require('fs');
-const { SECRET_KEY_STRIPE } = process.env
-const stripe = require('stripe')(SECRET_KEY_STRIPE);
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
+const { uploadFile } = require("../../middleware/aws/aws.js");
 
-const userProfile = async (body, res) => {
+const freelencerProfile = async (req, res) => {
     return new Promise(async () => {
-        const profileSchema = new ProfileSchema(body);
-        await UserSchema.find({
-            _id: body.user_id
-        }).then(async (result) => {
-            if (result.length !== 0) {
-                await ProfileSchema.find({
-                    user_id: body.user_id
-                }).then(async (result) => {
-                    if (result.length !== 0) {
-                        await UserSchema.updateOne({
-                            _id: body.user_id
-                        }, { $set: { email: body['email'] } }
-                        ).then(async (result) => {
-                            if (result.length !== 0) {
-                                await ProfileSchema.findOneAndUpdate(
-                                    {
-                                        user_id: body.user_id
-                                    },
-                                    body, { new: true, upsert: true }
-                                ).then(async (result) => {
-                                    if (result.length !== 0) {
-                                        logger.info(messageConstants.PROFILE_UPDATED_SUCCESSFULLY);
-                                        return responseData.success(res, result, messageConstants.PROFILE_UPDATED_SUCCESSFULLY);
-                                    } else {
-                                        logger.error(messageConstants.PROFILE_NOT_UPDATED);
-                                        return responseData.fail(res, messageConstants.PROFILE_NOT_UPDATED, 401);
-                                    }
-                                }).catch((err) => {
-                                    logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-                                    return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
-                                })
-                            } else {
-                                logger.error(messageConstants.PROFILE_NOT_UPDATED);
-                                return responseData.fail(res, messageConstants.PROFILE_NOT_UPDATED, 401);
-                            }
-                        }).catch((err) => {
-                            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-                            return responseData.fail(res, 'This email is already used', 500);
-                        })
-                    }
-                    else {
-                        await profileSchema.save().then(async (result) => {
-                            logger.info(messageConstants.PROFILE_SAVED_SUCCESSFULLY);
-                            return responseData.success(res, result, messageConstants.PROFILE_SAVED_SUCCESSFULLY);
-                        }).catch((err) => {
-                            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-                            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
-                        })
-                    }
-                })
+        let profile = await ProfileSchema.findOne({ user_id : req.userId });
+        if (!profile) {
+            profile = new ProfileSchema({ user_id: req.userId });
+        }
+        // Experience section
+        if (req.body.experience) {
+            const experienceData = JSON.parse(req.body.experience);
+            const company_name = educationData?.company_name || "null";
+            const years_experience = educationData?.years_experience || "null";
+            const start_date = educationData?.start_date || "null";
+            const end_date = educationData?.end_date || "null";
+            if (profile.experience && profile.experience.length > 0) {
+                profile.experience[0] = { ...profile.experience[0], ...experienceData };
+                profile.markModified('experience');
             } else {
-                logger.error(`${messageConstants.USER_NOT_FOUND} Please signup and then add profile details.`);
-                return responseData.fail(res, `${messageConstants.USER_NOT_FOUND} Please signup and then add profile details.`, 401);
+                profile.experience.push({
+                    company_name,
+                    years_experience,
+                    start_date,
+                    end_date
+                });
             }
+        }
+        // Eductaion section
+        if (req.body.education) {
+            const educationData = JSON.parse(req.body?.education);
+            const degree_name = educationData?.degree_name || "null";
+            const institution = educationData?.institution || "null";
+            const starting_date = educationData?.start_date || "null";
+            const ending_date = educationData?.end_date || "null";
+            if (profile.education && profile.education.length > 0) {
+                profile.education[0] = { ...profile.education[0], ...educationData };
+                profile.markModified('education');
+            } else {
+                profile.education.push({
+                    degree_name,
+                    institution,
+                    starting_date,
+                    ending_date
+                });
+            }
+        }
+        // For Portfolio section
+        if (req.body.portfolio || req.file) {
+            let fileUrl = '';
+            if (req.file) {
+              const fileBuffer = req.file.path;
+              const folder_name = 'portfolio';
+              // Upload the file buffer to S3 and get its access URL
+              fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folder_name);
+            }
+            // Check if there is already an attachment in the database
+            const existingAttachment = profile.portfolio[0] && profile.portfolio[0].attachements && profile.portfolio[0].attachements!='null';      
+            // Add the file URL to the jobData object if it's not already there
+            let headline;
+            let description;
+            let attachements = fileUrl == '' ? 'null' : fileUrl;
+            if (req.body.portfolio) {
+              const portfolioData = JSON.parse(req.body?.portfolio);
+              headline = portfolioData.headline || "null";
+              description = portfolioData.description || "null";
+            if (profile.portfolio && profile.portfolio.length > 0) {
+                if(existingAttachment){
+                    attachements=profile.portfolio[0].attachements;
+                }
+                // Update the portfolio
+                profile.portfolio[0] = { ...profile.portfolio[0], ...portfolioData, attachements };
+                profile.markModified('portfolio');
+              } else {
+                // If the portfolio array is empty, push a new entry
+                profile.portfolio.push({
+                  headline,
+                  description,
+                  attachements
+                });
+              }
+            } else {
+              headline = "null";
+              description = "null";
+              if (existingAttachment) {
+                // If an attachment already exists, don't make changes to the "attachments" field
+                attachements = existingAttachment;
+              }
+              profile.portfolio.push({
+                headline,
+                description,
+                attachements
+              });
+            }
+        }
+        if( profile.skills.length > 0){
+            profile.skills = profile.skills;
+        }else{
+            profile.skills = req.body.skills ? JSON.parse(req.body.skills) : [];
+        }   
+        profile.professional_role = req.body?.professional_role ? req.body?.professional_role : (profile.professional_role !== 'null' ? profile.professional_role : 'null');
+        profile.title = req.body?.title ? req.body?.title : (profile.title !== 'null' ? profile.title : 'null');
+        profile.hourly_rate = req.body?.hourly_rate ? req.body?.hourly_rate : (profile.hourly_rate !== 'null' ? profile.hourly_rate : 'null');
+        profile.description = req.body?.description ? req.body?.description : (profile.description !== 'null' ? profile.description : 'null');
+        await profile.save().then((result) => {
+            logger.info(`Freelencer Profile Details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+            return responseData.success(res, result, `Freelencer Profile Details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
         }).catch((err) => {
             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
             return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
-        })
+        });
     })
-}
+};
 
-const getUserProfile = async (req, userData, res) => {
+
+const getUserProfile = async (userData, res) => {
     return new Promise(async () => {
-        // const query = [
-        //     {
-        //         $match: {
-        //             _id: new ObjectId(req.query.user_id || userData._id)
-        //         }
-        //     },
-        //     {
-        //         $lookup: {
-        //             from: "feedbacks",
-        //             localField: "_id",
-        //             foreignField: "user_id_feedbacker",
-        //             pipeline: [
-        //                 {
-        //                     $lookup: {
-        //                         from: "users",
-        //                         localField: "user_id_giver",
-        //                         foreignField: '_id',
-        //                         pipeline: [
-        //                             { $project: { _id: 1, firstname: 1, lastname: 1, email: 1 } },
-        //                         ],
-        //                         as: "feedback_giver_user_details",
-        //                     },
-        //                 },
-        //             ],
-        //             as: "feedback_details",
-        //         }
-        //     }
-        // ];
-
-        const query = [
-            {
-                $match: {
-                    _id: new ObjectId(req.query.user_id) || new ObjectId(userData._id)
-                }
-            },
-            {
-                $lookup: {
-                    from: "feedbacks",
-                    let: { userId: "$_id" },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: { $eq: [{ $toObjectId: "$user_id_feedbacker" }, "$$userId"] }
-                            }
-                        },
-                        {
-                            $lookup: {
-                                from: "users",
-                                let: { giverId: "$user_id_giver" },
-                                pipeline: [
-                                    {
-                                        $match: {
-                                            $expr: { $eq: [{ $toString: "$_id" }, "$$giverId"] }
-                                        }
-                                    },
-                                    { $project: { _id: 1, firstname: 1, lastname: 1, email: 1 } }
-                                ],
-                                as: "feedback_giver_user_details"
-                            }
-                        }
-                    ],
-                    as: "feedback_details"
-                }
-            }
-        ];
-
-        await UserSchema.aggregate(query).then(async (result) => {
-            console.log(result)
-            if (result?.length !== 0) {
-                logger.info(`User details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
-                return responseData.success(res, result, `User details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
-            } else {
-                logger.info(`User ${messageConstants.PROFILE_DETAILS_NOT_FOUND}`);
-                return responseData.fail(res, `User ${messageConstants.PROFILE_DETAILS_NOT_FOUND}`, 200);
-            }
-        }).catch((err) => {
-            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
-        })
+        const userId = userData._id.toString();
+        let profile = await ProfileSchema.findOne({ user_id : userId });
+        if (profile) {
+            logger.info(`User details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+            return responseData.success(res, profile, `User details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+        } else {
+            logger.info(`User ${messageConstants.PROFILE_DETAILS_NOT_FOUND}`);
+            return responseData.fail(res, `User ${messageConstants.PROFILE_DETAILS_NOT_FOUND}`, 200);
+        }
     })
 }
 
@@ -185,7 +163,7 @@ const getProfileImage = async (req, res) => {
 }
 
 module.exports = {
-    userProfile,
+    freelencerProfile,
     getUserProfile,
     getProfileImage
 }
