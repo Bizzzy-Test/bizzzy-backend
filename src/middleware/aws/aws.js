@@ -1,4 +1,4 @@
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client, PutObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require("uuid");
 const fs = require("fs");
 
@@ -10,11 +10,12 @@ const s3 = new S3Client({
   region: process.env.AWS_REGION,
 });
 
-const uploadFile = async (fileBuffer, originalname) => {
-  const key = `${uuidv4()}-${originalname}`;
+const uploadFile = async (fileBuffer, originalname, contentType, folderName) => {
+  const key = `${folderName}/${uuidv4()}-${originalname}`;
   const uploadParams = {
     Bucket: process.env.AWS_BUCKET_NAME,
     Body: fileBuffer,
+    ContentType: contentType,
     Key: key,
   };
 
@@ -22,10 +23,7 @@ const uploadFile = async (fileBuffer, originalname) => {
     const command = new PutObjectCommand(uploadParams);
     await s3.send(command);
 
-    // Get the access URL of the uploaded file
     const fileUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${key}`;
-
-    console.log("fileUrl:", fileUrl);
 
     return fileUrl;
   } catch (error) {
@@ -34,6 +32,22 @@ const uploadFile = async (fileBuffer, originalname) => {
   }
 };
 
+const deleteFile = async (key) => {
+  const deleteParams = {
+    Bucket: process.env.AWS_BUCKET_NAME,
+    Key: key,
+  };
+
+  try {
+    const command = new DeleteObjectCommand(deleteParams);
+    await s3.send(command);
+  } catch (error) {
+    console.error("Error deleting file from S3:", error);
+    throw error;
+  }
+}
+
 module.exports = {
   uploadFile,
+  deleteFile
 };

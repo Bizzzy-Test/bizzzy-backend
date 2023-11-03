@@ -11,7 +11,7 @@ const JobSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    userId: {
+    client_detail: {
         type: String,
         required: true,
         ref: 'users'
