@@ -1,4 +1,3 @@
-const uuid = require('uuid');
 const mongoose = require('mongoose');
 const { budgetType, experienceType } = require('../constants/enum');
 
@@ -11,7 +10,7 @@ const JobSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    userId: {
+    client_detail: {
         type: String,
         required: true,
         ref: 'users'
@@ -50,7 +49,16 @@ const JobSchema = mongoose.Schema({
         {
             type: String
         }
-    ]
+    ],
+    created_at: {
+        type: Date,
+        default: Date.now
+    },
+    updated_at: {
+        type: Date,
+        default: Date.now
+    }
+
 });
 
 module.exports = mongoose.model('Job', JobSchema);

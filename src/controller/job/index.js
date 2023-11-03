@@ -1,22 +1,26 @@
 const JobService = require("../../service/job/index.js");
 const { messageConstants } = require('../../constants/index.js');
 const { logger } = require('../../utils/index.js');
-const { uploadFile } = require("../../middleware/aws/aws.js");
+const { uploadFile, deleteFile } = require("../../middleware/aws/aws.js");
 
 // ==== create job post ==== controller
+
 const createJobPost = async (req, res) => {
     try {
         const userToken = req.headers.token;
-        const fileBuffer = req.file.buffer;
         const jobData = req.body;
 
+        const fileBuffer = req.file.buffer;
+
+        const folderName = "job_files";
+
         // Upload the file buffer to S3 and get its access URL
-        const fileUrl = await uploadFile(fileBuffer, req.file.originalname);
+        const fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folderName);
 
         // Add the file URL to the jobData object
-        jobData.fileUrl = fileUrl;
-
+        jobData.file = fileUrl;
         const response = await JobService.createJobPost(jobData, userToken);
+
         res.status(200).json({
             data: response,
             success: true,
@@ -87,8 +91,8 @@ const searchJobPost = async (req, res) => {
 
 const getJobPostByUserId = async (req, res) => {
     try {
-        const userId = req.params.id;
-        const response = await JobService.getJobPostByUserId(userId);
+        const client_detail = req.params.id;
+        const response = await JobService.getJobPostByUserId(client_detail);
 
         res.status(200).json({
             data: response,
@@ -135,18 +139,26 @@ const updateJobPost = async (req, res) => {
         const userToken = req.headers.token;
         const jobId = req.params.id;
         const jobData = req.body;
+        const folderName = "job-files";
 
         // Check if a new file was uploaded in the request
         if (req.file) {
             const fileBuffer = req.file.buffer;
             // Upload the new file buffer to S3 and get its access URL
-            const fileUrl = await uploadFile(fileBuffer, req.file.originalname);
+            const fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folderName);
             // Add the new file URL to the jobData object
-            jobData.fileUrl = fileUrl;
+            jobData.file = fileUrl;
+
+            // Delete the old file from S3
+            const existingJob = await JobService.getSingleJobPost(jobId);
+            const existingFileKey = existingJob.fileUrl.split('/').pop();
+            await deleteFile(existingFileKey);
+
+
         } else {
             // If no new file was uploaded, keep the existing file URL in jobData
             const existingJob = await JobService.getSingleJobPost(jobId);
-            jobData.fileUrl = existingJob.fileUrl;
+            jobData.file = existingJob.file;
         }
 
         const response = await JobService.updateJobPost(jobData, jobId, userToken);
@@ -167,7 +179,6 @@ const updateJobPost = async (req, res) => {
 
 
 // ==== delete job post ==== controller
-
 const deleteJobPost = async (req, res) => {
     try {
         const userToken = req.headers.token;

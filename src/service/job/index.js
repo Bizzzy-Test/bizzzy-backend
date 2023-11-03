@@ -1,4 +1,4 @@
-const { responseData, messageConstants } = require("../../constants");
+const { messageConstants } = require("../../constants");
 const JobSchema = require("../../models/job")
 const { logger } = require("../../utils");
 const jwt = require('jsonwebtoken');
@@ -8,16 +8,9 @@ const createJobPost = async (payload, userToken) => {
     try {
         const user = jwt.decode(userToken);
 
-        if (user.role !== 2) {
+        if (user.role !== "2") {
             throw new Error(`${messageConstants.USER_NOT_AUTHORIZED}`);
         } else {
-
-
-            if (payload.fileUrl) {
-                payload.fileUrl = payload.fileUrl;
-            } else {
-                payload.fileUrl = null;
-            }
             const jobData = new JobSchema(payload);
             const data = await jobData.save();
             return data;
@@ -31,7 +24,7 @@ const createJobPost = async (payload, userToken) => {
 // ==== get all job post ==== service
 const getAllJobPost = async () => {
     try {
-        const jobSchema = await JobSchema.find().populate('userId');
+        const jobSchema = await JobSchema.find().populate('client_detail');
         return jobSchema;
     } catch (error) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
@@ -124,7 +117,7 @@ const searchJobPost = async (payload, userToken) => {
 // ==== get single job post ==== service
 const getSingleJobPost = async (jobId) => {
     try {
-        const jobSchema = await JobSchema.findById(jobId).populate('userId');
+        const jobSchema = await JobSchema.findById(jobId).populate('client_detail');
         return jobSchema;
     } catch (error) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
@@ -134,9 +127,9 @@ const getSingleJobPost = async (jobId) => {
 
 
 // ==== get job post by user id ==== service
-const getJobPostByUserId = async (userId, res) => {
+const getJobPostByUserId = async (userId) => {
     try {
-        const jobSchema = await JobSchema.find({ userId: userId });
+        const jobSchema = await JobSchema.find({ client_detail: userId });
         return jobSchema;
     } catch (error) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
@@ -149,7 +142,7 @@ const updateJobPost = async (body, jobId, userToken) => {
     try {
         const user = jwt.decode(userToken);
 
-        if (user.role !== 2 && user._id !== body.userId) {
+        if (user.role !== "2" && user._id !== body.client_detail) {
             throw new Error(messageConstants.USER_NOT_AUTHORIZED);
         }
 
@@ -166,13 +159,12 @@ const updateJobPost = async (body, jobId, userToken) => {
         throw new Error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
     }
 };
-
-
+// 
 
 // ==== delete job post ==== service
 const deleteJobPost = async (jobId, userToken) => {
     const user = jwt.decode(userToken);
-    if (user.role !== 2) {
+    if (user.role !== "2") {
         logger.error(`${messageConstants.USER_NOT_AUTHORIZED}`);
         throw new Error(`${messageConstants.USER_NOT_AUTHORIZED}`);
     } else {
