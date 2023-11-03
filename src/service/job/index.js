@@ -166,8 +166,7 @@ const updateJobPost = async (body, jobId, userToken) => {
         throw new Error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
     }
 };
-
-
+// 
 
 // ==== delete job post ==== service
 const deleteJobPost = async (jobId, userToken) => {

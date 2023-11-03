@@ -178,7 +178,6 @@ const updateJobPost = async (req, res) => {
 
 
 // ==== delete job post ==== controller
-
 const deleteJobPost = async (req, res) => {
     try {
         const userToken = req.headers.token;
