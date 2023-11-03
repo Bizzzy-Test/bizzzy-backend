@@ -9,7 +9,7 @@ const TimerSchema = mongoose.Schema({
     jobId: {
         type: String,
         required: true,
-        ref: 'jobs'
+        ref: 'Job'
     },
     startTime: {
         type: Date,

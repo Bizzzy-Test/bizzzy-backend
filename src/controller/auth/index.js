@@ -139,5 +139,4 @@ module.exports = {
     resetPassword,
     verifyEmail,
     resendEmailVerification,
-
 }

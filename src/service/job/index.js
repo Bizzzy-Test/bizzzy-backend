@@ -117,7 +117,7 @@ const searchJobPost = async (payload, userToken) => {
 // ==== get single job post ==== service
 const getSingleJobPost = async (jobId) => {
     try {
-        const jobSchema = await JobSchema.findById(jobId).populate('client_detail');
+        const jobSchema = await JobSchema.findById({_id:jobId}).populate('client_detail');
         return jobSchema;
     } catch (error) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
