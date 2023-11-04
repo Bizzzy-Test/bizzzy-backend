@@ -1,35 +1,27 @@
 openapi: 3.0.0
 info:
-  title: Advisor-Bioldout API Document
+  title: Bizzzy API Document
   description: |-
     description
   contact:
-    email: abc@gmail.com
+    email: bizzzy@gmail.com
   version: 1.0.11
 externalDocs:
-  description: Advisor-Bioldout
+  description: Bizzzy
   url: fagsfagsf
 servers:
-  - url: "http://localhost:5001/api"
+  - url: "http://localhost:8000/api/v1"
 tags:
   - name: User
     description: Everything about user
-  - name: Payment
-    description: Everything about payment
   - name: Message
-    description: Everything about message
-  - name: Notification
-    description: Everything about notification
-  - name: Filter
-    description: Everything about filter
+    description: Everything about Messages
   - name: Invitation
-    description: Everything about invitations
-  - name: Comment
-    description: Everything about comment
-  - name: Session
-    description: Everything about session
-  - name: Board
-    description: Everything about board
+    description: Everything about Invitation
+  - name: Job Proposal
+    description: Everything about Job
+  - name: Job
+    description: Everything about Job
 
 paths:
   # User API
@@ -76,10 +68,10 @@ paths:
     post:
       tags:
         - User
-      summary: User signin
+      summary: User Signin
       description: User signin API
       requestBody:
-        description: Signup user
+        description: Sign up user
         content:
           application/json:
             schema:
@@ -109,27 +101,38 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/400"
-
-  /profile:
-    post:
-      tags:
-        - User
-      summary: User Profile
-      description: User profile API
-      requestBody:
-        description: Profile of user
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UserProfile"
-      responses:
-        200:
-          description: User profile created successfully
+        500:
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserProfile200"
+                $ref: "#/components/schemas/500"
 
+  /token:
+    post:
+      tags:
+        - User
+      summary: Refresh Token
+      description: Refresh Token API
+      requestBody:
+        description: Refresh Token
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLogin"
+      responses:
+        200:
+          description: User loggedin successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserLogin200"
+        401:
+          description: Email or password is incorrect
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
         404:
           description: User not found
           content:
@@ -142,26 +145,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/400"
-
-  /upload/image:
-    post:
-      tags:
-        - User
-      summary: User Profile
-      description: User profile API
-      requestBody:
-        description: Profile image upload
-        content:
-          multipart/form-data:
-            schema:
-              $ref: "#/components/schemas/UserProfileImage"
-      responses:
-        200:
-          description: Profile image updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserProfileImage200"
         500:
           description: Internal server error
           content:
@@ -169,33 +152,296 @@ paths:
               schema:
                 $ref: "#/components/schemas/500"
 
-  /reset-password:
+  /profile:
     post:
       tags:
         - User
-      summary: User Reset Password
-      description: User Reset Password API
-      security:
-        - BearerAuth: []
+      summary: Profile 
+      description: Profile API
       requestBody:
-        description: Reset password for user object
+        description: Profile
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ResetPassword"
+              $ref: "#/components/schemas/Profile"
       responses:
         200:
-          description: Password reset successfully
+          description: User loggedin successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResetPassword200"
+                $ref: "#/components/schemas/Profile200"
+        401:
+          description: Email or password is incorrect
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+  
+  /upload/image/{user_id}:
+    post:
+      tags:
+        - User
+      summary: Upload image 
+      description: Upload image API
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: User loggedin successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile200"
+        401:
+          description: Email or password is incorrect
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+  
+  /load-profile-image/{profile_image}:
+    post:
+      tags:
+        - User
+      summary: Profile image 
+      description: Profile image API
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: profile_image
+          required: true
+          schema:
+            type: string
+          
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: User loggedin successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile200"
+        401:
+          description: Email or password is incorrect
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /resend-verify-email:
+    post:
+      tags:
+        - User
+      summary: Resend verify email
+      description: Resend verify email API
+      requestBody:
+        description: Resend verify email of user
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResendVerifyEmail"
+      responses:
+        200:
+          description: Email resent for verification
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResendVerifyEmail200"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /verify-email:
+    post:
+      tags:
+        - User
+      summary: Verify email
+      description: Verify email API
+      requestBody:
+        description: Verify email of user
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyEmail"
+      responses:
+        200:
+          description: Email has been successfully verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyEmail200"
+        401:
+          description: Email or Token is incorrect
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
         403:
-          description: Old password not matched
+          description: Email has not been verified
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/403"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+  
+  /add/feedback:
+    post:
+      tags:
+        - User
+      summary: Add feedback
+      description: Post feedback API
+      requestBody:
+        description: Post feedback
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddFeedback"
+      responses:
+        200:
+          description: Email has been successfully verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddFeedback200"
+        401:
+          description: Email or Token is incorrect
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        403:
+          description: Email has not been verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/403"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /users/list:
+    get:
+      tags:
+        - User
+      summary: Retrive user
+      description: User List
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: User list retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserList200"
         400:
           description: Please provide token
           content:
@@ -208,27 +454,200 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/401"
-  /forgot-password:
-    post:
-      tags:
-        - User
-      summary: User Forgot Password
-      description: User Forgot Password API
-      security:
-        - BearerAuth: []
-      requestBody:
-        description: Forgot password for user object
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ForgotPassword"
-      responses:
-        200:
-          description: Password forgotted successfully
+        404:
+          description: User list not found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ForgotPassword200"
+                $ref: "#/components/schemas/404"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+  
+  /job/get-all:
+    get:
+      tags:
+        - Job
+      summary: Retrive all jobs
+      description: Job List
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Job list retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetAllJob200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        404:
+          description: Job list not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+  
+  /job/get-by-user-id/{id}:
+    get:
+      tags:
+        - Job
+      summary: Retrive all jobs by user id
+      description: Job List by user id
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          
+      responses:
+        200:
+          description: Job fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetAllJobByUserId200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        404:
+          description: Job list not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+  
+  /job/get/{id}:
+    get:
+      tags:
+        - Job
+      summary: Retrive jobs by id
+      description: Job List id
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          
+      responses:
+        200:
+          description: Job fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetSingleJob200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        404:
+          description: Job list not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /get-countries:
+    get:
+      tags:
+        - User
+      summary: Retrive countries
+      description: Countries List
+      responses:
+        200:
+          description: Get all countries successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserList200"
+
+        404:
+          description: Countries list not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /message/list:
+    get:
+      tags:
+        - Message
+      summary: Retrive messages
+      description: Messages List
+      parameters:
+        - in: query
+          name: user_id
+          schema:
+            type: string
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Message list retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetMessageList200"
         400:
           description: Please provide token
           content:
@@ -236,7 +655,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/400"
         404:
-          description: User not found!
+          description: Message list not found.
           content:
             application/json:
               schema:
@@ -247,16 +666,193 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/401"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+  
+  /user-chat-list:
+    get:
+      tags:
+        - Message
+      summary: Retrive chat user list
+      description: Chat user List
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Chat user list retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetChatUserList200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        404:
+          description: Chat user list not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+  
+  /getOptionsList:
+    get:
+      tags:
+        - User
+      summary: Retrive options list
+      description: Retrive options List
+      parameters:
+        - in: query
+          name: user_type
+          schema:
+            type: number
+            enum:
+              - 1
+              - 2
+            x-enum-descriptions:
+              1: Freelancer User
+              2: client User
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Options list retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OptionsList200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        404:
+          description: User list not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+  
+  /users/profile:
+    get:
+      tags:
+        - User
+      summary: Retrive User Profile with feedback
+      description: Retrive User Profile with feedback
+      parameters:
+        - in: query
+          name: user_id
+          schema:
+            type: string
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: User details list fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfileList200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        404:
+          description: User list not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+ 
+  /forgot-password:
+    post:
+      tags:
+        - User
+      summary: Forgot password email
+      description: Forgot Password API
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Forgot Password
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResendVerifyEmail"
+      responses:
+        200:
+          description: Email sent successfully with the password reset link
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResendVerifyEmail200"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+  
   /change-password:
     post:
       tags:
         - User
-      summary: User Change Password
-      description: User Forgot change Password API
+      summary: Change password
+      description: Change Password API
       security:
         - BearerAuth: []
       requestBody:
-        description: Change password for user object
+        description: Change Password
         content:
           application/json:
             schema:
@@ -268,36 +864,392 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ChangePassword200"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
         403:
           description: Password forgot unsuccessful
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/403"
+  
+  /reset-password:
+    post:
+      tags:
+        - User
+      summary: Reset password
+      description: Reset Password API
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Reset Password
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPassword"
+      responses:
+        200:
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChangePassword200"
         400:
-          description: Please provide token
+          description: Validation error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/400"
         401:
-          description: Token expired, Please generate new token!
+          description: unauthorized
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/401"
+        403:
+          description: Old password not matched
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/403"
+
+  /invitation-send:
+    post:
+      tags:
+        - Invitation
+      summary: Send Invitation
+      description: Send Invitation API
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Send Invitation
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendInvitation"
+      responses:
+        200:
+          description: Invitation send successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChangePassword200"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        403:
+          description: Invitation already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/403"
+
+  /invitation-details:
+    get:
+      tags:
+        - Invitation
+      security:
+        - BearerAuth: []
+      summary: Retrive invitations
+      parameters:
+        - in: query
+          name: job_id
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetInvitatonList200"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Unauthorize error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /invitation-status-update:
+    put:
+      tags:
+        - Invitation
+      security:
+        - BearerAuth: []
+      summary: Update invitations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateInvitation"
+
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateInvitation"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Unauthorize error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /job-proposal:
+    post:
+      tags:
+        - Job Proposal
+      summary: Create Job Proposal
+      description: Create Job Proposal
+      requestBody:
+        description: Create Job Proposal
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobProposal"
+      responses:
+        200:
+          description: job proposal created succesfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobProposal200"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+  
+  /job/create:
+    post:
+      tags:
+        - Job
+      summary: Add a job
+      description: Endpoint to add a new job
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Job"
+      responses:
+        200:
+          description: job proposal created succesfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobProposal200"
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+        
+  /job-proposal-by-job-id/{jobId}:
+    get:
+      tags:
+        - Job Proposal
+      summary: Retrive Job Proposal by job id
+      description: Retrive Job Proposal by job id
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema:
+            type: string
+          
+      responses:
+        200:
+          description: job proposal fetched succesfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobProposalByJobId200"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+ 
+  /job-proposal-by-user-id/{userId}:
+    get:
+      tags:
+        - Job Proposal
+      summary: Retrive Job Proposal by job id
+      description: Retrive Job Proposal by job id
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          
+      responses:
+        200:
+          description: job proposal fetched succesfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobProposalByJobId200"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+
+  /job/delete/{id}:
+    delete:
+      tags:
+        - Job
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          
+      summary: Delete job
+
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteJob200"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Unauthorize error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+        403:
+          description: Comment not updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/403"
 
 components:
   schemas:
     UserRegister:
       type: object
       properties:
-        name:
+        firstName:
+          type: string
+        lastName:
           type: string
         email:
           type: string
         password:
           type: string
+        role:
+          type: number
+          enum:
+            - 1
+            - 2
+          x-enum-descriptions:
+            1: Freelancer User
+            2: client User
+        country:
+          type: string
+        social_logins:
+          type: array
+        email_verification_token:
+          type: string
+        is_email_verified:
+          type: boolean
+        send_promo_emails:
+          type: boolean
+        has_accepted_terms:
+          type: boolean
+        date_registered:
+          type: string
+          format: date-time
+        password_reset_token:
+          type: string
+        last_login:
+          type: string
+          format: date-time
+
     UserRegister200:
       type: object
       properties:
@@ -312,17 +1264,149 @@ components:
           properties:
             name:
               type: string
+            id:
+              type: string
+              format: uuid
             email:
               type: string
-            password:
-              type: string
-            status:
-              type: string
-            is_deleted:
-              type: boolean
+            role:
+              type: number
+              enum:
+                - 1
+                - 2
+              x-enum-descriptions:
+                1: Freelancer User
+                2: client User
+    
+    UserLogin:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    
+    SendInvitation:
+      type: object
+      properties:
+        receiver_id:
+          type: string
+        job_id:
+          type: string
+   
+    UpdateInvitation:
+      type: object
+      properties:
+        receiver_id:
+          type: string
+        job_id:
+          type: string
+    
+    Profile:
+      type: object
+      properties:
+        user_id:
+          type: string
+        name:
+          type: string
+        role:
+          type: number
+          enum:
+            - 1
+            - 2
+          x-enum-descriptions:
+            1: Freelancer User
+            2: client User
+        company_name:
+          type: string
+        industry:
+          type: array
+          items:
+            type: string
+        location:
+          type: string
+        company_stage:
+          type: string
+        country:
+          type: string
+        state:
+          type: string
+        position:
+          type: string
+        bio:
+          type: string
+        profile_image:
+          type: string
+        rate:
+          type: string
+        seeking_help:
+          type: array
+          items:
+            type: string
+        provide_help:
+          type: array
+          items:
+            type: string
+    
+    Profile200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
             _id:
               type: string
               format: uuid
+            user_id:
+              type: string
+            name:
+              type: string
+            role:
+              type: number
+              enum:
+                - 1
+                - 2
+              x-enum-descriptions:
+                1: Freelancer User
+                2: client User
+            company_name:
+              type: string
+            industry:
+              type: array
+              items:
+                type: string
+            location:
+              type: string
+            company_stage:
+              type: string
+            country:
+              type: string
+            state:
+              type: string
+            position:
+              type: string
+            bio:
+              type: string
+            profile_image:
+              type: string
+            rate:
+              type: string
+            seeking_help:
+              type: array
+              items:
+                type: string
+            provide_help:
+              type: array
+              items:
+                type: string
+            is_deleted:
+              type: boolean
             created_at:
               type: string
               format: date-time
@@ -332,13 +1416,6 @@ components:
             _v:
               type: string
 
-    UserLogin:
-      type: object
-      properties:
-        email:
-          type: string
-        password:
-          type: string
     UserLogin200:
       type: object
       properties:
@@ -355,15 +1432,238 @@ components:
               type: string
             email:
               type: string
-            password:
-              type: string
-            status:
-              type: string
-            is_deleted:
-              type: boolean
-            _id:
+            role:
+              type: number
+              enum:
+                - 1
+                - 2
+              x-enum-descriptions:
+                1: Freelancer User
+                2: client User
+            id:
               type: string
               format: uuid
+            token:
+              type: string
+
+    VerifyEmail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        token:
+          type: string
+    
+    VerifyEmail200:
+      type: object
+      properties:
+        success:
+            type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+    
+    UserList200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                format: uuid
+              country_name:
+                type: string
+    
+    UserProfileList200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                format: uuid
+              firstName:
+                type: string
+              lastName:
+                type: string
+              email:
+                type: string
+              country:
+                type: string
+              email_verification_token:
+                type: string
+              is_email_verified:
+                type: boolean
+              send_promo_emails:
+                type: boolean
+              has_accepted_terms:
+                type: boolean
+              is_deleted:
+                type: boolean
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+              _v:
+                type: string
+              role:
+                type: number
+                enum:
+                  - 1
+                  - 2
+                x-enum-descriptions:
+                  1: Freelancer User
+                  2: client User
+              feedback_details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id: 
+                      type: string
+                      format: uuid
+                    user_id_giver: 
+                      type: string
+                      format: uuid
+                    user_id_feedbacker: 
+                      type: string
+                      format: uuid
+                    private_feedback: 
+                      type: object
+                      properties:
+                        reason_for_ending_contract:
+                          type: string
+                        recommending_to_others:
+                          type: string
+                        strengths:
+                          type: array
+                          items:
+                            type: string
+                        status:
+                          type: string
+                        is_deleted:
+                          type: boolean
+                    public_feedback:
+                      type: object
+                      properties:
+                        feedback:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              options:
+                                type: string
+                              ratings:
+                                type: string  
+                              _id:
+                                type: string
+                                format: uuid
+                    is_deleted:
+                      type: boolean
+                    status:
+                      type: string
+                    created_at:
+                      type: string
+                      format: date-time
+                    updated_at:
+                      type: string
+                      format: date-time
+                    _v:
+                      type: string
+                    feedback_giver_user_details:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            format: uuid
+                          firstName:
+                            type: string
+                          lastName:
+                            type: string
+                          email:
+                            type: string
+
+    AddFeedback200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: object
+          properties:
+            _id: 
+              type: string
+              format: uuid
+            user_id_giver: 
+              type: string
+              format: uuid
+            user_id_feedbacker: 
+              type: string
+              format: uuid
+            private_feedback: 
+              type: object
+              properties:
+                reason_for_ending_contract:
+                  type: string
+                recommending_to_others:
+                  type: string
+                strengths:
+                  type: array
+                  items:
+                    type: string
+                status:
+                  type: string
+                is_deleted:
+                  type: boolean
+            public_feedback:
+              type: object
+              properties:
+                feedback:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      options:
+                        type: string
+                      ratings:
+                        type: string  
+                      _id:
+                        type: string
+                        format: uuid
+            is_deleted:
+              type: boolean
+            status:
+              type: string
             created_at:
               type: string
               format: date-time
@@ -372,47 +1672,50 @@ components:
               format: date-time
             _v:
               type: string
-            token:
-              type: string
 
-    UserProfile:
+    AddFeedback:
       type: object
       properties:
-        user_id:
+        user_id_giver: 
           type: string
-        name:
+          format: uuid
+        user_id_feedbacker: 
           type: string
-        role:
-          type: number
-          enum:
-            - 1
-            - 2
-          x-enum-descriptions:
-            1: Advisor User
-            2: Founder User
-        company_name:
-          type: string
-        industry:
-          type: string
-        position:
-          type: string
-        location:
-          type: string
-        stage:
-          type: string
-        seeking_help:
-          type: array
-          items:
-            type: string
-        provide_help:
-          type: array
-          items:
-            type: string
-        bio:
-          type: string
-        profile_image:
-          type: string
-    UserProfile200:
+          format: uuid
+        private_feedback: 
+          type: object
+          properties:
+            reason_for_ending_contract:
+              type: string
+            recommending_to_others:
+              type: string
+            strengths:
+              type: array
+              items:
+                type: string
+            status:
+              type: string
+            is_deleted:
+              type: boolean
+        public_feedback:
+          type: object
+          properties:
+            feedback:
+              type: array
+              items:
+                type: object
+                properties:
+                  options:
+                    type: string
+                  ratings:
+                    type: string  
+                  _id:
+                    type: string
+                    format: uuid
+            description:
+              type: string
+
+    OptionsList200:
       type: object
       properties:
         success:
@@ -424,82 +1727,82 @@ components:
         body:
           type: object
           properties:
-            _id:
-              type: string
-            user_id:
-              type: string
-            name:
-              type: string
-            role:
-              type: string
-            company_name:
-              type: string
-            industry:
-              type: string
-            location:
-              type: string
-            stage:
-              type: string
-            seeking_help:
+            strengths:
               type: array
               items:
-                type: string
-            provide_help:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+            reasons:
               type: array
               items:
-                type: string
-            bio:
-              type: string
-            profile_image:
-              type: string
-            status:
-              type: string
-            created_at:
-              type: string
-              format: date-time
-            updated_at:
-              type: string
-              format: date-time
-            is_deleted:
-              type: boolean
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  user_type:
+                    type: number
+                    enum:
+                      - 1
+                      - 2
+                    x-enum-descriptions:
+                      1: Freelancer User
+                      2: client User
+            feedback_options:
+              type: array
+              items:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
 
-    ResetPassword:
+    ResendVerifyEmail:
       type: object
       properties:
-        old_password:
+        email:
           type: string
-        new_password:
-          type: string
-
+    
     ChangePassword:
       type: object
       properties:
         new_password:
           type: string
-
-    ForgotPassword:
+    
+    ResetPassword:
       type: object
       properties:
-        email:
+        new_password:
           type: string
-
-    ResetPassword200:
-      type: object
-      properties:
-        success:
+        old_password:
           type: string
-        code:
-          type: string
-        msg:
-          type: string
-        body:
-          type: object
-
+    
     ChangePassword200:
       type: object
       properties:
         success:
+            type: string
+        code:
           type: string
+        msg:
+          type: string
+        body:
+          type: object
+    
+    ResendVerifyEmail200:
+      type: object
+      properties:
+        success:
+            type: string
         code:
           type: string
         msg:
@@ -507,7 +1810,7 @@ components:
         body:
           type: object
 
-    ForgotPassword200:
+    GetMessageList200:
       type: object
       properties:
         success:
@@ -517,66 +1820,61 @@ components:
         msg:
           type: string
         body:
-          type: object
-
-    FilterUserList200:
-      type: object
-      properties:
-        success:
-          type: string
-        code:
-          type: string
-        msg:
-          type: string
-        body:
-          type: object
-          properties:
-            _id:
-              type: string
-            user_id:
-              type: string
-            name:
-              type: string
-            role:
-              type: string
-            company_name:
-              type: string
-            industry:
-              type: string
-            location:
-              type: string
-            stage:
-              type: string
-            seeking_help:
-              type: array
-              items:
+          type: array
+          items:
+            type: object
+            properties:
+              sender_id:
                 type: string
-            provide_help:
-              type: array
-              items:
+              receiver_id:
                 type: string
-            bio:
-              type: string
-            profile_image:
-              type: string
-            status:
-              type: string
-            created_at:
-              type: string
-              format: date-time
-            updated_at:
-              type: string
-              format: date-time
-            is_deleted:
-              type: boolean
+              message:
+                type: string
+              message_type:
+                type: string
+              is_deleted:
+                type: boolean
+              status:
+                type: string
+              _id:
+                type: string
+                format: uuid
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+              __v:
+                type: string
+              sender_details:
+                type: array
+                items:
+                  properties:
+                    _id:
+                      type: string
+                      format: uuid
+                    firstname:
+                      type: string
+                    lastname:
+                      type: string
+                    email:
+                      type: string
+              receiver_details:
+                type: array
+                items:
+                  properties:
+                    _id:
+                      type: string
+                      format: uuid
+                    firstname:
+                      type: string
+                    lastname:
+                      type: string
+                    email:
+                      type: string
 
-    UserProfileImage:
-      type: object
-      properties:
-        profileImage:
-          type: string
-          format: binary
-    UserProfileImage200:
+    GetChatUserList200:
       type: object
       properties:
         success:
@@ -586,39 +1884,32 @@ components:
         msg:
           type: string
         body:
-          type: object
-          properties:
-            message:
-              type: string
-            imageurl:
-              type: string
-              format: uri
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+              chatId:
+                type: string
+              lastMessage:
+                type: string
+              timestamp:
+                type: string
+              user_profile_details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      format: uuid
+                    name:
+                      type: string
+                    profile_image:
+                      type: string
 
-    PaymentDetails:
-      type: object
-      properties:
-        payment_method:
-          type: string
-        payment_type:
-          type: string
-        plan_id:
-          type: string
-        address:
-          type: object
-          properties:
-            line1:
-              type: string
-            line2:
-              type: string
-            city:
-              type: string
-            state:
-              type: string
-            postal_code:
-              type: string
-            country:
-              type: string
-    PaymentDetails200:
+    GetInvitatonList200:
       type: object
       properties:
         success:
@@ -628,35 +1919,66 @@ components:
         msg:
           type: string
         body:
-          properties:
-            _id:
-              type: string
-            name:
-              type: string
-            email:
-              type: boolean
-            payment_method:
-              type: string
-            payment_type:
-              type: string
-            plan_id:
-              type: string
-            address:
-              $ref: "#/components/schemas/Payment"
-            is_deleted:
-              type: boolean
-            status:
-              type: number
-            created_at:
-              type: string
-              format: date-time
-            updated_at:
-              type: string
-              format: date-time
-            __v:
-              type: string
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+    
+    JobProposal:
+      type: object
+      properties:
+        jobId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        desiredPrice:
+          type: number
+        PaymentPreference:
+          type: string
+          enum:
+            - project
+            - milestone
+            - hourly
+        coverLetter:
+          type: string
+        projectFilesLink:
+          type: array
+          items:
+            type: string
+    
+    Job:
+      type: object
+      properties:
+        file:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        client_detail:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        budget:
+          type: string
+        amount:
+          type: number
+        experience:
+          type: string
+        durations:
+          type: string
+        skills:
+          type: array
+          items:
+            type: string
 
-    Subscription:
+    JobProposal200:
       type: object
       properties:
         success:
@@ -666,51 +1988,324 @@ components:
         msg:
           type: string
         body:
-          type: object
-          properties:
-            id:
-              type: string
-            object:
-              type: string
-            active:
-              type: boolean
-            attributes:
-              type: array
-              items:
+          type: array
+          items:
+            type: object
+            properties:
+              _id: 
                 type: string
-            created:
-              type: integer
-            default_price:
-              $ref: "#/components/schemas/Price"
-            description:
-              type: string
-            images:
-              type: array
-              items:
+                format: uuid
+              jobId:
                 type: string
-            livemode:
-              type: boolean
-            metadata:
-              type: object
-            name:
-              type: string
-            package_dimensions:
-              type: string
-            shippable:
-              type: string
-            statement_descriptor:
-              type: string
-            tax_code:
-              type: boolean
-            type:
-              type: string
-            unit_label:
-              type: string
-            updated:
-              type: integer
-            url:
-              type: string
+                format: uuid
+              userId:
+                type: string
+                format: uuid
+              desiredPrice:
+                type: number
+              PaymentPreference:
+                type: string
+                enum:
+                  - project
+                  - milestone
+                  - hourly
+              coverLetter:
+                type: string
+              projectFilesLink:
+                type: array
+                items:
+                  type: string
+              _v: 
+                type: string
+    
+    DeleteJob200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: array
+          items:
+            type: object
+            properties:
+              _id: 
+                type: string
+                format: uuid
 
+    JobProposalByJobId200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: array
+          items:
+            type: object
+            properties:
+              jobId:
+                type: string
+              userId:
+                type: string
+              desiredPrice: 
+                type: string
+              PaymentPreference: 
+                type: string
+              coverLetter: 
+                type: string
+              projectFilesLink:
+                type: array
+                items:
+                  type: string
+              _v: 
+                type: string
+    
+    GetAllJobByUserId200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+              title:
+                type: string
+              description: 
+                type: string
+              client_detail: 
+                type: string
+              budget: 
+                type: string
+              tags:
+                type: array
+                items:
+                  type: string
+              skills:
+                type: array
+                items:
+                  type: string
+              amount: 
+                type: string
+              file: 
+                type: string
+              experience: 
+                type: string
+              durations: 
+                type: string
+              __v: 
+                type: string
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+    
+    GetSingleJob200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+              title:
+                type: string
+              description: 
+                type: string
+              client_detail: 
+                type: object
+                properties:
+                  _id: 
+                    type: string
+                  firstName:
+                    type: string
+                  lastName: 
+                    type: string
+                  email: 
+                    type: string
+                  password: 
+                    type: string
+                  role:
+                    type: number
+                    enum:
+                      - 1
+                      - 2
+                    x-enum-descriptions:
+                      1: Freelancer User
+                      2: client User
+                  country:
+                    type: string
+                  email_verification_token:
+                    type: string
+                  is_email_verified:
+                    type: boolean
+                  send_promo_emails:
+                    type: boolean
+                  has_accepted_terms:
+                    type: boolean
+                  is_deleted:
+                    type: boolean
+                  status:
+                    type: string
+                  social_logins:
+                    type: array
+                    items:
+                      type: string
+                  date_registered:
+                    type: string
+                    format: date-time
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+                  __v:
+                    type: string
+              tags:
+                type: array
+                items:
+                  type: string
+              skills:
+                type: array
+                items:
+                  type: string
+              budget:
+                type: string
+              amount:
+                type: string
+              file:
+                type: string
+              experience:
+                type: string
+              durations:
+                type: string
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+    
+    GetAllJob200:
+      type: object
+      properties:
+        success:
+          type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+              title:
+                type: string
+              description: 
+                type: string
+              client_detail: 
+                type: object
+                properties:
+                  _id: 
+                    type: string
+                  firstName:
+                    type: string
+                  lastName: 
+                    type: string
+                  email: 
+                    type: string
+                  password: 
+                    type: string
+                  role:
+                    type: number
+                    enum:
+                      - 1
+                      - 2
+                    x-enum-descriptions:
+                      1: Freelancer User
+                      2: client User
+                  country:
+                    type: string
+                  email_verification_token:
+                    type: string
+                  is_email_verified:
+                    type: boolean
+                  send_promo_emails:
+                    type: boolean
+                  has_accepted_terms:
+                    type: boolean
+                  is_deleted:
+                    type: boolean
+                  status:
+                    type: string
+                  social_logins:
+                    type: array
+                    items:
+                      type: string
+                  date_registered:
+                    type: string
+                    format: date-time
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+                  __v:
+                    type: string
+              tags:
+                type: array
+                items:
+                  type: string
+              skills:
+                type: array
+                items:
+                  type: string
+              budget:
+                type: string
+              amount:
+                type: string
+              file:
+                type: string
+              experience:
+                type: string
+              durations:
+                type: string
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+    
     400:
       type: object
       properties:
