@@ -9,6 +9,8 @@ const urlConstants = {
     USER_LOGIN: '/login',
     GET_USER_PROFILE: '/get-user-profile',
     PROFILE_DETAILS: '/profile-details',
+    UPDATE_EXPERIENCE: '/edit-experience',
+    DELETE_EXPERIENCE: '/delete-experience',
     REFRESH_TOKEN: '/token',
     UPLOAD_IMAGE: '/upload/image',
     SUBSCRIPTION_PLAN_LIST: '/subscription/plan',

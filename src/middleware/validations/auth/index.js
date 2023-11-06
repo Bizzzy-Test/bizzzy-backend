@@ -51,11 +51,19 @@ const resetPasswordValidation = (req, res, next) => {
     validateRequest(req, res, schema, next)
 }
 
+const experienceValidation = (req, res, next) => {
+    const schema = Joi.object({
+        experienceId: Joi.string().required()
+    })
+    validateRequest(req, res, schema, next)
+}
+
 module.exports = {
     signUpValidation,
     signInValidation,
     forgotPasswordValidation,
     changePasswordValidation,
     resetPasswordValidation,
-    emailVerifyValidation
+    emailVerifyValidation,
+    experienceValidation
 }
