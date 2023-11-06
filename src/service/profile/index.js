@@ -142,8 +142,6 @@ const freelencerProfile = async (req, res) => {
             }
         }
 
-
-
         // if (profile.skills.length > 0) {
         //     profile.skills = profile.skills;
         // } else {
