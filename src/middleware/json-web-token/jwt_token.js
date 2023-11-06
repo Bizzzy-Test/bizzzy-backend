@@ -29,7 +29,7 @@ function validateToken(req, res, next, userToken = '') {
         if (token) {
             const verified = jwt.verify(token, jwtSecretKey);
             if (verified) {
-                req.userId = verified.id;
+                req.userId = verified.id ?? verified.userId;
                 logger.info(messageConstants.TOKEN_VALIDATED);
                 next();
             } else {
