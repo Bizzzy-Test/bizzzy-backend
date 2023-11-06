@@ -6,7 +6,12 @@ const { getUserData } = require('../../middleware');
 const userProfile = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
-        const response = await profileService.freelencerProfile(req, userData, res);
+        let response;
+        if(userData.role==2){
+            response = await profileService.clientProfile(req, userData, res);
+        }else{
+            response = await profileService.freelencerProfile(req, userData, res);
+        }
         logger.info(`${messageConstants.RESPONSE_FROM} Freelencer Profile API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
@@ -42,8 +47,36 @@ const getProfileImage = async (req, res) => {
     }
 }
 
+const updateExperience = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await profileService.updateExperience(req, userData, res);
+        if (response != null){
+            res.sendFile(response);
+        }
+    } catch (err) {
+        logger.error(`Update experience ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+}
+
+const deleteExperience = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await profileService.deleteExperience(req, userData, res);
+        if (response != null){
+            res.sendFile(response);
+        }
+    } catch (err) {
+        logger.error(`Delete experience ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+}
+
 module.exports = {
     userProfile,
     getUserProfile,
     getProfileImage,
+    updateExperience,
+    deleteExperience
 }

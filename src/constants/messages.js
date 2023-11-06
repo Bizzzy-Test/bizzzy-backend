@@ -9,6 +9,7 @@ const messageConstants = {
     USER_ALREADY_EXIST: 'User already exists',
     USER_NOT_VERIFIED: 'Your Email is not verified',
     PROFILE_UPDATED_SUCCESSFULLY: 'Profile updated successfully',
+    PROFILE_CREATED_SUCCESSFULLY: 'Profile created successfully',
     PROFILE_NOT_UPDATED: 'profile not updated',
     PROFILE_SAVED_SUCCESSFULLY: 'Profile saved successfully',
     CONNECTED_SUCCESSFULLY: 'connected successfully',
@@ -56,7 +57,9 @@ const messageConstants = {
     NOT_SENT_INVITE : 'Not allowed to send invite',
     EMAIL_RESENT_FOR_VERIFICATION: 'Email resent for verification',
     ALREADY_ADDED: "You've already added this data",
-
+    NOT_UPDATED_EXPERIENCE : "Experience not updated please enter correct experience id",
+    UPDATED_EXPERIENCE : "Successfully updated experience",
+    NOT_UPDATED : "Error while updating experience",
     // ===
     JOB_CREATED_SUCCESSFULLY: 'Job created successfully',
     SOMETHING_WENT_WRONG: 'Something went wrong',
