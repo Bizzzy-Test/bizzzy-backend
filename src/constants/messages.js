@@ -55,6 +55,7 @@ const messageConstants = {
     EMAIL_VERIFICATION_FAILED: 'Email verification failed. Please try again.',
     NOT_SENT_INVITE : 'Not allowed to send invite',
     EMAIL_RESENT_FOR_VERIFICATION: 'Email resent for verification',
+    ALREADY_ADDED: "You've already added this data",
 
     // ===
     JOB_CREATED_SUCCESSFULLY: 'Job created successfully',

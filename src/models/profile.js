@@ -3,35 +3,39 @@ const mongoose = require('mongoose');
 const { userType } = require('../constants');
 
 const experienceSchema = mongoose.Schema({
-    user_id: {
+    // user_id: {
+    //     type: String,
+    //     required: true,
+    // },
+
+    position: {
         type: String,
         required: true,
     },
-    name: {
-        type: String,
-        required: true
-    },
-    role: {
-        type: Number,
-        required: true,
-        enum: [
-            userType.FREELANCER,
-            userType.CLIENT
-        ],
-    },
+
     company_name: {
-        type: String
+        type: String,
+        required: true,
     },
-    years_experience: {
-        type: Number
+
+    job_description: {
+        type: String,
+        required: true,
     },
-    start_date:{
-        type: String
+    job_location: {
+        type: String,
+        required: true,
+    },
+
+    start_date: {
+        type: String,
+        required: true,
     },
     end_date: {
-        type: String
+        type: String,
+        required: true,
     }
-}, { _id: false });
+}, { _id: true });
 
 const educationSchema = mongoose.Schema({
     degree_name: {
@@ -60,16 +64,36 @@ const portfolioSchema = mongoose.Schema({
     }
 }, { _id: false });
 
+
 const skillSchema = mongoose.Schema({
     skill_name: {
         type: String
     }
 }, { _id: false });
 
+const categorySchema = mongoose.Schema({
+    category_name: {
+        type: String
+    }
+}, { _id: false });
+
 const profileSchema = mongoose.Schema({
     user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+        required: true,
+    },
+    firstName: {
         type: String,
         required: true,
+    },
+    lastName: {
+        type: String,
+        required: true,
+    },
+    location: {
+        type: String,
+        required: true
     },
     professional_role: {
         type: String,
@@ -107,6 +131,10 @@ const profileSchema = mongoose.Schema({
         type: [skillSchema],
         default: []
     },
+    categories: {
+        type: [categorySchema],
+        default: []
+    },
     created_at: {
         type: Date,
         default: Date.now,
@@ -124,5 +152,6 @@ const profileSchema = mongoose.Schema({
         default: 1,
     }
 })
+
 
 module.exports = mongoose.model('freelencer_profile', profileSchema)
