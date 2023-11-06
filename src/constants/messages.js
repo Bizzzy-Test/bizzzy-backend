@@ -10,6 +10,7 @@ const messageConstants = {
     USER_NOT_VERIFIED: 'Your Email is not verified',
     PROFILE_UPDATED_SUCCESSFULLY: 'Profile updated successfully',
     PROFILE_CREATED_SUCCESSFULLY: 'Profile created successfully',
+    PROFILE_IMAGE_UPLOADED: 'Profile image uploaded successfully',
     PROFILE_NOT_UPDATED: 'profile not updated',
     PROFILE_SAVED_SUCCESSFULLY: 'Profile saved successfully',
     CONNECTED_SUCCESSFULLY: 'connected successfully',
