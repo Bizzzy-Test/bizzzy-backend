@@ -34,6 +34,19 @@ const getUserProfile = async (req, res) => {
     }
 }
 
+const profileImageUpload = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await profileService.profileImageUpload(req, userData, res);
+        if (response != null){
+            res.sendFile(response);
+        }
+    } catch (err) {
+        logger.error(`Delete experience ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+}
+
 const getProfileImage = async (req, res) => {
     try {
         const response = await profileService.getProfileImage(req, res);
@@ -77,6 +90,7 @@ module.exports = {
     userProfile,
     getUserProfile,
     getProfileImage,
+    profileImageUpload,
     updateExperience,
     deleteExperience
 }

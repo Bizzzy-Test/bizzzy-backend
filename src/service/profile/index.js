@@ -131,12 +131,40 @@ const getUserProfile = async (userData, res) => {
         const userId = userData._id.toString();
         let profile = await ProfileSchema.findOne({ user_id: userId });
         if (profile) {
+            profile = profile.toObject();
+            profile.role = userData.role;
             logger.info(`User details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
             return responseData.success(res, profile, `User details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
         } else {
             logger.info(`User ${messageConstants.PROFILE_DETAILS_NOT_FOUND}`);
             return responseData.fail(res, `User ${messageConstants.PROFILE_DETAILS_NOT_FOUND}`, 200);
         }
+    })
+}
+
+const profileImageUpload = async (req, userData, res) => {
+    return new Promise(async () => {
+        let profile = await ClientProfileSchema.findOne({ userId: new ObjectId(req.userId) });
+        if (!profile && profile.role==2) {
+            profile = new ClientProfileSchema({ userId: req.userId });
+        }else{
+            profile = new ProfileSchema({ userId: req.userId });
+        }
+        if (req.file) {
+            const fileBuffer = req.file.path;
+            const folder_name = userData.role==1 ? 'freelencer_profile' : 'client_profile';
+            // Upload the file buffer to S3 and get its access URL
+            fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folder_name);
+        }
+        let attachements = fileUrl == '' ? 'null' : fileUrl;
+        profile.profile_image = attachements;
+        await profile.save().then((result) => {
+            logger.info(`Client Profile Image ${messageConstants.PROFILE_IMAGE_UPLOADED}`);
+            return responseData.success(res, result, `Client Profile Image ${messageConstants.PROFILE_IMAGE_UPLOADED}`);
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        });
     })
 }
 
@@ -229,6 +257,7 @@ module.exports = {
     freelencerProfile,
     clientProfile,
     getUserProfile,
+    profileImageUpload,
     getProfileImage,
     updateExperience,
     deleteExperience
