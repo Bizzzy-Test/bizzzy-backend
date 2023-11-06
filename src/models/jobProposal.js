@@ -1,6 +1,7 @@
 const uuid = require('uuid');
 const mongoose = require('mongoose');
 const { userType } = require('../constants');
+const { jobTypes } = require('../constants/enum');
 
 const jobProposalSchema = mongoose.Schema({
 
@@ -17,14 +18,10 @@ const jobProposalSchema = mongoose.Schema({
         required: true,
         min: 0
     },
-    PaymentPreference: { // desired payment method of user
+    jobType: { // desired payment method of user
         type: String,
         required: true,
-        enum: [
-            'project',
-            'milestone',
-            'hourly',
-        ]
+        enum: Object.values(jobTypes)
     },
     coverLetter: {
         type: String,

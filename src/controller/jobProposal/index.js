@@ -4,6 +4,7 @@ const { logger } = require('../../utils');
 
 const createJobProposal = async (req, res) => {
     try {
+        req.body.userId = req.userId
         const response = await jobProposalService.createJobProposal(req.body, res);
         logger.info(`${messageConstants.RESPONSE_FROM} createJobProposal API`, JSON.stringify(response));
         res.send(response);
