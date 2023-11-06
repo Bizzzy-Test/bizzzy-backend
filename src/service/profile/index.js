@@ -88,6 +88,7 @@ const freelencerProfile = async (req, userData, res) => {
             }
         }
 
+
         profile.skills = req.body?.skills ? req.body.skills : [];
         profile.categories = req.body?.categories ? req.body.categories : [];
         profile.professional_role = req.body?.professional_role ? req.body?.professional_role : (profile.professional_role !== 'null' ? profile.professional_role : 'null');
