@@ -1,6 +1,7 @@
 const uuid = require('uuid');
 const mongoose = require('mongoose');
 const { userType } = require('../constants');
+const { jobTypes } = require('../constants/enum');
 
 const jobProposalSchema = mongoose.Schema({
 
