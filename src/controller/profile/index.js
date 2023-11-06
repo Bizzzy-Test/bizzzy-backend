@@ -5,7 +5,8 @@ const { getUserData } = require('../../middleware');
 
 const userProfile = async (req, res) => {
     try {
-        const response = await profileService.freelencerProfile(req, res);
+        const userData = await getUserData(req, res);
+        const response = await profileService.freelencerProfile(req, userData, res);
         logger.info(`${messageConstants.RESPONSE_FROM} Freelencer Profile API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {

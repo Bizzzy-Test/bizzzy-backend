@@ -3,11 +3,6 @@ const mongoose = require('mongoose');
 const { userType } = require('../constants');
 
 const experienceSchema = mongoose.Schema({
-    // user_id: {
-    //     type: String,
-    //     required: true,
-    // },
-
     position: {
         type: String,
         required: true,
@@ -35,7 +30,7 @@ const experienceSchema = mongoose.Schema({
         type: String,
         required: true,
     }
-}, { _id: true });
+});
 
 const educationSchema = mongoose.Schema({
     degree_name: {
@@ -50,32 +45,23 @@ const educationSchema = mongoose.Schema({
     end_date: {
         type: String
     }
-}, { _id: false });
+});
 
 const portfolioSchema = mongoose.Schema({
-    headline: {
+    project_name: {
         type: String
     },
-    description: {
+    project_description: {
         type: String
     },
+    technologies: {
+        type: Array
+    },
+    // Max images three
     attachements: {
         type: String
     }
-}, { _id: false });
-
-
-const skillSchema = mongoose.Schema({
-    skill_name: {
-        type: String
-    }
-}, { _id: false });
-
-const categorySchema = mongoose.Schema({
-    category_name: {
-        type: String
-    }
-}, { _id: false });
+});
 
 const profileSchema = mongoose.Schema({
     user_id: {
@@ -128,11 +114,11 @@ const profileSchema = mongoose.Schema({
         default: []
     },
     skills: {
-        type: [skillSchema],
+        type: Array,
         default: []
     },
     categories: {
-        type: [categorySchema],
+        type: Array,
         default: []
     },
     created_at: {
