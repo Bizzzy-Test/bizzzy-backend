@@ -8,6 +8,7 @@ const urlConstants = {
     USER_PROFILE: '/profile',
     USER_LOGIN: '/login',
     GET_USER_PROFILE: '/get-user-profile',
+    USER_PROFILE_IMAGE: '/user-profile-image',
     PROFILE_DETAILS: '/profile-details',
     UPDATE_EXPERIENCE: '/edit-experience',
     DELETE_EXPERIENCE: '/delete-experience',

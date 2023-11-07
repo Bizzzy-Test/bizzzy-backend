@@ -28,6 +28,10 @@ const clientProfileSchema = mongoose.Schema({
         type: String,
         default: 'null'
     },
+    profile_image: {
+        type: String,
+        default: 'null'
+    },
     created_at: {
         type: Date,
         default: Date.now,

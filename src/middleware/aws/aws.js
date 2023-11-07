@@ -11,18 +11,18 @@ const s3 = new S3Client({
 });
 
 const uploadFile = async (fileBuffer, originalname, contentType, folderName) => {
+  const fileStream = fs.createReadStream(fileBuffer);
   const key = `${folderName}/${uuidv4()}-${originalname}`;
   const uploadParams = {
     Bucket: process.env.AWS_BUCKET_NAME,
-    Body: fileBuffer,
+    Body: fileStream,
     ContentType: contentType,
-    Key: key,
+    Key: key
   };
 
   try {
     const command = new PutObjectCommand(uploadParams);
     await s3.send(command);
-
     const fileUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${key}`;
 
     return fileUrl;
