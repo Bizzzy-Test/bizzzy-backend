@@ -144,30 +144,34 @@ const getUserProfile = async (userData, res) => {
 }
 
 const profileImageUpload = async (req, userData, res) => {
-    return new Promise(async () => {
-        let profile = await ClientProfileSchema.findOne({ userId: new ObjectId(req.userId) });
-        if (!profile && profile.role==2) {
-            profile = new ClientProfileSchema({ userId: req.userId });
+    try {
+        let profile;
+        if(userData.role==2){
+            profile = await ClientProfileSchema.findOne({ userId: new ObjectId(req.userId) });
         }else{
-            profile = new ProfileSchema({ userId: req.userId });
+            profile = await ProfileSchema.findOne({ user_id: new ObjectId(req.userId) });
         }
+        if (!profile) {
+            // Create a new profile if it doesn't exist
+            profile = new profileSchema({ userId: req.userId });
+        }
+        console.log('INCOMING IMAGE', req.file);
         if (req.file) {
             const fileBuffer = req.file.path;
-            const folder_name = userData.role==1 ? 'freelencer_profile' : 'client_profile';
-            // Upload the file buffer to S3 and get its access URL
-            fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folder_name);
+            const folder_name = userData.role == 1 ? 'freelancers' : 'clients';
+            // Assuming uploadFile is a function you've defined to handle file uploads
+            const fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folder_name);
+            profile.profile_image = fileUrl || 'null';  // Use the URL or 'null' if the upload failed
         }
-        let attachements = fileUrl == '' ? 'null' : fileUrl;
-        profile.profile_image = attachements;
-        await profile.save().then((result) => {
-            logger.info(`Client Profile Image ${messageConstants.PROFILE_IMAGE_UPLOADED}`);
-            return responseData.success(res, result, `Client Profile Image ${messageConstants.PROFILE_IMAGE_UPLOADED}`);
-        }).catch((err) => {
-            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
-        });
-    })
-}
+        const result = await profile.save();
+        logger.info(`Profile Image ${messageConstants.PROFILE_IMAGE_UPLOADED}`);
+        responseData.success(res, result, `Profile Image ${messageConstants.PROFILE_IMAGE_UPLOADED}`);
+    } catch (err) {
+        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+        responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+    }
+};
+
 
 const getProfileImage = async (req, res) => {
     const profile_image = req.params['profile_image'];
