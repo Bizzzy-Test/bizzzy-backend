@@ -1,4 +1,5 @@
 const messageConstants = {
+    USER_NOT_AUTHORIZED:"You are not allowed to create jobs",
     USER_NOT_FOUND: 'User not found!',
     TOKEN_EXPIRED: 'Token expired, Please generate new token!',
     TOKEN_VALIDATED: 'Token validated successfully',
