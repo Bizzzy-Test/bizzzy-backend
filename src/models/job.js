@@ -12,7 +12,6 @@ const JobSchema = mongoose.Schema({
     },
     client_detail: {
         type: String,
-        required: true,
         ref: 'users'
     },
     tags: {

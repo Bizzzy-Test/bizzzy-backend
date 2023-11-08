@@ -5,14 +5,17 @@ const jwt = require('jsonwebtoken');
 
 // ==== create job post ==== service
 const createJobPost = async (payload, userToken) => {
+    console.log({ "sagar": payload });
     try {
         const user = jwt.decode(userToken);
+        const clientDetail = user?._id;
+        payload.client_detail = clientDetail;
 
-        if (user.role !== "2") {
+        if (user.role != "2") {
             throw new Error(`${messageConstants.USER_NOT_AUTHORIZED}`);
         } else {
-            const jobData = new JobSchema(payload);
-            const data = await jobData.save();
+            const newJobData = new JobSchema(payload);
+            const data = await newJobData.save();
             return data;
         }
     } catch (error) {
@@ -117,7 +120,7 @@ const searchJobPost = async (payload, userToken) => {
 // ==== get single job post ==== service
 const getSingleJobPost = async (jobId) => {
     try {
-        const jobSchema = await JobSchema.findById({_id:jobId}).populate('client_detail');
+        const jobSchema = await JobSchema.findById({ _id: jobId }).populate('client_detail');
         return jobSchema;
     } catch (error) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);

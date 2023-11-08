@@ -8,17 +8,20 @@ const { uploadFile, deleteFile } = require("../../middleware/aws/aws.js");
 const createJobPost = async (req, res) => {
     try {
         const userToken = req.headers.token;
+        console.log(userToken);
         const jobData = req.body;
 
-        const fileBuffer = req.file.buffer;
+        let fileUrl = "";
 
-        const folderName = "job_files";
-
-        // Upload the file buffer to S3 and get its access URL
-        const fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folderName);
-
+        if (req.file) {
+            const fileBuffer = req.file.buffer;
+            const folderName = "job_files";
+            // Upload the file buffer to S3 and get its access URL
+            fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folderName);
+        }
         // Add the file URL to the jobData object
-        jobData.file = fileUrl;
+        jobData.file = fileUrl === "" ? "null" : fileUrl;
+
         const response = await JobService.createJobPost(jobData, userToken);
 
         res.status(200).json({
