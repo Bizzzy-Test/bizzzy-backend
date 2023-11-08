@@ -4,7 +4,8 @@ const InviteSchema = require('../../models/invite');
 const UserSchema = require('../../models/users');
 const MessageSchema = require('../../models/message');
 const { logger, mail } = require('../../utils');
-
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 // Send user invite
 const sendInvitation = async (body, userData, res) => {
     return new Promise(async () => {
