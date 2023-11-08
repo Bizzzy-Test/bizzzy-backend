@@ -88,10 +88,8 @@ const freelencerProfile = async (req, userData, res) => {
                 });
             }
         }
-
-
-        profile.skills = req.body?.skills ? req.body.skills : [];
-        profile.categories = req.body?.categories ? req.body.categories : [];
+        profile.skills = req.body?.skills ? req.body?.skills : (profile.skills.length !== 0 ? profile.skills : []);
+        profile.categories = req.body?.categories ? req.body?.categories : (profile.categories.length !== 'null' ? profile.categories : []);
         profile.professional_role = req.body?.professional_role ? req.body?.professional_role : (profile.professional_role !== 'null' ? profile.professional_role : 'null');
         profile.title = req.body?.title ? req.body?.title : (profile.title !== 'null' ? profile.title : 'null');
         profile.hourly_rate = req.body?.hourly_rate ? req.body?.hourly_rate : (profile.hourly_rate !== 'null' ? profile.hourly_rate : 'null');
@@ -130,7 +128,12 @@ const clientProfile = async (req, userData, res) => {
 const getUserProfile = async (userData, res) => {
     return new Promise(async () => {
         const userId = userData._id.toString();
-        let profile = await ProfileSchema.findOne({ user_id: userId });
+        let profile;
+        if(userData.role==2){
+            profile = await ClientProfileSchema.findOne({ userId: userId });
+        }else{
+            profile = await ProfileSchema.findOne({ user_id: userId });
+        }
         if (profile) {
             profile = profile.toObject();
             profile.role = userData.role;
