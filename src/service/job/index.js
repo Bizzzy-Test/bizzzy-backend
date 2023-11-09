@@ -2,13 +2,15 @@ const { messageConstants } = require("../../constants");
 const JobSchema = require("../../models/job")
 const { logger } = require("../../utils");
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
+
 
 // ==== create job post ==== service
 const createJobPost = async (payload, userToken) => {
     console.log({ "sagar": payload });
     try {
         const user = jwt.decode(userToken);
-        const clientDetail = user?._id;
+        const clientDetail = user?.id;
         payload.client_detail = clientDetail;
 
         if (user.role != "2") {
@@ -166,8 +168,10 @@ const updateJobPost = async (body, jobId, userToken) => {
 
 // ==== delete job post ==== service
 const deleteJobPost = async (jobId, userToken) => {
+    const ObjectId = mongoose.Types.ObjectId;
+    jobId = new ObjectId(jobId)
     const user = jwt.decode(userToken);
-    if (user.role !== "2") {
+    if (user.role !== 2) {
         logger.error(`${messageConstants.USER_NOT_AUTHORIZED}`);
         throw new Error(`${messageConstants.USER_NOT_AUTHORIZED}`);
     } else {
