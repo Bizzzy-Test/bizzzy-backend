@@ -64,7 +64,7 @@ const urlConstants = {
 
     CREATE_JOB_PROPOSAL: '/job-proposal',
     GET_JOB_PROPOSALS_BY_USER_ID: '/job-proposal-by-user-id/:userId',
-    GET_JOB_PROPOSALS_BY_JOB_ID: '/job/:jobId/propasal',
+    GET_JOB_PROPOSALS_BY_JOB_ID: '/job-proposal-by-job-id/:jobId',
 
     POST_FEEDBACK: '/add/feedback',
 
@@ -72,7 +72,7 @@ const urlConstants = {
     ADD_JOB: '/job/create',
     GET_JOB: '/job/get-all',
     GET_SINGEL_JOB: '/job/get-job/:id',
-    GET_JOB_BY_USERID: '/job/client/jobs',
+    GET_JOB_BY_USERID: '/job/get-by-user-id',
     DELETE_JOB: '/job/delete/:id',
     UPDATE_JOB: '/job/update/:id',
     JOB_SEARCH: '/job/search',
