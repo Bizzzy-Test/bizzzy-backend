@@ -130,9 +130,9 @@ const getSingleJobPost = async (jobId) => {
 
 
 // ==== get job post by user id ==== service
-const getJobPostByUserId = async (userId) => {
+const getJobPostByUserId = async (req, userData, res) => {
     try {
-        const jobSchema = await JobSchema.find({ client_detail: userId });
+        const jobSchema = await JobSchema.find({ client_detail: userData._id });
         return jobSchema;
     } catch (error) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
