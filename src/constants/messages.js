@@ -38,6 +38,7 @@ const messageConstants = {
     PASSWORD_NOT_RESET: 'Password reset unsuccessful',
     PASSWORD_NOT_FORGOT: 'Password forgot unsuccessful',
     EMAIL_PASS_INCORRECT: 'Email or Password is incorrect',
+    EMAIL_NOT_FOUND:"User not found with this email",
     NOTE_NOT_CREATED: 'Note not created',
     NOTE_CREATED_SUCCESSFULY: 'Note created successfully',
     NOTIFICATION_CREATION_FAILED: 'Notification creation failed',
