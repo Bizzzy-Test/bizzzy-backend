@@ -2,6 +2,7 @@ const JobService = require("../../service/job/index.js");
 const { messageConstants } = require('../../constants/index.js');
 const { logger } = require('../../utils/index.js');
 const { uploadFile, deleteFile } = require("../../middleware/aws/aws.js");
+const { getUserData } = require("../../middleware/index.js");
 
 // ==== create job post ==== controller
 
@@ -94,8 +95,9 @@ const searchJobPost = async (req, res) => {
 
 const getJobPostByUserId = async (req, res) => {
     try {
-        const client_detail = req.params.id;
-        const response = await JobService.getJobPostByUserId(client_detail);
+        // const client_detail = req.params.id;
+        const userData = await getUserData(req, res)
+        const response = await JobService.getJobPostByUserId(req, userData, res);
 
         res.status(200).json({
             data: response,
