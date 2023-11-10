@@ -256,6 +256,28 @@ const deleteExperience = async (req, userData, res) => {
     })
 }
 
+const searchFreelencers = async (req, userData, res) => {
+    return new Promise(async () => {
+        if(userData.role==2){
+            logger.info(`Search freelencers ${messageConstants.NOT_ALLOWED}`);
+            return responseData.fail(res, `${messageConstants.NOT_ALLOWED}`, 404);
+        }else{
+            const { keywords } = req.body;
+            await ProfileSchema.find({
+                skills: { $in: keywords.map(keyword => new RegExp(keyword, 'i')) }
+            }).then(async (result) => {
+                if(result.length>0){
+                    logger.info(`Search freelencers ${messageConstants.DATA_FOUND}`);
+                    return responseData.success(res, result, `Search freelencers ${messageConstants.DATA_FOUND}`);
+                }else{
+                    logger.info(`Search freelencers ${messageConstants.NOT_UPDATED}`);
+                    return responseData.fail(res, `${messageConstants.NOT_UPDATED}`, 404);
+                }
+            })
+        }
+    })
+}
+
 module.exports = {
     freelencerProfile,
     clientProfile,
@@ -263,5 +285,6 @@ module.exports = {
     profileImageUpload,
     getProfileImage,
     updateExperience,
-    deleteExperience
+    deleteExperience,
+    searchFreelencers
 }

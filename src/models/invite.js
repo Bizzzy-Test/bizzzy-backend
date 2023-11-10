@@ -4,8 +4,7 @@ const { invitationStatus } = require('../constants');
 
 const inviteSchema = mongoose.Schema({
     job_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'jobs',
+        type: String,
         required: true,
     },
     sender_id: {

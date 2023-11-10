@@ -68,6 +68,8 @@ const messageConstants = {
     JOB_UPDATED_SUCCESSFULLY: 'Job updated successfully',
     JOB_FETCHED_SUCCESSFULLY: 'Job fetched successfully',
     JOB_NOT_FOUND: 'Job not found',
+    NOT_ALLOWED : 'Not allowed to perform action',
+    DATA_FOUND : 'Successfully data found',
 
     // ===
 }
