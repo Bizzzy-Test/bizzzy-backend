@@ -10,7 +10,7 @@ const urlConstants = {
     GET_USER_PROFILE: '/get-user-profile',
     USER_PROFILE_IMAGE: '/user-profile-image',
     PROFILE_DETAILS: '/profile-details',
-    UPDATE_EXPERIENCE: '/edit-experience',
+    EDIT_PROFILE: '/edit-profile',
     DELETE_EXPERIENCE: '/delete-experience',
     REFRESH_TOKEN: '/token',
     UPLOAD_IMAGE: '/upload/image',
