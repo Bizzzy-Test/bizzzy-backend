@@ -60,10 +60,15 @@ const getProfileImage = async (req, res) => {
     }
 }
 
-const updateExperience = async (req, res) => {
+const editProfile = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
-        const response = await profileService.updateExperience(req, userData, res);
+        let response;
+        if(userData.role==1){
+            response = await profileService.editFreelencerProfile(req, userData, res);
+        }else{
+            response = await profileService.editClientProfile(req, userData, res);
+        }
         if (response != null){
             res.sendFile(response);
         }
@@ -91,6 +96,6 @@ module.exports = {
     getUserProfile,
     getProfileImage,
     profileImageUpload,
-    updateExperience,
+    editProfile,
     deleteExperience
 }

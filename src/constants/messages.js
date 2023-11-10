@@ -60,7 +60,7 @@ const messageConstants = {
     NOT_SENT_INVITE : 'Not allowed to send invite',
     EMAIL_RESENT_FOR_VERIFICATION: 'Email resent for verification',
     ALREADY_ADDED: "You've already added this data",
-    NOT_UPDATED_EXPERIENCE : "Experience not updated please enter correct experience id",
+    PROFILE_NOT_UPDATED : "Profile Not Updated",
     UPDATED_EXPERIENCE : "Successfully updated experience",
     NOT_UPDATED : "Error while updating experience",
     // ===

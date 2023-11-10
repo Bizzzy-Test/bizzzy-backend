@@ -193,43 +193,78 @@ const getProfileImage = async (req, res) => {
     }
 }
 
-const updateExperience = async (req, userData, res) => {
+const editFreelencerProfile = async (req, userData, res) => {
     return new Promise(async () => {
         const find_profile = await ProfileSchema.findOne({ user_id : new ObjectId(userData._id)});
         if(find_profile){
             const updateObject = {};
-            if (req.body?.company_name) {
-                updateObject["experience.$.company_name"] = req.body?.company_name;
+            let update_condition = {};
+            if(req.body?.experience){
+                updateObject["experience.$.company_name"] = req.body?.experience?.company_name;
+                updateObject["experience.$.position"] = req.body?.experience?.position;
+                updateObject["experience.$.job_description"] = req.body?.experience?.job_description;
+                updateObject["experience.$.job_location"] = req.body?.experience?.job_location;
+                updateObject["experience.$.start_date"] = req.body?.experience?.start_date;
+                updateObject["experience.$.end_date"] = req.body?.experience?.end_date;
+                update_condition = {
+                    _id: new ObjectId(find_profile._id),
+                    "experience._id": new ObjectId(req.body?.experience?.experienceId)
+                }
             }
-            if (req.body?.position) {
-                updateObject["experience.$.position"] = req.body?.position;
+            if(req.body?.education){
+                updateObject["education.$.degree_name"] = req.body?.education?.degree_name;
+                updateObject["education.$.institution"] = req.body?.education?.institution;
+                updateObject["education.$.start_date"] = req.body?.education?.start_date;
+                updateObject["education.$.end_date"] = req.body?.education?.end_date;
+                update_condition = {
+                    _id: new ObjectId(find_profile._id),
+                    "education._id": new ObjectId(req.body?.education?.educationId)
+                }
             }
-            if (req.body?.job_description) {
-                updateObject["experience.$.job_description"] = req.body?.job_description;
+            if(req.body?.portfolio || req.file){
+                let fileUrl = '';
+                if (req.file) {
+                    const fileBuffer = req.file.path;
+                    const folder_name = 'portfolio';
+                    // Upload the file buffer to S3 and get its access URL
+                    fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folder_name);
+                    updateObject["portfolio.$.attachements"] = fileUrl == '' ? 'null' : fileUrl;
+                    update_condition = {
+                        _id: new ObjectId(find_profile._id),
+                        "portfolio._id": new ObjectId(req.body?.portfolioId)
+                    }  
+                }else{
+                    updateObject["portfolio.$.project_name"] = req.body?.portfolio?.project_name;
+                    updateObject["portfolio.$.project_description"] = req.body?.portfolio?.project_description;
+                    updateObject["portfolio.$.technologies"] = req.body?.portfolio?.technologies; 
+                    update_condition = {
+                        _id: new ObjectId(find_profile._id),
+                        "portfolio._id": new ObjectId(req.body?.portfolio?.portfolioId)
+                    }     
+                }          
             }
-            if (req.body?.job_location) {
-                updateObject["experience.$.job_location"] = req.body?.job_location;
+            if(req.body?.professional_role || req.body?.title || req.body?.hourly_rate || req.body?.description || req.body?.skills || req.body?.categories){
+                updateObject.professional_role = req.body?.professional_role;
+                updateObject.hourly_rate = req.body?.hourly_rate;
+                updateObject.description = req.body?.description;
+                updateObject.skills = req.body?.skills;
+                updateObject.categories = req.body?.categories;
+                update_condition = {
+                    _id: new ObjectId(find_profile._id)
+                }
             }
-            if (req.body?.start_date) {
-                updateObject["experience.$.start_date"] = req.body?.start_date;
-            }
-            if (req.body?.end_date) {
-                updateObject["experience.$.end_date"] = req.body?.end_date;
-            }
-            await ProfileSchema.updateOne({
-                _id: new ObjectId(find_profile._id),
-                "experience._id": new ObjectId(req.body?.experienceId)
-              },
+            // Update data in freelencer profile
+            await ProfileSchema.updateOne(update_condition,
               {
                 $set: updateObject
               }
             ).then(async (updateResult) => {
                 if(updateResult?.modifiedCount==1){
-                    logger.info(`User experience ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
-                    return responseData.success(res, req.body, `User experience ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                    logger.info(`Edit Freelencer profile ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                    return responseData.success(res, req.body, `Edit Freelencer profile ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
                 }else{
-                    logger.info(`User ${messageConstants.NOT_UPDATED_EXPERIENCE}`);
-                    return responseData.fail(res, `${messageConstants.NOT_UPDATED_EXPERIENCE}`, 200);
+                    logger.info(`Edit Freelencer profile ${messageConstants.PROFILE_NOT_UPDATED}`);
+                    return responseData.fail(res, `${messageConstants.PROFILE_NOT_UPDATED}`, 200);
                 }
             })
         }else{
@@ -239,6 +274,17 @@ const updateExperience = async (req, userData, res) => {
     })
 }
 
+const editClientProfile = async (req, userData, res) => {
+    return new Promise(async () => {
+        const find_profile = await ProfileSchema.findOne({ user_id : new ObjectId(userData._id)});
+        if(find_profile){
+            const updateObject = {};
+        }else{
+            logger.error(messageConstants.USER_NOT_FOUND);
+            return responseData.fail(res, messageConstants.USER_NOT_FOUND, 403);
+        }
+    })
+}
 const deleteExperience = async (req, userData, res) => {
     return new Promise(async () => {
         const find_profile = await ProfileSchema.findOne({ user_id : new ObjectId(userData._id)});
@@ -267,6 +313,7 @@ module.exports = {
     getUserProfile,
     profileImageUpload,
     getProfileImage,
-    updateExperience,
+    editFreelencerProfile,
+    editClientProfile,
     deleteExperience
 }
