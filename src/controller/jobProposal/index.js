@@ -17,7 +17,7 @@ const createJobProposal = async (req, res) => {
         }
         // Add the file URL to the jobData object
         jobProposalData.file = fileUrl || null; // Use null instead of "null" if no file URL
-        const response = await jobProposalService.createJobProposal(jobProposalData, res);
+        const response = await jobProposalService.createJobProposal(jobProposalData, userToken, res);
         logger.info(`${messageConstants.RESPONSE_FROM} createJobProposal API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
