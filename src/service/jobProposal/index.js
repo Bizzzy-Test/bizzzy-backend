@@ -1,9 +1,8 @@
 const { responseData, messageConstants } = require('../../constants');
 const JobProposalSchema = require('../../models/jobProposal');
 const { logger } = require('../../utils');
-const jwt = require('jsonwebtoken');
 
-const createJobProposal = async (payload, userToken, res) => {
+const createJobProposal = async (payload, res) => {
     return new Promise(async () => {
         const jobProposal = JobProposalSchema(payload);
         await jobProposal.save().then(response => {
