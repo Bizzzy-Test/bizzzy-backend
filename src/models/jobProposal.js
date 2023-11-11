@@ -30,6 +30,9 @@ const jobProposalSchema = mongoose.Schema({
     projectFilesLink: {
         type: [String],
         required: false
+    },
+    file:{
+        type: String
     }
 },
 {

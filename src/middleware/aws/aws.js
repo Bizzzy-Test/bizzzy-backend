@@ -11,11 +11,11 @@ const s3 = new S3Client({
 });
 
 const uploadFile = async (fileBuffer, originalname, contentType, folderName) => {
-  const fileStream = fs.createReadStream(fileBuffer);
+  // const fileStream = fs.createReadStream(fileBuffer);
   const key = `${folderName}/${uuidv4()}-${originalname}`;
   const uploadParams = {
     Bucket: process.env.AWS_BUCKET_NAME,
-    Body: fileStream,
+    Body: fileBuffer,
     ContentType: contentType,
     Key: key
   };
