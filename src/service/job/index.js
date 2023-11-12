@@ -148,17 +148,6 @@ const getJobPostByUserId = async (req, userData, res) => {
                             $match: {
                                 $expr: { $eq: ['$jobId', '$$jobId'] }
                             }
-                        },
-                        {
-                            $project: {
-                                _id: 1,
-                                jobId: 1,
-                                userId: 1,
-                                desiredPrice: 1,
-                                PaymentPreference: 1,
-                                coverLetter: 1,
-                                projectFilesLink: 1
-                            }
                         }
                     ],
                     as: 'proposal_details'
