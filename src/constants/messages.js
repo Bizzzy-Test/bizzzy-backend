@@ -70,7 +70,8 @@ const messageConstants = {
     JOB_UPDATED_SUCCESSFULLY: 'Job updated successfully',
     JOB_FETCHED_SUCCESSFULLY: 'Job fetched successfully',
     JOB_NOT_FOUND: 'Job not found',
-
+    JOB_OFFER_SEND_SUCCESSFULLY: 'Job offer send successfully',
+    NOT_SENT_OFFER : 'Not allowed to send job offer',
     // ===
 }
 

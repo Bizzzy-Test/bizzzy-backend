@@ -5,6 +5,7 @@ const commentValiator = require('./comment');
 const goalValidatior = require('./goal');
 const sessionValidator = require('./session');
 const boardValidator = require('./board');
+const offerValidator = require('./offer');
 
 module.exports = {
     authValidator,
@@ -13,5 +14,6 @@ module.exports = {
     commentValiator,
     sessionValidator,
     goalValidatior,
-    boardValidator
+    boardValidator,
+    offerValidator
 }
