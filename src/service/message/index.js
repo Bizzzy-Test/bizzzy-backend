@@ -64,7 +64,7 @@ const getChatUserList = (req, user, res) => {
         const query = [
             {
                 $match: {
-                    $or: [{ sender_id: user._id }, { receiver_id: user._id }],
+                    $or: [{ sender_id: user._id.toString() }, { receiver_id: user._id.toString() }],
                 },
             },
             // Look up the invitation collection to check the invitation status
@@ -129,19 +129,9 @@ const getChatUserList = (req, user, res) => {
             },
             {
                 $sort: { timestamp: -1 },
-            },
-            {
-                $lookup: {
-                    from: 'user_profiles',
-                    localField: '_id',
-                    foreignField: 'user_id',
-                    pipeline: [
-                        { $project: { _id: 1, name: 1, profile_image: 1 } }
-                    ],
-                    as: 'user_profile_details'
-                }
             }
         ]
+        
         await MessageSchema.aggregate(query).then(async (result) => {
             if (result.length !== 0) {
                 logger.info(`Chat User ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);

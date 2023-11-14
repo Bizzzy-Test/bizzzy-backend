@@ -1,6 +1,6 @@
 const cryptoGraphy = require('./cryptography/encryption_decryption');
 const jsonWebToken = require('./json-web-token/jwt_token');
-const { authValidator, paymentValidator, inviteValidator, commentValiator, sessionValidator, goalValidatior, boardValidator } = require('./validations');
+const { authValidator, paymentValidator, inviteValidator, commentValiator, sessionValidator, goalValidatior, boardValidator, offerValidator } = require('./validations');
 const { getUserData } = require('./user-data');
 
 module.exports = {
@@ -13,5 +13,6 @@ module.exports = {
     commentValiator,
     sessionValidator,
     goalValidatior,
-    boardValidator
+    boardValidator,
+    offerValidator
 }

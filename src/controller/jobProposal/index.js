@@ -5,10 +5,14 @@ const { uploadFile } = require('../../middleware/aws/aws');
 
 const createJobProposal = async (req, res) => {
     try {
-        const userToken = req.headers.token;
-        const jobProposalData = req.body;
+        const userID = req.userId;
+        const jobId = req.body.jobId;
         let fileUrl = "";
-
+        // Check if the user has already applied for the proposal
+        const userAlreadyApplied = await jobProposalService.checkUserApplied(userID, jobId, res);
+        if (userAlreadyApplied) {
+            return res.status(400).json({ error: 'User has already applied for this proposal.' });
+        }
         if (req.file) {
             const fileBuffer = req.file.buffer;
             const folderName = "job_files";
@@ -16,13 +20,14 @@ const createJobProposal = async (req, res) => {
             fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folderName);
         }
         // Add the file URL to the jobData object
-        jobProposalData.file = fileUrl || null; // Use null instead of "null" if no file URL
+        jobProposalData.file = fileUrl || null; // Use null instead of “null” if no file URL
+        // Continue with the creation of the job proposal
         const response = await jobProposalService.createJobProposal(jobProposalData, userToken, res);
         logger.info(`${messageConstants.RESPONSE_FROM} createJobProposal API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
         logger.error(`createJobProposal ${messageConstants.API_FAILED} ${err}`);
-        res.send(err);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 }
 
