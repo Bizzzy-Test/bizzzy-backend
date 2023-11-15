@@ -36,6 +36,7 @@ const urlConstants = {
     SEND_INVITATION: '/invitation-send',
     UPDATE_INVITATION_STATUS: '/invitation-status-update',
     GET_INVITATION_DETAILS: '/invitation-details',
+    OFFER_SEND: '/offer-send',
     ADD_COMMENT: '/comment',
     ADD_GOAL: '/goal',
     GET_GOAL_LIST:'/goal',

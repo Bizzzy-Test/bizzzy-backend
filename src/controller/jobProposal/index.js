@@ -51,6 +51,7 @@ const createJobProposal = async (req, res) => {
 };
 
 
+
 // will be used by user to see his/her job proposals
 const getJobProposalByUserId = async (req, res) => {
     try {

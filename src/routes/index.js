@@ -4,6 +4,7 @@ const api = express.Router();
 //Router define your
 const routes = [
     `auth`,
+    `offer`,
     `country`,
     `job`,
     `jobProposal`,
