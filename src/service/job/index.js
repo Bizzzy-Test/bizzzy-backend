@@ -1,4 +1,5 @@
 const { messageConstants } = require("../../constants");
+const responseData = require("../../constants/responses");
 const JobSchema = require("../../models/job")
 const { logger } = require("../../utils");
 const jwt = require('jsonwebtoken');
@@ -133,13 +134,33 @@ const getSingleJobPost = async (jobId) => {
 
 // ==== get job post by user id ==== service
 const getJobPostByUserId = async (req, userData, res) => {
-    try {
-        const jobSchema = await JobSchema.find({ client_detail: userData._id });
-        return jobSchema;
-    } catch (error) {
-        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
-        return error
-    }
+    return new Promise(async () => {
+        const query = [
+            {
+                $match: { client_detail: userData._id.toString() }
+            },
+            {
+                $lookup: {
+                    from: 'job_proposals',
+                    let: { jobId: { $toString: '$_id' } },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ['$jobId', '$$jobId'] }
+                            }
+                        }
+                    ],
+                    as: 'proposal_details'
+                }
+            }
+        ];
+        await JobSchema.aggregate(query).then(async (result) => {
+            return responseData.success(res, result, `job fetched succesfully with proposals`);
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        })
+    })
 }
 
 // ==== update job post ==== service
