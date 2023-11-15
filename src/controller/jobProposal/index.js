@@ -2,12 +2,27 @@ const jobProposalService = require('../../service/jobProposal');
 const { messageConstants } = require('../../constants');
 const { logger } = require('../../utils');
 const { uploadFile } = require('../../middleware/aws/aws');
+const JobProposalSchema = require('../../models/jobProposal');
+
 
 const createJobProposal = async (req, res) => {
     try {
-        const userToken = req.headers.token;
-        const jobProposalData = req.body;
+        const userID = req.userId;
+        const jobId = req.body.jobId;
+        const { desiredPrice, jobType, coverLetter } = req.body; // Destructure properties from req.body
         let fileUrl = "";
+
+        // Check if the user has already applied for the proposal
+        const userAlreadyApplied = await JobProposalSchema.findOne({
+            $and: [
+                { userId: userID },
+                { jobId: jobId },
+            ],
+        });
+
+        if (userAlreadyApplied) {
+            return res.send({ code: 400, message: "You have already applied for this proposal." });
+        }
 
         if (req.file) {
             const fileBuffer = req.file.buffer;
@@ -15,16 +30,26 @@ const createJobProposal = async (req, res) => {
             // Upload the file buffer to S3 and get its access URL
             fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folderName);
         }
-        // Add the file URL to the jobData object
-        jobProposalData.file = fileUrl || null; // Use null instead of "null" if no file URL
-        const response = await jobProposalService.createJobProposal(jobProposalData, userToken, res);
-        logger.info(`${messageConstants.RESPONSE_FROM} createJobProposal API`, JSON.stringify(response));
-        res.send(response);
+
+        // Continue with the creation of the job proposal
+        const newJobProposal = new JobProposalSchema({
+            userId: userID,
+            jobId: jobId,
+            file: fileUrl || null,
+            desiredPrice: desiredPrice,
+            jobType: jobType,
+            coverLetter: coverLetter
+        });
+
+        await newJobProposal.save();
+
+        logger.info(`${messageConstants.RESPONSE_FROM} createJobProposal API`, JSON.stringify(newJobProposal));
+        return res.send({ code: 200, newJobProposal });
     } catch (err) {
-        logger.error(`createJobProposal ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
-}
+};
+
 
 // will be used by user to see his/her job proposals
 const getJobProposalByUserId = async (req, res) => {

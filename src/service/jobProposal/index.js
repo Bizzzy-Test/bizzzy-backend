@@ -17,6 +17,8 @@ const createJobProposal = async (payload, userToken, res) => {
     })
 }
 
+
+
 const getJobProposalByUserId = async (req, res) => {
     return new Promise(async () => {
         await JobProposalSchema.find({ userId: req.userId }).then(async (result) => {
@@ -27,6 +29,7 @@ const getJobProposalByUserId = async (req, res) => {
         })
     })
 }
+
 
 const getJobProposalByJobId = async (req, res) => {
     return new Promise(async () => {
@@ -70,5 +73,5 @@ const getJobProposalByJobId = async (req, res) => {
 module.exports = {
     createJobProposal,
     getJobProposalByUserId,
-    getJobProposalByJobId
+    getJobProposalByJobId,
 }
