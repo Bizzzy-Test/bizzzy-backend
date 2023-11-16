@@ -4,7 +4,8 @@ const InviteSchema = require('../../models/invite');
 const UserSchema = require('../../models/users');
 const MessageSchema = require('../../models/message');
 const { logger, mail } = require('../../utils');
-
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 // Send user invite
 const sendInvitation = async (body, userData, res) => {
     return new Promise(async () => {
@@ -64,7 +65,7 @@ const updateInvitationStatus = async (req, res) => {
                 $and: [
                     { receiver_id: req.userId },
                     { job_id: job_id },
-                    { _id: invite_id }
+                    { _id: new ObjectId(invite_id) }
                 ]
             }
         ).then(async (result) => {
@@ -72,7 +73,7 @@ const updateInvitationStatus = async (req, res) => {
                 await InviteSchema.findOneAndUpdate(
                     {
                         $and: [
-                            { _id: invite_id },
+                            { _id: new ObjectId(invite_id) },
                             { receiver_id: req.userId },
                             { job_id: job_id },
                         ]
@@ -121,11 +122,11 @@ const getInvitationDetails = async (req, res,) => {
             },
             {
                 $lookup: {
-                    from: 'user_profiles',
+                    from: 'client_profiles',
                     localField: 'sender_id',
-                    foreignField: 'user_id',
+                    foreignField: 'userId',
                     pipeline: [
-                        { $project: { _id: 1, user_id: 1, name: 1, profile_image: 1, position: 1 } }
+                        { $project: { _id: 1, userId: 1, firstName: 1, profile_image: 1 } }
                     ],
                     as: 'client_details'
                 }

@@ -8,9 +8,9 @@ const socketSchema = mongoose.Schema({
         required: true
     },
     user_id: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
         required: true,
-        index: { unique: true }
     },
     created_at: {
         type: Date,

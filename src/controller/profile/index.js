@@ -78,6 +78,19 @@ const editProfile = async (req, res) => {
     }
 }
 
+const searchFreelencers = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await profileService.searchFreelencers(req, userData, res);
+        if (response != null){
+            res.sendFile(response);
+        }
+    } catch (err) {
+        logger.error(`Update experience ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+}
+
 const deleteExperience = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
@@ -96,6 +109,9 @@ module.exports = {
     getUserProfile,
     getProfileImage,
     profileImageUpload,
+    updateExperience,
+    deleteExperience,
+    searchFreelencers,
     editProfile,
     deleteExperience
 }

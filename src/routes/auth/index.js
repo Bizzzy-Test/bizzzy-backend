@@ -16,6 +16,7 @@ module.exports = (app) => {
     app.put(urlConstants.EDIT_PROFILE, jsonWebToken.validateToken, upload.single("file"), profileAPI.editProfile);
     app.delete(urlConstants.DELETE_EXPERIENCE, jsonWebToken.validateToken, authValidator.experienceValidation, profileAPI.deleteExperience);
     app.post(urlConstants.USER_PROFILE_IMAGE, jsonWebToken.validateToken, upload.single('file'), profileAPI.profileImageUpload);
+    app.post(urlConstants.SEARCH_FREELENCERS, jsonWebToken.validateToken, profileAPI.searchFreelencers);
 
     app.post(urlConstants.UPLOAD_IMAGE + "/:user_id", upload.single('image'), userAPI.uploadImage);
     app.get(urlConstants.GET_USER_LIST, jsonWebToken.validateToken, userAPI.getUserList);

@@ -63,16 +63,16 @@ const messageConstants = {
     PROFILE_NOT_UPDATED : "Profile Not Updated",
     UPDATED_EXPERIENCE : "Successfully updated experience",
     NOT_UPDATED : "Error while updating experience",
-    // ===
     JOB_CREATED_SUCCESSFULLY: 'Job created successfully',
     SOMETHING_WENT_WRONG: 'Something went wrong',
     JOB_DELETED_SUCCESSFULLY: 'Job deleted successfully',
     JOB_UPDATED_SUCCESSFULLY: 'Job updated successfully',
     JOB_FETCHED_SUCCESSFULLY: 'Job fetched successfully',
     JOB_NOT_FOUND: 'Job not found',
+    NOT_ALLOWED : 'Not allowed to perform action',
+    DATA_FOUND : 'Successfully data found',
     JOB_OFFER_SEND_SUCCESSFULLY: 'Job offer send successfully',
     NOT_SENT_OFFER : 'Not allowed to send job offer',
-    // ===
 }
 
 module.exports = messageConstants;

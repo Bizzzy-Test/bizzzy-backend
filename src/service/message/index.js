@@ -4,18 +4,21 @@ const MessageSchema = require('../../models/message');
 
 const getMessageList = (req, user, res) => {
     return new Promise(async () => {
+        console.log('user._id', user._id);
+        console.log('id.toString()', user._id.toString());
+        console.log('req.query.user_id', req.query.user_id);
         logger.info(`Message ${messageConstants.LIST_API_CALL_SUCCESSFULLY}`);
         const query = [
             {
                 $match: {
                     $or: [
                         {
-                            sender_id: user._id,
+                            sender_id: user._id.toString(),
                             receiver_id: req.query.user_id,
                         },
                         {
                             sender_id: req.query.user_id,
-                            receiver_id: user._id,
+                            receiver_id: user._id.toString(),
                         }
                     ]
                 }
@@ -23,10 +26,16 @@ const getMessageList = (req, user, res) => {
             {
                 $lookup: {
                     from: 'users',
-                    localField: 'sender_id',
-                    foreignField: '_id',
+                    let: { senderId: "$sender_id" }, // Define variable for use in the pipeline
                     pipeline: [
-                        { $project: { _id: 1, name: 1, email: 1 } }
+                        {
+                            $match: {
+                                $expr: {
+                                    $eq: [ '$_id', { $toObjectId: "$$senderId" } ] // Use the $$ syntax to refer to variables
+                                }
+                            }
+                        },
+                        { $project: { _id: 1, firstName: 1, email: 1 } }
                     ],
                     as: 'sender_details'
                 }
@@ -34,14 +43,21 @@ const getMessageList = (req, user, res) => {
             {
                 $lookup: {
                     from: 'users',
-                    localField: 'receiver_id',
-                    foreignField: '_id',
+                    let: { receiverId: "$receiver_id" }, // Define variable for use in the pipeline
                     pipeline: [
-                        { $project: { _id: 1, name: 1, email: 1 } }
+                        {
+                            $match: {
+                                $expr: {
+                                    $eq: [ '$_id', { $toObjectId: "$$receiverId" } ] // Use the $$ syntax to refer to variables
+                                }
+                            }
+                        },
+                        { $project: { _id: 1, firstName: 1, email: 1 } }
                     ],
                     as: 'receiver_details'
                 }
             }
+            
         ]
         await MessageSchema.aggregate(query).then(async (result) => {
             if (result.length !== 0) {
