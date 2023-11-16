@@ -1,4 +1,5 @@
 const messageConstants = {
+    USER_NOT_AUTHORIZED:"You are not allowed to create jobs",
     USER_NOT_FOUND: 'User not found!',
     TOKEN_EXPIRED: 'Token expired, Please generate new token!',
     TOKEN_VALIDATED: 'Token validated successfully',
@@ -37,6 +38,7 @@ const messageConstants = {
     PASSWORD_NOT_RESET: 'Password reset unsuccessful',
     PASSWORD_NOT_FORGOT: 'Password forgot unsuccessful',
     EMAIL_PASS_INCORRECT: 'Email or Password is incorrect',
+    EMAIL_NOT_FOUND:"User not found with this email",
     NOTE_NOT_CREATED: 'Note not created',
     NOTE_CREATED_SUCCESSFULY: 'Note created successfully',
     NOTIFICATION_CREATION_FAILED: 'Notification creation failed',
@@ -58,10 +60,9 @@ const messageConstants = {
     NOT_SENT_INVITE : 'Not allowed to send invite',
     EMAIL_RESENT_FOR_VERIFICATION: 'Email resent for verification',
     ALREADY_ADDED: "You've already added this data",
-    NOT_UPDATED_EXPERIENCE : "Experience not updated please enter correct experience id",
+    PROFILE_NOT_UPDATED : "Profile Not Updated",
     UPDATED_EXPERIENCE : "Successfully updated experience",
     NOT_UPDATED : "Error while updating experience",
-    // ===
     JOB_CREATED_SUCCESSFULLY: 'Job created successfully',
     SOMETHING_WENT_WRONG: 'Something went wrong',
     JOB_DELETED_SUCCESSFULLY: 'Job deleted successfully',
@@ -70,8 +71,8 @@ const messageConstants = {
     JOB_NOT_FOUND: 'Job not found',
     NOT_ALLOWED : 'Not allowed to perform action',
     DATA_FOUND : 'Successfully data found',
-
-    // ===
+    JOB_OFFER_SEND_SUCCESSFULLY: 'Job offer send successfully',
+    NOT_SENT_OFFER : 'Not allowed to send job offer',
 }
 
 module.exports = messageConstants;

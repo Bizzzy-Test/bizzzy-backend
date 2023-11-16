@@ -4,12 +4,12 @@ const mongoose = require('mongoose');
 const feedbackSchema = mongoose.Schema({
     //This field represents the user ID of the person giving the feedback.
     user_id_giver: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true
     },
     //This field represents the user ID of the person receiving the feedback.
     user_id_feedbacker: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true
     },
     private_feedback: {

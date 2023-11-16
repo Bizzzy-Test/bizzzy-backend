@@ -37,7 +37,7 @@ const sendInvitation = async (body, userData, res) => {
             }
         } else {
             logger.info(messageConstants.NOT_SENT_INVITE);
-            return responseData.fail(res, `${messageConstants.NOT_SENT_INVITE}. ${err}`, 401);
+            return responseData.fail(res, `${messageConstants.NOT_SENT_INVITE}`, 401);
         }
     })
 }

@@ -29,16 +29,21 @@ const notificationType = Object.freeze({
 
 // ==
 const budgetType = Object.freeze({
-    FIXED_BUDGET:'Fixed Budget',
-    HOURLY :'Hourly'
+    FIXED_BUDGET: 1,
+    HOURLY: 2
 })
 
 const experienceType = Object.freeze({
     ENTRY: 'Entry',
     INTERMEDIATE: 'Intermediate',
     EXPERT: 'Expert'
-}) 
+})
 
+const jobTypes = Object.freeze({
+    PROJECT: "project",
+    MILESTONE: "milestone",
+    HOURLY: "hourly",
+});
 // ==
 
 module.exports = {
@@ -48,5 +53,6 @@ module.exports = {
     notificationType,
     paymentStatus,
     budgetType,
-    experienceType
+    experienceType,
+    jobTypes
 }

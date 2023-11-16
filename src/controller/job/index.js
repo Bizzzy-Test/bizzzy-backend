@@ -2,23 +2,27 @@ const JobService = require("../../service/job/index.js");
 const { messageConstants } = require('../../constants/index.js');
 const { logger } = require('../../utils/index.js');
 const { uploadFile, deleteFile } = require("../../middleware/aws/aws.js");
+const { getUserData } = require("../../middleware/index.js");
 
 // ==== create job post ==== controller
 
 const createJobPost = async (req, res) => {
     try {
         const userToken = req.headers.token;
+        console.log(userToken);
         const jobData = req.body;
 
-        const fileBuffer = req.file.buffer;
+        let fileUrl = "";
 
-        const folderName = "job_files";
-
-        // Upload the file buffer to S3 and get its access URL
-        const fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folderName);
-
+        if (req.file) {
+            const fileBuffer = req.file.buffer;
+            const folderName = "job_files";
+            // Upload the file buffer to S3 and get its access URL
+            fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folderName);
+        }
         // Add the file URL to the jobData object
-        jobData.file = fileUrl;
+        jobData.file = fileUrl === "" ? "null" : fileUrl;
+
         const response = await JobService.createJobPost(jobData, userToken);
 
         res.status(200).json({
@@ -91,8 +95,9 @@ const searchJobPost = async (req, res) => {
 
 const getJobPostByUserId = async (req, res) => {
     try {
-        const client_detail = req.params.id;
-        const response = await JobService.getJobPostByUserId(client_detail);
+        // const client_detail = req.params.id;
+        const userData = await getUserData(req, res)
+        const response = await JobService.getJobPostByUserId(req, userData, res);
 
         res.status(200).json({
             data: response,

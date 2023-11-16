@@ -1,18 +1,24 @@
 const { messageConstants } = require("../../constants");
+const responseData = require("../../constants/responses");
 const JobSchema = require("../../models/job")
 const { logger } = require("../../utils");
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
+
 
 // ==== create job post ==== service
 const createJobPost = async (payload, userToken) => {
+    console.log({ "sagar": payload });
     try {
         const user = jwt.decode(userToken);
+        const clientDetail = user?.id;
+        payload.client_detail = clientDetail;
 
-        if (user.role !== "2") {
+        if (user.role != "2") {
             throw new Error(`${messageConstants.USER_NOT_AUTHORIZED}`);
         } else {
-            const jobData = new JobSchema(payload);
-            const data = await jobData.save();
+            const newJobData = new JobSchema(payload);
+            const data = await newJobData.save();
             return data;
         }
     } catch (error) {
@@ -117,7 +123,7 @@ const searchJobPost = async (payload, userToken) => {
 // ==== get single job post ==== service
 const getSingleJobPost = async (jobId) => {
     try {
-        const jobSchema = await JobSchema.findById({_id:jobId}).populate('client_detail');
+        const jobSchema = await JobSchema.findById({ _id: jobId }).populate('client_detail');
         return jobSchema;
     } catch (error) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
@@ -127,14 +133,34 @@ const getSingleJobPost = async (jobId) => {
 
 
 // ==== get job post by user id ==== service
-const getJobPostByUserId = async (userId) => {
-    try {
-        const jobSchema = await JobSchema.find({ client_detail: userId });
-        return jobSchema;
-    } catch (error) {
-        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
-        return error
-    }
+const getJobPostByUserId = async (req, userData, res) => {
+    return new Promise(async () => {
+        const query = [
+            {
+                $match: { client_detail: userData._id.toString() }
+            },
+            {
+                $lookup: {
+                    from: 'job_proposals',
+                    let: { jobId: { $toString: '$_id' } },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ['$jobId', '$$jobId'] }
+                            }
+                        }
+                    ],
+                    as: 'proposal_details'
+                }
+            }
+        ];
+        await JobSchema.aggregate(query).then(async (result) => {
+            return responseData.success(res, result, `job fetched succesfully with proposals`);
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        })
+    })
 }
 
 // ==== update job post ==== service
@@ -163,8 +189,10 @@ const updateJobPost = async (body, jobId, userToken) => {
 
 // ==== delete job post ==== service
 const deleteJobPost = async (jobId, userToken) => {
+    const ObjectId = mongoose.Types.ObjectId;
+    jobId = new ObjectId(jobId)
     const user = jwt.decode(userToken);
-    if (user.role !== "2") {
+    if (user.role !== 2) {
         logger.error(`${messageConstants.USER_NOT_AUTHORIZED}`);
         throw new Error(`${messageConstants.USER_NOT_AUTHORIZED}`);
     } else {

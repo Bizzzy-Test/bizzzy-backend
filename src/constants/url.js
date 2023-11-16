@@ -11,7 +11,7 @@ const urlConstants = {
     USER_PROFILE_IMAGE: '/user-profile-image',
     SEARCH_FREELENCERS: '/search-freelencers',
     PROFILE_DETAILS: '/profile-details',
-    UPDATE_EXPERIENCE: '/edit-experience',
+    EDIT_PROFILE: '/edit-profile',
     DELETE_EXPERIENCE: '/delete-experience',
     REFRESH_TOKEN: '/token',
     UPLOAD_IMAGE: '/upload/image',
@@ -37,6 +37,7 @@ const urlConstants = {
     SEND_INVITATION: '/invitation-send',
     UPDATE_INVITATION_STATUS: '/invitation-status-update',
     GET_INVITATION_DETAILS: '/get-invitation-details',
+    OFFER_SEND: '/offer-send',
     ADD_COMMENT: '/comment',
     ADD_GOAL: '/goal',
     GET_GOAL_LIST:'/goal',
@@ -65,7 +66,7 @@ const urlConstants = {
 
     CREATE_JOB_PROPOSAL: '/job-proposal',
     GET_JOB_PROPOSALS_BY_USER_ID: '/job-proposal-by-user-id/:userId',
-    GET_JOB_PROPOSALS_BY_JOB_ID: '/job-proposal-by-job-id/:jobId',
+    GET_JOB_PROPOSALS_BY_JOB_ID: '/job/:jobId/proposal',
 
     POST_FEEDBACK: '/add/feedback',
 
@@ -73,7 +74,7 @@ const urlConstants = {
     ADD_JOB: '/job/create',
     GET_JOB: '/job/get-all',
     GET_SINGEL_JOB: '/job/get-job/:id',
-    GET_JOB_BY_USERID: '/job/get-by-user-id/:id',
+    GET_JOB_BY_USERID: '/job/client/jobs',
     DELETE_JOB: '/job/delete/:id',
     UPDATE_JOB: '/job/update/:id',
     JOB_SEARCH: '/job/search',

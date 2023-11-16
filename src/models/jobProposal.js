@@ -1,15 +1,15 @@
 const uuid = require('uuid');
 const mongoose = require('mongoose');
 const { userType } = require('../constants');
+const { jobTypes } = require('../constants/enum');
 
 const jobProposalSchema = mongoose.Schema({
-
     jobId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
     userId: {  // user_id of the client who is applying for the job
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
     desiredPrice: { // amount given by the user (how much they want to be paid)
@@ -17,14 +17,10 @@ const jobProposalSchema = mongoose.Schema({
         required: true,
         min: 0
     },
-    PaymentPreference: { // desired payment method of user
+    jobType: { // desired payment method of user
         type: String,
         required: true,
-        enum: [
-            'project',
-            'milestone',
-            'hourly',
-        ]
+        enum: Object.values(jobTypes)
     },
     coverLetter: {
         type: String,
@@ -33,7 +29,13 @@ const jobProposalSchema = mongoose.Schema({
     projectFilesLink: {
         type: [String],
         required: false
+    },
+    file:{
+        type: String
     }
+},
+{
+    timestamps: true
 })
 
 module.exports = mongoose.model('job_proposal', jobProposalSchema)
