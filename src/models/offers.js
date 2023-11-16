@@ -12,6 +12,11 @@ const OfferSchema = mongoose.Schema({
         ref: 'client_profiles',
         required: true,
     },
+    job_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'jobs',
+        required: true,
+    },
     contract_title: {
         type: String,
         required: true

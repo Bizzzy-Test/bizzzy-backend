@@ -12,7 +12,8 @@ const mailTemplateConstants = {
     FORGOT_PASS_TEMPLATE: 'forgot_password_template.ejs',
     FORGOTTED_PASS_TEMPLATE: 'forgotted_password_template.ejs',
     BOOK_SESSION: 'book_session.ejs',
-    INVITATION_TEMPLATE: 'invite.ejs'
+    INVITATION_TEMPLATE: 'invite.ejs',
+    SEND_OFFER: 'send_offer.ejs'
 }
 
 module.exports = { mailSubjectConstants, mailTemplateConstants };
