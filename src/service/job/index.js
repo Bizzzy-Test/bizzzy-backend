@@ -39,7 +39,7 @@ const getAllJobPost = async () => {
 }
 
 // ==== search job post ==== service
-const searchJobPost = async (payload, userToken) => {
+const searchJobPosts = async (payload, userToken) => {
     const { searchQuery, budget, experience, sort } = payload;
     const user = jwt.decode(userToken);
 
@@ -120,6 +120,36 @@ const searchJobPost = async (payload, userToken) => {
     return mergedResults;
 };
 
+const searchJobPost = async (req, userData, res) => {
+    return new Promise(async () => {
+        if(userData.role==2){
+            logger.info(`Search Job Post ${messageConstants.NOT_ALLOWED}`);
+            return responseData.fail(res, `${messageConstants.NOT_ALLOWED}`, 404);
+        }else{
+            const body = req.body;
+            let result;
+            if(body?.experience=='' && body?.budget=='' && body?.category?.length==0 && body?.skills?.length==0){
+                result=await JobSchema.find({});
+            }else{
+                result=await JobSchema.find({
+                    $or:[
+                        {experience: body?.experience},
+                        {budget: body?.budget},
+                        {tags: { $in: body?.category?.map(category => new RegExp(category, 'i')) }},
+                        {skills: { $in: body?.skills?.map(skills => new RegExp(skills, 'i')) }}
+                    ]
+                });
+            }
+            if(result.length>0){
+                logger.info(`Search Job Post ${messageConstants.DATA_FOUND}`);
+                return responseData.success(res, result, `Search Job Post ${messageConstants.DATA_FOUND}`);
+            }else{
+                logger.info(`Search Job Post ${messageConstants.LIST_NOT_FOUND}`);
+                return responseData.success(res, [], `${messageConstants.LIST_NOT_FOUND}`, 200);
+            }
+        }
+    })
+}
 // ==== get single job post ==== service
 const getSingleJobPost = async (jobId) => {
     try {

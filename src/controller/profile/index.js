@@ -109,7 +109,6 @@ module.exports = {
     getUserProfile,
     getProfileImage,
     profileImageUpload,
-    updateExperience,
     deleteExperience,
     searchFreelencers,
     editProfile,

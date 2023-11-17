@@ -64,7 +64,7 @@ const getAllJobPost = async (req, res) => {
 
 // ===== search job post ==== controller
 
-const searchJobPost = async (req, res) => {
+const searchJobPosts = async (req, res) => {
     try {
         const userToken = req.headers.token;
         const searchQuery = req.query.query;
@@ -90,7 +90,18 @@ const searchJobPost = async (req, res) => {
     }
 };
 
-
+const searchJobPost = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await JobService.searchJobPost(req, userData, res);
+        if (response != null){
+            res.sendFile(response);
+        }
+    } catch (err) {
+        logger.error(`Update experience ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+}
 // ==== get job post by userId ==== controller
 
 const getJobPostByUserId = async (req, res) => {
