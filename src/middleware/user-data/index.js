@@ -6,7 +6,7 @@ const getUserData = async (req, res) => {
     return new Promise(async (resolve, reject) => {
         await UserSchema.find({ _id : req.userId }).then(async (result) => {
             if (result.length !== 0) {
-                logger.info(`User ${result[0]['name']} fetched successfully`);
+                logger.info(`User ${result[0]['firstName']} fetched successfully`);
                 return resolve(result[0]);
             } else {
                 logger.error(messageConstants.TOKEN_EXPIRED);

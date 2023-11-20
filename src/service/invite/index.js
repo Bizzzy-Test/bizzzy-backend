@@ -2,6 +2,7 @@
 const { messageConstants, responseData, mailTemplateConstants } = require('../../constants');
 const InviteSchema = require('../../models/invite');
 const UserSchema = require('../../models/users');
+const ClientSchema = require('../../models/clientProfile');
 const MessageSchema = require('../../models/message');
 const { logger, mail } = require('../../utils');
 const mongoose = require("mongoose");
@@ -16,7 +17,7 @@ const sendInvitation = async (body, userData, res) => {
                     $and: [
                         { receiver_id: body.receiver_id },
                         { sender_id: body.sender_id },
-                        { job_id: body.job_id }
+                        { job_id: new ObjectId(body.job_id) }
                     ]
                 })
             if (find_invite) {
@@ -25,15 +26,23 @@ const sendInvitation = async (body, userData, res) => {
             } else {
                 const invitationResponse = await saveInvitation(body);
                 const user = await UserSchema.findOne({ _id: body.receiver_id });
-                const mailContent = {
-                    name: user.firstName,
-                    email : user.email,
-                    message: body.message,
-                    link: `${process.env.BASE_URL}/message/invitation?job_id=${body.job_id}&invite_id=${invitationResponse.invite_result._id}`,
-                };
-                await mail.sendMailtoUser(mailTemplateConstants.INVITATION_TEMPLATE, user.email, "Invitation", res, mailContent);
-                logger.info(messageConstants.INVITATION_SEND_SUCCESSFULLY);
-                return responseData.success(res, {}, messageConstants.INVITATION_SEND_SUCCESSFULLY);
+                const client_details = await ClientSchema.findOne({ userId: userData._id });
+                if(client_details){
+                    const mailContent = {
+                        name: user.firstName,
+                        client_name: client_details.firstName + client_details.lastName,
+                        business_name: client_details.businessName,
+                        email : user.email,
+                        message: body.message,
+                        link: `${process.env.BASE_URL}/message/invitation?job_id=${body.job_id}&invite_id=${invitationResponse.invite_result._id}`,
+                    };
+                    await mail.sendMailtoUser(mailTemplateConstants.INVITATION_TEMPLATE, user.email, "Invitation", res, mailContent);
+                    logger.info(messageConstants.INVITATION_SEND_SUCCESSFULLY);
+                    return responseData.success(res, {}, messageConstants.INVITATION_SEND_SUCCESSFULLY);
+                }else{
+                    logger.info(`Client ${messageConstants.NOT_FOUND}`);
+                    return responseData.fail(res, `${messageConstants.NOT_FOUND}`, 400);
+                }
             }
         } else {
             logger.info(messageConstants.NOT_SENT_INVITE);
@@ -155,8 +164,65 @@ const getInvitationDetails = async (req, res,) => {
     })
 }
 
+// Get invited freelancers list
+const getInvitedFreelancers = async (userData, res) => {
+    return new Promise(async () => {
+        if (userData.role == 2) {
+            const query = [
+                {
+                    $match: {
+                        sender_id: userData._id.toString()
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'freelencer_profiles',
+                        let: { receiverId: "$receiver_id" },
+                        pipeline: [
+                            { 
+                                $match: { 
+                                    $expr: { 
+                                        $eq: [ { $toString: "$user_id" }, "$$receiverId" ] 
+                                    } 
+                                } 
+                            },
+                            { 
+                                $project: { 
+                                    _id: 1, 
+                                    user_id: 1, 
+                                    name: { $concat: ["$firstName", " ", "$lastName"] },
+                                    professional_role: 1, 
+                                    profile_image: 1, 
+                                    hourly_rate: 1 
+                                } 
+                            }
+                        ],
+                        as: 'freelancerDetails'
+                    }
+                }
+            ]
+            await InviteSchema.aggregate(query).then(async (result) => {
+                if (result.length !== 0) {
+                    logger.info(`Get User Invitation details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                    return responseData.success(res, result, `Get User Invitation details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                } else {
+                    logger.info(`List ${messageConstants.NOT_FOUND}`);
+                    return responseData.fail(res, `User invitation list ${messageConstants.NOT_FOUND}`, 200);
+                }
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            })
+        } else {
+            logger.info(messageConstants.NOT_ALLOWED);
+            return responseData.fail(res, `${messageConstants.NOT_ALLOWED}`, 401);
+        }
+    })
+}
+
 module.exports = {
     sendInvitation,
     updateInvitationStatus,
-    getInvitationDetails
+    getInvitationDetails,
+    getInvitedFreelancers
 }

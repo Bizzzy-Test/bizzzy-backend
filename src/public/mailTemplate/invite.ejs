@@ -40,11 +40,14 @@
                     <h1 style="font-size:24px;margin:0 0 20px 0;font-family:Poppins,sans-serif;">Hello, <%=
                         content.name %>
                     </h1>
+                      <p style="margin:3rem 0; font-size:17px; line-height:24px; font-family:Poppins,sans-serif; text-align: center;">
+                        Business name <%= content.business_name %>
+                      </p>
                         <p style="margin:3rem 0; font-size:17px; line-height:24px; font-family:Poppins,sans-serif; text-align: center;">
-                          You have an invitation to accept.
+                          You have an invitation to accept from client <%= content.client_name %>
                         </p>
                         <p style="margin:0 0 12px 0; text-align: center; font-size:16px;line-height:24px;font-family:Poppins,sans-serif;">
-                          <%= content.message %> has sent a request to add you as an advisor. Please click the link below to accept or reject the invite.
+                          <%= content.message %>
                         </p>
                         <p style="margin:0; font-size:17px; line-height:24px;font-family:Poppins,sans-serif; text-align: center; border: 0.1px solid #0080FF; border-radius: 10px; padding: 0.7rem 0; margin-bottom: 2rem; width: 75%; margin-left: auto; margin-right: auto;">
                           <a href="<%= content.link %>"
