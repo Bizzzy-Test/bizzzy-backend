@@ -2,6 +2,8 @@ const { responseData, messageConstants } = require('../../constants');
 const JobProposalSchema = require('../../models/jobProposal');
 const { logger } = require('../../utils');
 const jwt = require('jsonwebtoken');
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 
 const createJobProposal = async (payload, userToken, res) => {
     return new Promise(async () => {
@@ -35,18 +37,20 @@ const getJobProposalByJobId = async (req, res) => {
     return new Promise(async () => {
         const query = [
             {
-                $match: { jobId: req.jobId }
+                $match: { jobId: new ObjectId(req.jobId)}
             },
             {
                 $lookup: {
                     from: 'users',
                     let: { userId: { $toObjectId: '$userId' } },
+                    localField: 'userId',
+                    foreignField: '_id',
                     pipeline: [
-                        {
-                            $match: {
-                                $expr: { $eq: ['$_id', '$$userId'] }
-                            }
-                        },
+                        // {
+                        //     $match: {
+                        //         $expr: { $eq: ['$_id', '$$userId'] }
+                        //     }
+                        // },
                         {
                             $project: {
                                 _id: 1,

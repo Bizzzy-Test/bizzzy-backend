@@ -176,7 +176,7 @@ const getJobPostByUserId = async (req, userData, res) => {
                     pipeline: [
                         {
                             $match: {
-                                $expr: { $eq: ['$jobId', '$$jobId'] }
+                                $expr: { $eq: [{ $toString: '$jobId' }, '$$jobId'] }
                             }
                         }
                     ],
