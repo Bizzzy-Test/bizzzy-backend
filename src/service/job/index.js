@@ -182,7 +182,7 @@ const getJobPostByUserId = async (req, userData, res) => {
                     ],
                     as: 'proposal_details'
                 }
-            }
+            },
         ];
         await JobSchema.aggregate(query).then(async (result) => {
             return responseData.success(res, result, `job fetched succesfully with proposals`);
