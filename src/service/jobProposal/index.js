@@ -42,15 +42,9 @@ const getJobProposalByJobId = async (req, res) => {
             {
                 $lookup: {
                     from: 'freelencer_profiles',
-                    // let: { userId: { $toObjectId: '$userId' } },
                     localField: 'userId',
                     foreignField: 'user_id',
                     pipeline: [
-                        // {
-                        //     $match: {
-                        //         $expr: { $eq: ['$_id', '$$userId'] }
-                        //     }
-                        // },
                         {
                             $project: {
                                 _id: 0,
