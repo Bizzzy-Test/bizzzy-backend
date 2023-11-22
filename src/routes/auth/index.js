@@ -12,8 +12,8 @@ module.exports = (app) => {
     app.post(urlConstants.USER_LOGIN, authValidator.signInValidation, api.signIn);
     //TODO Refresh Token
     app.post(urlConstants.REFRESH_TOKEN, authValidator.signInValidation, api.signIn);
-    app.post(urlConstants.PROFILE_DETAILS, jsonWebToken.validateToken, upload.single("file"), profileAPI.userProfile);
-    app.put(urlConstants.EDIT_PROFILE, jsonWebToken.validateToken, upload.single("file"), profileAPI.editProfile);
+    app.post(urlConstants.PROFILE_DETAILS, jsonWebToken.validateToken, upload.array("file"), profileAPI.userProfile);
+    app.put(urlConstants.EDIT_PROFILE, jsonWebToken.validateToken, upload.array("file"), profileAPI.editProfile);
     app.delete(urlConstants.DELETE_EXPERIENCE, jsonWebToken.validateToken, authValidator.experienceValidation, profileAPI.deleteExperience);
     app.post(urlConstants.USER_PROFILE_IMAGE, jsonWebToken.validateToken, upload.single('file'), profileAPI.profileImageUpload);
     app.post(urlConstants.SEARCH_FREELENCERS, jsonWebToken.validateToken, profileAPI.searchFreelencers);

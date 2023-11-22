@@ -56,36 +56,40 @@ const freelencerProfile = async (req, userData, res) => {
             });
         }
         // For Portfolio section
-        if (req.body.portfolio || req.file) {
-            let fileUrl = '';
-            if (req.file) {
-                const fileBuffer = req.file.path;
-                const folder_name = 'portfolio';
-                // Upload the file buffer to S3 and get its access URL
-                fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folder_name);
-            }
-            let attachements = fileUrl == '' ? 'null' : fileUrl;
-            if (req.body.portfolio) {
-                const portfolioData = req.body?.portfolio;
-                const project_name = portfolioData.project_name || "null";
-                const project_description = portfolioData.project_description || "null";
-                const technologies = portfolioData.technologies || [];
+        if (req.body.portfolio || req.files) {
+            let fileUrls = [];
+            if(req.files?.length>3){
+                logger.error(`You can only upload three images at a time`);
+                return responseData.fail(res, `You can only upload three images at a time`, 400);
+            }else{
+                if (req.files && req.files.length > 0) {
+                    // Upload multiple files to S3 and get their access URLs
+                    fileUrls = await uploadMultipleFiles(req.files);
+                }
+                let attachements = fileUrls == '' ? 'null' : fileUrls;
+                if (req.body.portfolio) {
+                    const portfolioData = req.body?.portfolio;
+                    const project_name = portfolioData.project_name || "null";
+                    const project_description = portfolioData.project_description || "null";
+                    const technologies = portfolioData.technologies || [];
                     // If the portfolio array is empty, push a new entry
                     profile.portfolio.push({
                         project_name,
                         project_description,
                         technologies,
-                        attachements
+                        attachements  // Store the array of file URLs in the 'attachments' field
                     });
-            } else {
-                project_name = "null";
-                project_description = "null";
-                technologies = [];
-                profile.portfolio.push({
-                    project_name,
-                    project_description,
-                    attachements
-                });
+                } else {
+                    project_name = "null";
+                    project_description = "null";
+                    technologies = [];
+                    profile.portfolio.push({
+                        project_name,
+                        project_description,
+                        technologies,
+                        attachements  // Store the array of file URLs in the 'attachments' field
+                    });
+                }
             }
         }
         profile.skills = req.body && req.body.skills !== undefined ? req.body.skills : profile.skills;
@@ -96,12 +100,30 @@ const freelencerProfile = async (req, userData, res) => {
         profile.description = req.body?.description ? req.body?.description : (profile.description !== 'null' ? profile.description : 'null');
         await profile.save().then((result) => {
             logger.info(`Freelencer Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
-            return responseData.success(res, result, `Freelencer Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
+            if(req.files){
+                const portfolio_length = result.portfolio.length-1;
+                return responseData.success(res, profile.portfolio[portfolio_length], `Freelencer Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
+            }else{
+                return responseData.success(res, req.body, `Freelencer Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
+            }
         }).catch((err) => {
             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
             return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
         });
     })
+};
+
+// Portfolio Files Upload
+const uploadMultipleFiles = async (fileArray) => {
+    const uploadedFileUrls = [];
+    for (const file of fileArray) {
+      const fileBuffer = file.path;
+      const folder_name = 'portfolio'; 
+      // Upload the file buffer to S3 and get its access URL
+      const fileUrl = await uploadFile(fileBuffer, file.originalname, file.mimetype, folder_name);
+      uploadedFileUrls.push(fileUrl);
+    }  
+    return uploadedFileUrls;
 };
 
 const clientProfile = async (req, userData, res) => {
@@ -198,6 +220,7 @@ const editFreelencerProfile = async (req, userData, res) => {
         if(find_profile){
             const updateObject = {};
             let update_condition = {};
+            // For update experience section
             if(req.body?.experience){
                 updateObject["experience.$.company_name"] = req.body?.experience?.company_name;
                 updateObject["experience.$.position"] = req.body?.experience?.position;
@@ -210,6 +233,7 @@ const editFreelencerProfile = async (req, userData, res) => {
                     "experience._id": new ObjectId(req.body?.experience?.experienceId)
                 }
             }
+            // For update education section
             if(req.body?.education){
                 updateObject["education.$.degree_name"] = req.body?.education?.degree_name;
                 updateObject["education.$.institution"] = req.body?.education?.institution;
@@ -220,28 +244,35 @@ const editFreelencerProfile = async (req, userData, res) => {
                     "education._id": new ObjectId(req.body?.education?.educationId)
                 }
             }
-            if(req.body?.portfolio || req.file){
-                let fileUrl = '';
-                if (req.file) {
-                    const fileBuffer = req.file.path;
-                    const folder_name = 'portfolio';
-                    // Upload the file buffer to S3 and get its access URL
-                    fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folder_name);
-                    updateObject["portfolio.$.attachements"] = fileUrl == '' ? 'null' : fileUrl;
-                    update_condition = {
-                        _id: new ObjectId(find_profile._id),
-                        "portfolio._id": new ObjectId(req.body?.portfolioId)
-                    }  
+            // For edit portfolio section
+            if(req.body?.portfolio || req.files){
+                let fileUrls = [];
+                if (req.files) {
+                    if(req.files?.length > 3){
+                        logger.error(`You can only upload three images at a time`);
+                        return responseData.fail(res, `You can only upload three images at a time`, 400);
+                    }else{
+                        if (req.files && req.files?.length > 0) {
+                            fileUrls = await uploadMultipleFiles(req.files);
+                        }
+                        updateObject["portfolio.$.attachements"] = fileUrls;
+                        update_condition = {
+                            _id: new ObjectId(find_profile._id),
+                            "portfolio._id": new ObjectId(req.body?.portfolioId)
+                        }
+                    }
                 }else{
                     updateObject["portfolio.$.project_name"] = req.body?.portfolio?.project_name;
                     updateObject["portfolio.$.project_description"] = req.body?.portfolio?.project_description;
-                    updateObject["portfolio.$.technologies"] = req.body?.portfolio?.technologies; 
+                    updateObject["portfolio.$.technologies"] = req.body?.portfolio?.technologies;
+                    updateObject["portfolio.$.attachements"] = req.body?.portfolio?.attachements;
                     update_condition = {
                         _id: new ObjectId(find_profile._id),
                         "portfolio._id": new ObjectId(req.body?.portfolio?.portfolioId)
                     }     
                 }          
             }
+            // For update rest section
             if(req.body?.professional_role || req.body?.title || req.body?.hourly_rate || req.body?.description || req.body?.skills || req.body?.categories){
                 updateObject.professional_role = req.body?.professional_role;
                 updateObject.hourly_rate = req.body?.hourly_rate;

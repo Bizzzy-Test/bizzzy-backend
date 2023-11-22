@@ -59,7 +59,7 @@ const portfolioSchema = mongoose.Schema({
     },
     // Max images three
     attachements: {
-        type: String
+        type: Array
     }
 });
 

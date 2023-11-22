@@ -69,10 +69,12 @@ const messageConstants = {
     JOB_UPDATED_SUCCESSFULLY: 'Job updated successfully',
     JOB_FETCHED_SUCCESSFULLY: 'Job fetched successfully',
     JOB_NOT_FOUND: 'Job not found',
+    ALREADY_EXIST : 'already exist',
     NOT_ALLOWED : 'Not allowed to perform action',
     DATA_FOUND : 'Successfully data found',
     JOB_OFFER_SEND_SUCCESSFULLY: 'Job offer send successfully',
     NOT_SENT_OFFER : 'Not allowed to send job offer',
+    OFFERS_DETAILS_NOT_FOUND: 'Offers detail not found'
 }
 
 module.exports = messageConstants;
