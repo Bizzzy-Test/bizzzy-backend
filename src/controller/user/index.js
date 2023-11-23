@@ -49,18 +49,6 @@ const resetPassword = async (req, res) => {
     }
 }
 
-const postFeedback = async (req, res) => {
-    try {
-        const userData = await getUserData(req, res);
-        const response = await authService.postFeedback(req.body, userData, res);
-        logger.info(`${messageConstants.RESPONSE_FROM} postFeedback API`, JSON.stringify(response));
-        res.send(response);
-    } catch (err) {
-        logger.error(`Post Feedback Password ${messageConstants.API_FAILED}`, err);
-        res.send(err);
-    }
-}
-
 const forgotPassword = async (req, res, next) => {
     try {
         const response = await authService.forgotPassword(req, res, next);
@@ -92,6 +80,5 @@ module.exports = {
     forgotPassword,
     changePassword,
     resetPassword,
-    postFeedback,
     getOptionsList
 }

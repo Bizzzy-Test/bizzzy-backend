@@ -192,19 +192,6 @@ const resetPassword = async (body, userData, res) => {
     })
 }
 
-const postFeedback = async (body, userData, res) => {
-    return new Promise(async () => {
-        const feedbackSchema = new FeedbackSchema(body);
-        await feedbackSchema.save().then((result) => {
-            console.log("result", result);
-            logger.info(`${messageConstants.FEEDBACK_SAVED_SUCCESSFULLY}`);
-            return responseData.success(res, result, messageConstants.FEEDBACK_SAVED_SUCCESSFULLY);
-        }).catch((err) => {
-            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
-        })
-    })
-}
 
 const forgotPassword = async (req, res, next) => {
     return new Promise(async () => {
@@ -450,7 +437,6 @@ module.exports = {
     forgotPassword,
     changePassword,
     resetPassword,
-    postFeedback,
     getOptionsList,
     resendEmailVerification
 }

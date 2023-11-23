@@ -9,7 +9,8 @@ const routes = [
     `job`,
     `jobProposal`,
     `message`,
-    `invite`
+    `invite`,
+    `feedback`,
 ];
 
 routes.forEach((route) => require(`./${route}`)(api))

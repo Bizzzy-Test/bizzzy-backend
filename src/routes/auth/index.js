@@ -25,6 +25,5 @@ module.exports = (app) => {
     app.post(urlConstants.FORGOT_PASSWORD, authValidator.forgotPasswordValidation, userAPI.forgotPassword);
     app.post(urlConstants.CHANGE_PASSWORD, jsonWebToken.validateToken, authValidator.changePasswordValidation, userAPI.changePassword);
     app.post(urlConstants.RESET_PASSWORD, jsonWebToken.validateToken, authValidator.resetPasswordValidation, userAPI.resetPassword);
-    app.post(urlConstants.POST_FEEDBACK, jsonWebToken.validateToken, userAPI.postFeedback);
     app.get(urlConstants.GET_PROFILE_IMAGE + "/:profile_image", jsonWebToken.validateToken, profileAPI.getProfileImage);
 }

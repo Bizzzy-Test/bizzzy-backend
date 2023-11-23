@@ -71,6 +71,7 @@ const urlConstants = {
     GET_JOB_PROPOSALS_BY_JOB_ID: '/job/:jobId/proposal',
 
     POST_FEEDBACK: '/add/feedback',
+    GET_FEEDBACK: '/feedback',
 
     // = Job post url =
     ADD_JOB: '/job/create',
