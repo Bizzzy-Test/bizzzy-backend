@@ -11,7 +11,8 @@ const reasonsSchema = mongoose.Schema({
         type: Number,
         enum: [
             userType.FREELANCER,
-            userType.CLIENT
+            userType.CLIENT,
+            userType.ADMIN
         ],
         required: true
     },
