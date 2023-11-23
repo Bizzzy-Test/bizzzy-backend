@@ -45,7 +45,7 @@ const feedbackSchema = mongoose.Schema({
                 required: true
             }
         }],
-        description: {
+        feedback_message: {
             type: String
         },
         status: {
