@@ -6,7 +6,7 @@ const getJobForDashboard = async (req, res) => {
     return new Promise(async () => {
         const role = req?.query?.role;
         const start_date = req?.query?.start_date;
-        let end_date = new Date(req?.query?.end_date);
+        const end_date = new Date(req?.query?.end_date);
         const query = [
             {
                 $match: {}
