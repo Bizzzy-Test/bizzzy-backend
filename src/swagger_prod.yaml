@@ -560,6 +560,62 @@ paths:
               schema:
                 $ref: "#/components/schemas/500"
   
+  /admin/dasboard/jobs:
+    get:
+      tags:
+        - Job
+      summary: Retrive jobs for dashboard 
+      description: Job List for dashboard
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: start_date
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: end_date
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: role
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Job list retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getJobForDashboard200"
+        400:
+          description: Please provide token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/400"
+        401:
+          description: Token expired, Please generate new token!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/401"
+        404:
+          description: Job list not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/404"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500"
+  
   /job/get-by-user-id/{id}:
     get:
       tags:
@@ -2446,7 +2502,69 @@ components:
               updated_at:
                 type: string
                 format: date-time
-    
+    getJobForDashboard200:
+      type: object
+      properties:
+        success:
+            type: string
+        code:
+          type: string
+        msg:
+          type: string
+        body:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+              title:
+                type: string
+              description:
+                type: string
+              client_details: 
+                type: string
+              tags:
+                type: array
+                items:
+                  type: string
+              budget:
+                type: string
+              amount:
+                type: number
+              file:
+                type: string
+              experience:
+                type: string
+              skills:
+                type: array
+                items:
+                  type: string
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+              _v:
+                type: string
+              client_profile:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    userId:
+                      type: string
+                    businessName:
+                      type: string
+                    profile_image:
+                      type: string
+                    firstname:
+                      type: string
+                    lastname: 
+                      type: string
+                    location:
+                      type: string
     400:
       type: object
       properties:

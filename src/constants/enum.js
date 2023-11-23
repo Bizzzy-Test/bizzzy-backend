@@ -1,6 +1,7 @@
 const userType = Object.freeze({
     FREELANCER: 1,
-    CLIENT: 2
+    CLIENT: 2,
+    ADMIN: 3
 })
 
 const messageType = Object.freeze({

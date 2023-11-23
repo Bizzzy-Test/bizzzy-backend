@@ -73,6 +73,9 @@ const urlConstants = {
     POST_FEEDBACK: '/add/feedback',
     GET_FEEDBACK: '/feedback',
 
+    // Dashboard
+    GET_JOB_POST_FOR_DASHBOARD: '/admin/dasboard/jobs',
+
     // = Job post url =
     ADD_JOB: '/job/create',
     GET_JOB: '/job/get-all',
