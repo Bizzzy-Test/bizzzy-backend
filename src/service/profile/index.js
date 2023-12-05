@@ -2,6 +2,7 @@ const { responseData, messageConstants } = require("../../constants");
 const UserSchema = require('../../models/users');
 const ProfileSchema = require('../../models/profile');
 const ClientProfileSchema = require('../../models/clientProfile');
+const InvitationSchema = require('../../models/invite');
 const { logger } = require("../../utils");
 const path = require('path');
 const fs = require('fs');
@@ -180,6 +181,7 @@ const profileImageUpload = async (req, userData, res) => {
             // Create a new profile if it doesn't exist
             profile = new profileSchema({ userId: req.userId });
         }
+        console.log('FILE HERE', req.file);
         if (req.file) {
             const fileBuffer = req.file.path;
             const folder_name = userData.role == 1 ? 'freelancers' : 'clients';
@@ -353,8 +355,36 @@ const searchFreelencers = async (req, userData, res) => {
                 });
             }
             if(result.length>0){
-                logger.info(`Search freelencers ${messageConstants.DATA_FOUND}`);
-                return responseData.success(res, result, `Search freelencers ${messageConstants.DATA_FOUND}`);
+                let finalResult = [];
+                for (let i = 0; i < result.length; i++) {
+                    const invitation_details = await InvitationSchema.findOne({ $and: [
+                        { sender_id: userData._id.toString() },
+                        { receiver_id: result[i].user_id }
+                      ]
+                    });
+                    finalResult.push({ _id:result[i].result,
+                        user_id: result[i].user_id,
+                        professional_role: result[i].professional_role,
+                        profile_image: result[i].profile_image,
+                        title: result[i].title,
+                        hourly_rate: result[i].hourly_rate,
+                        description: result[i].description,
+                        categories: result[i].categories,
+                        is_deleted: result[i].is_deleted,
+                        experience: result[i].experience,
+                        education: result[i].education,
+                        portfolio: result[i].portfolio,
+                        firstName: result[i].firstName,
+                        lastName: result[i].lastName,
+                        location: result[i].location,
+                        skills: result[i].skills,
+                        invitation_status: invitation_details?.status == undefined ? 3 : invitation_details?.status
+                    });
+                    if(result.length-1==i){
+                        logger.info(`Search freelencers ${messageConstants.DATA_FOUND}`);
+                        return responseData.success(res, finalResult, `Search freelencers ${messageConstants.DATA_FOUND}`);
+                    }
+                }
             }else{
                 logger.info(`Search freelencers ${messageConstants.LIST_NOT_FOUND}`);
                 return responseData.success(res, [], `${messageConstants.LIST_NOT_FOUND}`, 200);

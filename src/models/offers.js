@@ -17,22 +17,10 @@ const OfferSchema = mongoose.Schema({
         ref: 'jobs',
         required: true,
     },
-    contract_title: {
-        type: String,
-        required: true
-    },
     budget: {
         type: String,
         required: true
     },
-    category: {
-        type: String,
-        required: true
-    },  
-    client_message: {
-        type: String,
-        required: true
-    }, 
     created_at: {
         type: Date,
         default: Date.now
