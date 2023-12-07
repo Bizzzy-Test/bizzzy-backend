@@ -128,15 +128,19 @@ const searchJobPost = async (req, userData, res) => {
         }else{
             const body = req.body;
             let result;
-            if(body?.experience=='' && body?.budget=='' && body?.category?.length==0 && body?.skills?.length==0){
+            if(body?.experience=='' && body?.budget=='' && body?.category?.length==0 && body?.skills?.length==0 && body?.title=='' && body?.description=='' ){
                 result=await JobSchema.find({});
             }else{
                 result=await JobSchema.find({
                     $or:[
-                        {experience: body?.experience},
-                        {budget: body?.budget},
+                        // {experience: body?.experience},
+                        // {budget: body?.budget},
                         {tags: { $in: body?.category?.map(category => new RegExp(category, 'i')) }},
-                        {skills: { $in: body?.skills?.map(skills => new RegExp(skills, 'i')) }}
+                        {skills: { $in: body?.skills?.map(skills => new RegExp(skills, 'i')) }},
+                        { experience: body?.experience },
+                        { budget: body?.budget },
+                        { title: { $regex: body?.title, $options: 'i' } },
+                        { description: { $regex: body?.description, $options: 'i' } },
                     ]
                 });
             }
@@ -239,5 +243,5 @@ module.exports = {
     updateJobPost,
     deleteJobPost,
     searchJobPost,
-    getSingleJobPost
+    getSingleJobPost,
 };

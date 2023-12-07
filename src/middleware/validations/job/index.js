@@ -3,7 +3,7 @@ const Joi = require('joi');
 
 const jobSerachValidation = (req, res, next) => {
     const schema = Joi.object({
-        experience: Joi.string().valid('Entry', 'Intermediate', 'Expert').required(),
+        experience: Joi.string().valid('Entry', 'Intermediate', 'Expert'),
         budget: Joi.string().required(),
         skills: Joi.array().required(),
         category: Joi.array().required(),

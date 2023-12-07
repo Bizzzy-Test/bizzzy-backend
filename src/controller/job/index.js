@@ -9,7 +9,6 @@ const { getUserData } = require("../../middleware/index.js");
 const createJobPost = async (req, res) => {
     try {
         const userToken = req.headers.token;
-        console.log(userToken);
         const jobData = req.body;
 
         let fileUrl = "";
@@ -102,6 +101,7 @@ const searchJobPost = async (req, res) => {
         res.send(err);
     }
 }
+
 // ==== get job post by userId ==== controller
 
 const getJobPostByUserId = async (req, res) => {
