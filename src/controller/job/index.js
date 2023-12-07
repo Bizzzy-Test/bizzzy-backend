@@ -11,14 +11,14 @@ const createJobPost = async (req, res) => {
         const userToken = req.headers.token;
         console.log(userToken);
         const jobData = req.body;
-
         let fileUrl = "";
 
         if (req.file) {
-            const fileBuffer = req.file.buffer;
+            const fileBuffer = req.file.path;
             const folderName = "job_files";
             // Upload the file buffer to S3 and get its access URL
             fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folderName);
+            console.log('fileUrl', fileUrl);
         }
         // Add the file URL to the jobData object
         jobData.file = fileUrl === "" ? "null" : fileUrl;

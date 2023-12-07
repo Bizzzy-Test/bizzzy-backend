@@ -40,7 +40,9 @@ const sendOffer = async (body, userData, res) => {
                                     name: find_freelencer.firstName +' '+ find_freelencer.lastName,
                                     client_name: client_details.firstName + client_details.lastName,
                                     job_title: job_details.title,
+                                    job_description: job_details.description,
                                     business_name: client_details.businessName,
+                                    budget:job_details.budget,
                                     email: find_freelencer.email,
                                     message: body.client_message,
                                 };
@@ -56,8 +58,8 @@ const sendOffer = async (body, userData, res) => {
                             return responseData.fail(res, `${messageConstants.NOT_FOUND}`, 400);
                         }
                     }else{
-                        logger.error(`Freelencer ${messageConstants.NOT_FOUND}`);
-                        return responseData.fail(res, `Freelencer ${messageConstants.NOT_FOUND}`, 403);
+                        logger.error(`Freelancer ${messageConstants.NOT_FOUND}`);
+                        return responseData.fail(res, `Freelancer ${messageConstants.NOT_FOUND}`, 403);
                     }
                 }).catch((err) => {
                         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);

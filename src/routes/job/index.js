@@ -1,7 +1,7 @@
 const api = require("../../controller/job");
 const { urlConstants } = require("../../constants");
 const { jobValidation, jsonWebToken } = require("../../middleware");
-const { upload } = require("../../middleware/multer/multer");
+const upload = require("../../middleware/image_upload");
 
 module.exports = (app) => {
     app.post(urlConstants.ADD_JOB, jsonWebToken.validateToken, upload.single("file"), api.createJobPost);
