@@ -17,6 +17,8 @@ module.exports = (app) => {
     app.delete(urlConstants.DELETE_EXPERIENCE, jsonWebToken.validateToken, authValidator.experienceValidation, profileAPI.deleteExperience);
     app.post(urlConstants.USER_PROFILE_IMAGE, jsonWebToken.validateToken, upload.single('file'), profileAPI.profileImageUpload);
     app.post(urlConstants.SEARCH_FREELENCERS, jsonWebToken.validateToken, profileAPI.searchFreelencers);
+    // app.get(urlConstants.GET_SKILLS, jsonWebToken.validateToken, profileAPI.getAllSkills);
+    app.get(urlConstants.GET_INVITED_FREELANCERS, jsonWebToken.validateToken, profileAPI.getInvitedFreelancers);
 
     app.post(urlConstants.UPLOAD_IMAGE + "/:user_id", upload.single('image'), userAPI.uploadImage);
     app.get(urlConstants.GET_USER_LIST, jsonWebToken.validateToken, userAPI.getUserList);

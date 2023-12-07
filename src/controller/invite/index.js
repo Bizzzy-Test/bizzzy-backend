@@ -37,6 +37,18 @@ const getInvitationDetails = async (req, res) => {
     }
 }
 
+// const getAllSkills = async (req, res) => {
+//     try {
+//         const userData = await getUserData(req, res);
+//         const response = await invitationService.getAllSkills(userData, res);
+//         logger.info(`${messageConstants.RESPONSE_FROM} Get All Skills API`, JSON.stringify(response));
+//         res.send(response);
+//     } catch (err) {
+//         logger.error(`Get Invited Freelencers List ${messageConstants.API_FAILED} ${err}`);
+//         res.send(err);
+//     }
+// }
+
 const getInvitedFreelancers = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
@@ -53,5 +65,6 @@ module.exports = {
     sendInvitation,
     updateInvitation,
     getInvitationDetails,
-    getInvitedFreelancers
+    getInvitedFreelancers,
+    // getAllSkills
 }
