@@ -19,7 +19,6 @@ const urlConstants = {
     CREATE_SUBSCRIPTION: '/create/subscription',
     MESSAGE_LIST: '/message-list',
     GET_USER_LIST: '/users/list',
-
     GET_OPTIONS_LIST:"/getOptionsList",
     // GET_USER_PROFILE: '/users/profile',
 
@@ -37,6 +36,7 @@ const urlConstants = {
     SEND_INVITATION: '/invitation-send',
     UPDATE_INVITATION_STATUS: '/invitation-status-update',
     GET_INVITATION_DETAILS: '/get-invitation-details',
+    GET_INVITED_FREELANCERS : '/get-invited-freelencers',
     GET_INVITED_FREELANCERS_LIST : '/invited-freelancers-list',
     OFFER_SEND: '/offer-send',
     OFFERS_LIST_GET: '/get-offers-list',

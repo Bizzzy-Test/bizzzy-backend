@@ -91,6 +91,19 @@ const searchFreelencers = async (req, res) => {
     }
 }
 
+const getInvitedFreelancers = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await profileService.getInvitedFreelancers(req, userData, res);
+        if (response != null){
+            res.sendFile(response);
+        }
+    } catch (err) {
+        logger.error(`Update experience ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+}
+
 const deleteExperience = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
@@ -112,5 +125,6 @@ module.exports = {
     deleteExperience,
     searchFreelencers,
     editProfile,
-    deleteExperience
+    deleteExperience,
+    getInvitedFreelancers
 }
