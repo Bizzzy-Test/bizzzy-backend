@@ -1,21 +1,24 @@
 const { messageConstants, responseData } = require("../../constants");
 const { logger } = require("../../utils");
 const MessageSchema = require('../../models/message');
+const UserSchema = require('../../models/users');
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 
 const getMessageList = (req, user, res) => {
     return new Promise(async () => {
         logger.info(`Message ${messageConstants.LIST_API_CALL_SUCCESSFULLY}`);
-        const role = req.query.role;
+        const recieverData = await getRecieverUserRole(req, res);
         const query = [
             {
                 $match: {
                     $or: [
                         {
                             sender_id: user._id.toString(),
-                            receiver_id: req.query.user_id,
+                            receiver_id: req.query.receiver_id,
                         },
                         {
-                            sender_id: req.query.user_id,
+                            sender_id: req.query.receiver_id,
                             receiver_id: user._id.toString(),
                         }
                     ]
@@ -23,13 +26,13 @@ const getMessageList = (req, user, res) => {
             },
             {
                 $lookup: {
-                    from: role == 2 ? 'client_profiles' : 'freelencer_profiles',
+                    from: recieverData.role == 2 ? 'client_profiles' : 'freelencer_profiles',
                     let: { senderId: "$sender_id" },
                     pipeline: [
                         {
                             $match: {
                                 $expr: {
-                                    $eq: [role == 2 ? '$userId' : '$user_id', { $toObjectId: "$$senderId" }] // Use the $$ syntax to refer to variables
+                                    $eq: [recieverData.role == 2 ? '$userId' : '$user_id', { $toObjectId: "$$senderId" }] // Use the $$ syntax to refer to variables
                                 }
                             }
                         },
@@ -40,13 +43,13 @@ const getMessageList = (req, user, res) => {
             },
             {
                 $lookup: {
-                    from: role == 2 ? 'client_profiles' : 'freelencer_profiles',
+                    from: recieverData.role == 2 ? 'client_profiles' : 'freelencer_profiles',
                     let: { receiverId: "$receiver_id" },
                     pipeline: [
                         {
                             $match: {
                                 $expr: {
-                                    $eq: [role == 2 ? '$userId' : '$user_id', { $toObjectId: "$$receiverId" }]
+                                    $eq: [recieverData.role == 2 ? '$userId' : '$user_id', { $toObjectId: "$$receiverId" }]
                                 }
                             }
                         },
@@ -68,6 +71,13 @@ const getMessageList = (req, user, res) => {
             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
             return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
         })
+    })
+}
+
+const getRecieverUserRole = async (req) => {
+    return new Promise(async(resolve, reject) => {
+        let userData = await UserSchema.findOne({ _id: new ObjectId(req.query.receiver_id) });
+        return resolve(userData);
     })
 }
 
@@ -249,6 +259,8 @@ const getChatUserList = (req, user, res) => {
         })
     })
 }
+
+
 
 
 module.exports = {
