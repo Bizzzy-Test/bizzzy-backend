@@ -6,10 +6,8 @@ const connectUser = async (socket) => {
     return new Promise(async (resolve, reject) => {
         try {
             socket.on('connect_user', async (data) => {
-                console.log('ADATA data HERE', data);
                 logger.info(`Data received during user connect ${JSON.stringify(data)}`);
                 const socketData = await SocketSchema.find({ user_id: data.user_id });
-                console.log('socket DATA', socketData);
                 if (socketData.length !== 0) {
                     // Update socket if user already exist
                     await updateSocket(socket, socketData);
