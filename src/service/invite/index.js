@@ -38,7 +38,7 @@ const sendInvitation = async (body, userData, res) => {
                             business_name: client_details.businessName,
                             email : user.email,
                             message: body.message,
-                            link: `${process.env.BASE_URL}message/invitation?job_id=${body.job_id}&invite_id=${invitationResponse.invite_result._id}`,
+                            link: `${process.env.BASE_URL}/message/invitation?job_id=${body.job_id}&invite_id=${invitationResponse.invite_result._id}`,
                         };
                         await mail.sendMailtoUser(mailTemplateConstants.INVITATION_TEMPLATE, user.email, "Invitation", res, mailContent);
                         logger.info(messageConstants.INVITATION_SEND_SUCCESSFULLY);
