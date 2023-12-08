@@ -95,6 +95,7 @@ const getInvitedFreelancers = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
         const response = await profileService.getInvitedFreelancers(req, userData, res);
+        console.log(response,"responseresponse")
         if (response != null){
             res.sendFile(response);
         }

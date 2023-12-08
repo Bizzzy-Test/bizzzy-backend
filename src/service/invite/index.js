@@ -117,7 +117,7 @@ const updateInvitationStatus = async (req, res) => {
     })
 }
 
-// Invitation details get for freelencer
+// Invitation details
 const getInvitationDetails = async (req, res,) => {
     return new Promise(async () => {
         const { job_id } = req.query;
@@ -129,7 +129,7 @@ const getInvitationDetails = async (req, res,) => {
                             receiver_id: req.userId
                         },
                         {
-                            job_id: job_id
+                            job_id: new ObjectId(job_id)
                         },
                         {
                             is_deleted: false
@@ -230,9 +230,59 @@ const getInvitedFreelancers = async (userData, res) => {
     })
 }
 
+// Invitation details get for freelencer
+const getInvitationDetailForFreelancer = async (req, res,) => {
+    return new Promise(async () => {
+        const { invitation_id } = req.query;
+        const query = [
+            {
+                $match: {
+                    _id: new ObjectId(invitation_id)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'client_profiles',
+                    localField: 'sender_id',
+                    foreignField: 'userId',
+                    pipeline: [
+                        { $project: { _id: 1, userId: 1, firstName: 1, } }
+                    ],
+                    as: 'client_details'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'jobs',
+                    localField: 'job_id',
+                    foreignField: '_id',
+                    pipeline: [
+                        { $project: { file: 0, client_detail: 0, } }
+                    ],
+                    as: 'job_details'
+                }
+            }
+        ]
+        console.log(JSON.stringify(query))
+        await InviteSchema.aggregate(query).then(async (result) => {
+            if (result.length !== 0) {
+                logger.info(`Invitation ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                return responseData.success(res, result, `Invitation ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+            } else {
+                logger.info(`Invitation ${messageConstants.LIST_NOT_FOUND}`);
+                return responseData.success(res, [], `Invitation ${messageConstants.LIST_NOT_FOUND}`);
+            }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        })
+    })
+}
+
 module.exports = {
     sendInvitation,
     updateInvitationStatus,
     getInvitationDetails,
-    getInvitedFreelancers
+    getInvitedFreelancers,
+    getInvitationDetailForFreelancer
 }

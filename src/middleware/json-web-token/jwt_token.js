@@ -14,7 +14,7 @@ function generateToken(user, remember_me) {
     // Token expiration (optional)
     if(!remember_me)
         options = {
-            expiresIn: '24h' // Token will expire in 1 hour
+            expiresIn: '24h' // Token will expire in 24 hour
         };
 
     const token = jwt.sign(payload, SECRET_KEY, options);
