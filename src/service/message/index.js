@@ -26,34 +26,34 @@ const getMessageList = (req, user, res) => {
             },
             {
                 $lookup: {
-                    from: recieverData.role == 2 ? 'client_profiles' : 'freelencer_profiles',
+                    from: recieverData.role == 2 || user.role == 2  ? 'client_profiles' : 'freelencer_profiles',
                     let: { senderId: "$sender_id" },
                     pipeline: [
                         {
                             $match: {
                                 $expr: {
-                                    $eq: [recieverData.role == 2 ? '$userId' : '$user_id', { $toObjectId: "$$senderId" }] // Use the $$ syntax to refer to variables
+                                    $eq: [recieverData.role == 2 || user.role == 2 ? '$userId' : '$user_id', { $toObjectId: "$$senderId" }] // Use the $$ syntax to refer to variables
                                 }
                             }
                         },
-                        { $project: { _id: 1, firstName: 1, lastName: 1, profile_image: 1, location: 1 } }
+                        { $project: { _id: 1, firstName: 1, lastName: 1, profile_image: 1, location: 1, user_id: 1 } }
                     ],
                     as: 'sender_details'
                 }
             },
             {
                 $lookup: {
-                    from: recieverData.role == 2 ? 'client_profiles' : 'freelencer_profiles',
+                    from: recieverData.role == 2 || user.role == 2 ? 'client_profiles' : 'freelencer_profiles',
                     let: { receiverId: "$receiver_id" },
                     pipeline: [
                         {
                             $match: {
                                 $expr: {
-                                    $eq: [recieverData.role == 2 ? '$userId' : '$user_id', { $toObjectId: "$$receiverId" }]
+                                    $eq: [recieverData.role == 2 || user.role == 2 ? '$userId' : '$user_id', { $toObjectId: "$$receiverId" }]
                                 }
                             }
                         },
-                        { $project: { _id: 1, firstName: 1, lastName: 1, profile_image: 1, location: 1 } }
+                        { $project: { _id: 1, firstName: 1, lastName: 1, profile_image: 1, location: 1, user_id: 1 } }
                     ],
                     as: 'receiver_details'
                 }
