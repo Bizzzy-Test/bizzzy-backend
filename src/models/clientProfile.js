@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const { userType } = require('../constants');
 
 const clientProfileSchema = mongoose.Schema({
-    userId: {
+    user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
         required: true,
