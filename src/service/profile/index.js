@@ -129,9 +129,9 @@ const uploadMultipleFiles = async (fileArray) => {
 
 const clientProfile = async (req, userData, res) => {
     return new Promise(async () => {
-        let profile = await ClientProfileSchema.findOne({ userId: new ObjectId(req.userId) });
+        let profile = await ClientProfileSchema.findOne({ user_id: new ObjectId(req.userId) });
         if (!profile) {
-            profile = new ClientProfileSchema({ userId: req.userId });
+            profile = new ClientProfileSchema({ user_id: req.userId });
         }
         profile.firstName = userData.firstName || "null";
         profile.lastName = userData.lastName || "null";
