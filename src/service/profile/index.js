@@ -204,7 +204,6 @@ const getProfileImage = async (req, res) => {
     try {
         const imagePath = path.join('./public/uploads', profile_image);
 
-        console.log(imagePath)
         if (!fs.existsSync(imagePath)) {
             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. File not exists`);
             return null;

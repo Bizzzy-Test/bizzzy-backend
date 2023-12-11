@@ -79,7 +79,10 @@ const getOffersList = async (userData, res) => {
             const query = [
                 {
                     $match: {
-                        client_id: new ObjectId(userData._id)
+                        $and:[
+                            { client_id: new ObjectId(userData._id) },
+                            { status: 0}
+                        ]
                     }
                 },
                 {
@@ -121,7 +124,105 @@ const getOffersList = async (userData, res) => {
         }
     })
 }
+
+const updateOffer = async (req, res) => {
+    return new Promise(async () => {
+        const { offer_id, status, job_id } = req.body;
+        await OfferSchema.find(
+            {
+                $and: [
+                    { freelencer_id: new ObjectId(req.userId) },
+                    { job_id: new ObjectId(job_id) },
+                    { _id: new ObjectId(offer_id) }
+                ]
+            }
+        ).then(async (result) => {
+            if (result.length !== 0) {
+                await OfferSchema.findOneAndUpdate(
+                    {
+                        $and: [
+                            { _id: new ObjectId(offer_id) },
+                            { freelencer_id: new ObjectId(req.userId) },
+                            { job_id: new ObjectId(job_id) },
+                        ]
+                    },
+                    { $set: { status: status } },
+                    { new: true }
+                ).then((result) => {
+                    if (result.length !== 0) {
+                        logger.info(messageConstants.OFFER_UPDATED_SUCCESSFULLY);
+                        return responseData.success(res, result, messageConstants.OFFER_UPDATED_SUCCESSFULLY);
+                    } else {
+                        logger.error(`Offer ${messageConstants.NOT_FOUND}`);
+                        return responseData.success(res, [], messageConstants.NOT_FOUND);
+                    }
+                })
+            } else {
+                logger.error("You are not allow to perform action");
+                return responseData.fail(res, "You are not allow to perform action", 400);
+            }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        })
+    })
+}
+
+const getHiredList = async (userData, res) => {
+    return new Promise(async () => {
+        if (userData.role == 2) {
+            const query = [
+                {
+                    $match: {
+                        $and:[
+                            { client_id: new ObjectId(userData._id) },
+                            { status: 1}
+                        ]
+                    }
+                },
+                {
+                    $lookup: {
+                      from: 'freelencer_profiles',
+                      localField: 'freelencer_id',
+                      foreignField: 'user_id',
+                      pipeline: [
+                        { 
+                            $project: { 
+                                _id: 1, 
+                                user_id: 1, 
+                                name: { $concat: ["$firstName", " ", "$lastName"] },
+                                professional_role: 1, 
+                                profile_image: 1, 
+                                hourly_rate: 1 
+                            } 
+                        }
+                    ],
+                      as: 'freelancerDetails'
+                    }
+                }
+            ]
+            await OfferSchema.aggregate(query).then(async (result) => {
+                if (result.length !== 0) {
+                    logger.info(`Get User hired details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                    return responseData.success(res, result, `Get User hired details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                } else {
+                    logger.info(`User ${messageConstants.HIRED_DETAILS_NOT_FOUND}`);
+                    return responseData.fail(res, `User ${messageConstants.HIRED_DETAILS_NOT_FOUND}`, 200);
+                }
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            })
+        } else {
+            logger.info(messageConstants.NOT_ALLOWED);
+            return responseData.fail(res, `${messageConstants.NOT_ALLOWED}`, 401);
+        }
+    })
+}
+
 module.exports = {
     sendOffer,
-    getOffersList
+    getOffersList,
+    updateOffer,
+    getHiredList
 }

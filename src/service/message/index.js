@@ -9,7 +9,6 @@ const getMessageList = (req, user, res) => {
     return new Promise(async () => {
         logger.info(`Message ${messageConstants.LIST_API_CALL_SUCCESSFULLY}`);
         const recieverData = await getRecieverUserRole(req, res);
-        console.log();
         const query = [
             {
                 $match: {
@@ -76,7 +75,6 @@ const getMessageList = (req, user, res) => {
 }
 
 const getRecieverUserRole = async (req) => {
-    console.log({ "dddd": req.query.reciever_id });
     return new Promise(async (resolve, reject) => {
         let userData = await UserSchema.findOne({ _id: new ObjectId(req.query.receiver_id) });
         return resolve(userData);

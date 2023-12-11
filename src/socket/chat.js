@@ -26,7 +26,6 @@ const handleChat = async (data, socket, io) => {
     if (saveMessage) {
         io.to(socket.id).emit('chat_message', saveMessage);
         if (receiverSocketData.length > 0) {
-            console.log({ "0000": receiverSocketData });
             io.to(receiverSocketData[0]['socket_id']).emit('chat_message', saveMessage);
         } else {
             logger.error(messageConstants.RECEIVER_NOT_FOUND);

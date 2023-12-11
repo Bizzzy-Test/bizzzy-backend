@@ -16,6 +16,17 @@ const sendOffer = async (req, res) => {
     }
 }
 
+const updateOffer = async (req, res) => {
+    try {
+        const response = await offerService.updateOffer(req, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} Update offer API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`Update offer API ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+}
+
 const getOffersList = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
@@ -28,7 +39,21 @@ const getOffersList = async (req, res) => {
     }
 }
 
+const getHiredList = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await offerService.getHiredList(userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} Get hired List API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`Get hired List API ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+}
+
 module.exports = {
     sendOffer,
-    getOffersList
+    getOffersList,
+    updateOffer,
+    getHiredList
 }
