@@ -34,7 +34,8 @@ const getMessageList = (req, user, res) => {
             {
                 $addFields: {
                     sender_id_ObjectId: { $toObjectId: '$sender_id' },
-                    receiver_id_ObjectId: { $toObjectId: '$receiver_id' }
+                    receiver_id_ObjectId: { $toObjectId: '$receiver_id' },
+                    job_id_ObjectId: { $toObjectId: '$job_id' }
                 }
             },
             {
@@ -74,6 +75,22 @@ const getMessageList = (req, user, res) => {
                 }
             },
             {
+                $lookup: {
+                    from: 'jobs',
+                    localField: 'job_id_ObjectId',
+                    foreignField: '_id',
+                    pipeline: [{
+                        $project: {
+                            title: 1,
+                            client_detail: 1,
+                            amount: 1,
+                            budget: 1
+                        }
+                    }],
+                    as: 'job_details'
+                }
+            },
+            {
                 $addFields: {
                     sender_details: {
                         $ifNull: [
@@ -93,6 +110,7 @@ const getMessageList = (req, user, res) => {
                 $project: {
                     sender_id_ObjectId: 0,
                     receiver_id_ObjectId: 0,
+                    job_id_ObjectId: 0,
                     sender_freelancer: 0,
                     sender_client: 0,
                     receiver_client: 0,

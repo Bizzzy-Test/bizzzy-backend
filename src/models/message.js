@@ -14,6 +14,9 @@ const messageSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    job_id:{
+        type: String
+    },
     message_type: {
         type: Number,
         required: true,
