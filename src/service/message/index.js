@@ -1,14 +1,21 @@
 const { messageConstants, responseData } = require("../../constants");
 const { logger } = require("../../utils");
 const MessageSchema = require('../../models/message');
-const UserSchema = require('../../models/users');
-const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
 
 const getMessageList = (req, user, res) => {
     return new Promise(async () => {
         logger.info(`Message ${messageConstants.LIST_API_CALL_SUCCESSFULLY}`);
-        const recieverData = await getRecieverUserRole(req, res);
+        const pipeline = [
+            {
+                $project: {
+                    user_id: 1,
+                    firstName: 1,
+                    lastName: 1,
+                    lastMessage: 1,
+                    profile_image: 1,
+                }
+            }
+        ]
         const query = [
             {
                 $match: {
@@ -25,37 +32,71 @@ const getMessageList = (req, user, res) => {
                 }
             },
             {
-                $lookup: {
-                    from: recieverData.role == 2 || user.role == 2 ? 'client_profiles' : 'freelencer_profiles',
-                    let: { senderId: "$sender_id" },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $eq: [recieverData.role == 2 || user.role == 2 ? '$userId' : '$user_id', { $toObjectId: "$$senderId" }] // Use the $$ syntax to refer to variables
-                                }
-                            }
-                        },
-                        { $project: { _id: 1, firstName: 1, lastName: 1, profile_image: 1, location: 1, user_id: 1 } }
-                    ],
-                    as: 'sender_details'
+                $addFields: {
+                    sender_id_ObjectId: { $toObjectId: '$sender_id' },
+                    receiver_id_ObjectId: { $toObjectId: '$receiver_id' }
                 }
             },
             {
                 $lookup: {
-                    from: recieverData.role == 2 || user.role == 2 ? 'client_profiles' : 'freelencer_profiles',
-                    let: { receiverId: "$receiver_id" },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $eq: [recieverData.role == 2 || user.role == 2 ? '$userId' : '$user_id', { $toObjectId: "$$receiverId" }]
-                                }
-                            }
-                        },
-                        { $project: { _id: 1, firstName: 1, lastName: 1, profile_image: 1, location: 1, user_id: 1 } }
-                    ],
-                    as: 'receiver_details'
+                    from: 'freelencer_profiles',
+                    localField: 'sender_id_ObjectId',
+                    foreignField: 'user_id',
+                    pipeline: pipeline,
+                    as: 'sender_freelancer'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'client_profiles',
+                    localField: 'sender_id_ObjectId',
+                    foreignField: 'user_id',
+                    pipeline: pipeline,
+                    as: 'sender_client'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'client_profiles',
+                    localField: 'receiver_id_ObjectId',
+                    foreignField: 'user_id',
+                    pipeline: pipeline,
+                    as: 'receiver_client'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'freelencer_profiles',
+                    localField: 'receiver_id_ObjectId',
+                    foreignField: 'user_id',
+                    pipeline: pipeline,
+                    as: 'receiver_freelancer'
+                }
+            },
+            {
+                $addFields: {
+                    sender_details: {
+                        $ifNull: [
+                            { $arrayElemAt: ['$sender_freelancer', 0] },
+                            { $arrayElemAt: ['$sender_client', 0] }
+                        ]
+                    },
+                    receiver_details: {
+                        $ifNull: [
+                            { $arrayElemAt: ['$receiver_client', 0] },
+                            { $arrayElemAt: ['$receiver_freelancer', 0] }
+                        ]
+                    }
+                }
+            },
+            {
+                $project: {
+                    sender_id_ObjectId: 0,
+                    receiver_id_ObjectId: 0,
+                    sender_freelancer: 0,
+                    sender_client: 0,
+                    receiver_client: 0,
+                    receiver_freelancer: 0
                 }
             }
         ]
@@ -71,13 +112,6 @@ const getMessageList = (req, user, res) => {
             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
             return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
         })
-    })
-}
-
-const getRecieverUserRole = async (req) => {
-    return new Promise(async (resolve, reject) => {
-        let userData = await UserSchema.findOne({ _id: new ObjectId(req.query.receiver_id) });
-        return resolve(userData);
     })
 }
 
