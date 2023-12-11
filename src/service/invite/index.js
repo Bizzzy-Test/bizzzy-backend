@@ -27,7 +27,7 @@ const sendInvitation = async (body, userData, res) => {
             } else {
                 const invitationResponse = await saveInvitation(body);
                 const user = await UserSchema.findOne({ _id: body.receiver_id });
-                const client_details = await ClientSchema.findOne({ user_id: userData._id });
+                const client_details = await ClientSchema.findOne({ userId: new ObjectId(userData._id) });
                 if (client_details) {
                     const job_details = await JobSchema.findOne({ client_detail: userData._id.toString() });
                     if (job_details) {

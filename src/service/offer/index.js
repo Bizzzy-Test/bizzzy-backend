@@ -81,7 +81,7 @@ const getOffersList = async (userData, res) => {
                     $match: {
                         $and:[
                             { client_id: new ObjectId(userData._id) },
-                            { client_id: new ObjectId(userData._id)}
+                            { status: 0}
                         ]
                     }
                 },
@@ -167,8 +167,62 @@ const updateOffer = async (req, res) => {
         })
     })
 }
+
+const getHiredList = async (userData, res) => {
+    return new Promise(async () => {
+        if (userData.role == 2) {
+            const query = [
+                {
+                    $match: {
+                        $and:[
+                            { client_id: new ObjectId(userData._id) },
+                            { status: 1}
+                        ]
+                    }
+                },
+                {
+                    $lookup: {
+                      from: 'freelencer_profiles',
+                      localField: 'freelencer_id',
+                      foreignField: 'user_id',
+                      pipeline: [
+                        { 
+                            $project: { 
+                                _id: 1, 
+                                user_id: 1, 
+                                name: { $concat: ["$firstName", " ", "$lastName"] },
+                                professional_role: 1, 
+                                profile_image: 1, 
+                                hourly_rate: 1 
+                            } 
+                        }
+                    ],
+                      as: 'freelancerDetails'
+                    }
+                }
+            ]
+            await OfferSchema.aggregate(query).then(async (result) => {
+                if (result.length !== 0) {
+                    logger.info(`Get User hired details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                    return responseData.success(res, result, `Get User hired details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                } else {
+                    logger.info(`User ${messageConstants.HIRED_DETAILS_NOT_FOUND}`);
+                    return responseData.fail(res, `User ${messageConstants.HIRED_DETAILS_NOT_FOUND}`, 200);
+                }
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            })
+        } else {
+            logger.info(messageConstants.NOT_ALLOWED);
+            return responseData.fail(res, `${messageConstants.NOT_ALLOWED}`, 401);
+        }
+    })
+}
+
 module.exports = {
     sendOffer,
     getOffersList,
-    updateOffer
+    updateOffer,
+    getHiredList
 }

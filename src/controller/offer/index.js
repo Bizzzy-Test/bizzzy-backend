@@ -39,8 +39,21 @@ const getOffersList = async (req, res) => {
     }
 }
 
+const getHiredList = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await offerService.getHiredList(userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} Get hired List API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`Get hired List API ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+}
+
 module.exports = {
     sendOffer,
     getOffersList,
-    updateOffer
+    updateOffer,
+    getHiredList
 }
