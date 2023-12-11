@@ -4,6 +4,7 @@ const { logger } = require("../utils");
 const MessageSchema = require('../models/message');
 
 const createMessage = async (data) => {
+    console.log({ "----": data });
     return new Promise(async (resolve, reject) => {
         try {
             const messageSchema = new MessageSchema(data);
@@ -18,13 +19,14 @@ const createMessage = async (data) => {
     })
 }
 
-const handleChat = async (data, socket, io)  => {
+const handleChat = async (data, socket, io) => {
     logger.info(`Data received in chat_message ${data.receiver_id}`);
     const receiverSocketData = await SocketSchema.find({ user_id: data.receiver_id });
     const saveMessage = await createMessage(data);
     if (saveMessage) {
         io.to(socket.id).emit('chat_message', saveMessage);
-        if (receiverSocketData) {
+        if (receiverSocketData.length > 0) {
+            console.log({ "0000": receiverSocketData });
             io.to(receiverSocketData[0]['socket_id']).emit('chat_message', saveMessage);
         } else {
             logger.error(messageConstants.RECEIVER_NOT_FOUND);

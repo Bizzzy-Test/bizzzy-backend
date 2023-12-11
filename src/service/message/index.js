@@ -9,6 +9,7 @@ const getMessageList = (req, user, res) => {
     return new Promise(async () => {
         logger.info(`Message ${messageConstants.LIST_API_CALL_SUCCESSFULLY}`);
         const recieverData = await getRecieverUserRole(req, res);
+        console.log();
         const query = [
             {
                 $match: {
@@ -26,7 +27,7 @@ const getMessageList = (req, user, res) => {
             },
             {
                 $lookup: {
-                    from: recieverData.role == 2 || user.role == 2  ? 'client_profiles' : 'freelencer_profiles',
+                    from: recieverData.role == 2 || user.role == 2 ? 'client_profiles' : 'freelencer_profiles',
                     let: { senderId: "$sender_id" },
                     pipeline: [
                         {
@@ -75,7 +76,8 @@ const getMessageList = (req, user, res) => {
 }
 
 const getRecieverUserRole = async (req) => {
-    return new Promise(async(resolve, reject) => {
+    console.log({ "dddd": req.query.reciever_id });
+    return new Promise(async (resolve, reject) => {
         let userData = await UserSchema.findOne({ _id: new ObjectId(req.query.receiver_id) });
         return resolve(userData);
     })
@@ -135,7 +137,8 @@ const getChatUserList = (req, user, res) => {
                                 userId: 1,
                                 firstName: 1,
                                 lastName: 1,
-                                profile_image: 1
+                                profile_image: 1,
+                                businessName: 1
                             }
                         }
                     ],
@@ -159,7 +162,7 @@ const getChatUserList = (req, user, res) => {
                                 user_id: 1,
                                 firstName: 1,
                                 lastName: 1,
-                                profile_image: 1
+                                profile_image: 1,
                             }
                         }
                     ],

@@ -8,11 +8,11 @@ const inviteSchema = mongoose.Schema({
         required: true
     },
     sender_id: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true
     },
     receiver_id: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true
     },
     message: {

@@ -28,26 +28,26 @@ const sendInvitation = async (body, userData, res) => {
                 const invitationResponse = await saveInvitation(body);
                 const user = await UserSchema.findOne({ _id: body.receiver_id });
                 const client_details = await ClientSchema.findOne({ userId: userData._id });
-                if(client_details){
+                if (client_details) {
                     const job_details = await JobSchema.findOne({ client_detail: userData._id.toString() });
-                    if(job_details){
+                    if (job_details) {
                         const mailContent = {
                             name: user.firstName,
                             client_name: client_details.firstName + client_details.lastName,
                             job_title: job_details.title,
                             business_name: client_details.businessName,
-                            email : user.email,
+                            email: user.email,
                             message: body.message,
                             link: `${process.env.BASE_URL}/message/invitation?job_id=${body.job_id}&invite_id=${invitationResponse.invite_result._id}`,
                         };
                         await mail.sendMailtoUser(mailTemplateConstants.INVITATION_TEMPLATE, user.email, "Invitation", res, mailContent);
                         logger.info(messageConstants.INVITATION_SEND_SUCCESSFULLY);
                         return responseData.success(res, {}, messageConstants.INVITATION_SEND_SUCCESSFULLY);
-                    }else{
+                    } else {
                         logger.info(`Job ${messageConstants.NOT_FOUND}`);
                         return responseData.fail(res, `${messageConstants.NOT_FOUND}`, 400);
                     }
-                }else{
+                } else {
                     logger.info(`Client ${messageConstants.NOT_FOUND}`);
                     return responseData.fail(res, `${messageConstants.NOT_FOUND}`, 400);
                 }
@@ -179,7 +179,8 @@ const getInvitedFreelancers = async (userData, res) => {
             const query = [
                 {
                     $match: {
-                        sender_id: userData._id.toString()
+                        // sender_id: userData._id.toString()
+                        sender_id: userData._id
                     }
                 },
                 {
@@ -187,24 +188,24 @@ const getInvitedFreelancers = async (userData, res) => {
                         from: 'freelencer_profiles',
                         let: { receiverId: "$receiver_id" },
                         pipeline: [
-                            { 
-                                $match: { 
-                                    $expr: { 
-                                        $eq: [ { $toString: "$user_id" }, "$$receiverId" ] 
-                                    } 
-                                } 
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: [{ $toString: "$user_id" }, "$$receiverId"]
+                                    }
+                                }
                             },
-                            { 
-                                $project: { 
-                                    _id: 1, 
-                                    user_id: 1, 
+                            {
+                                $project: {
+                                    _id: 1,
+                                    user_id: 1,
                                     name: { $concat: ["$firstName", " ", "$lastName"] },
-                                    professional_role: 1, 
-                                    profile_image: 1, 
+                                    professional_role: 1,
+                                    profile_image: 1,
                                     hourly_rate: 1,
-                                    description:1, 
+                                    description: 1,
                                     skills: 1
-                                } 
+                                }
                             }
                         ],
                         as: 'freelancerDetails'
@@ -246,7 +247,16 @@ const getInvitationDetailForFreelancer = async (req, res,) => {
                     localField: 'sender_id',
                     foreignField: 'userId',
                     pipeline: [
-                        { $project: { _id: 1, userId: 1, firstName: 1, } }
+                        {
+                            $project: {
+                                _id: 1,
+                                location: 1,
+                                userId: 1,
+                                firstName: 1,
+                                lastName: 1,
+                                reviews: { $ifNull: ['$reviews', []] } // If reviews is null, return an empty array
+                            }
+                        }
                     ],
                     as: 'client_details'
                 }
@@ -263,7 +273,6 @@ const getInvitationDetailForFreelancer = async (req, res,) => {
                 }
             }
         ]
-        console.log(JSON.stringify(query))
         await InviteSchema.aggregate(query).then(async (result) => {
             if (result.length !== 0) {
                 logger.info(`Invitation ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);

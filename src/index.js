@@ -46,13 +46,13 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-
-
 app.get("/", async (req, res) => {
   res.send("Welcome to Bizzzy API Server");
 });
 
 require('./socket')(io);
+
+
 const port = process.env.PORT || 5001;
 
 http.listen(port, () => {

@@ -361,7 +361,8 @@ const searchFreelencers = async (req, userData, res) => {
                 let finalResult = [];
                 for (let i = 0; i < result.length; i++) {
                     const invitation_details = await InvitationSchema.findOne({ $and: [
-                        { sender_id: userData._id.toString() },
+                        // { sender_id: userData._id.toString() },
+                        { sender_id: userData._id},
                         { receiver_id: result[i].user_id }
                       ]
                     });
@@ -406,7 +407,8 @@ const getInvitedFreelancers = async (req, userData, res) => {
             let getInvitedFreelancers = await InvitationSchema.aggregate([
                 {
                     $match: {
-                        sender_id: userData._id.toString()
+                        // sender_id: userData._id.toString()
+                        sender_id: userData._id
                     }
                 },
                 {
