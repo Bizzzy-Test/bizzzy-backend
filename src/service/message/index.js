@@ -157,6 +157,7 @@ const getChatUserList = (req, user, res) => {
                     },
                     lastMessage: '$message',
                     timestamp: '$created_at',
+                    job_id_ObjectId: { $toObjectId: '$job_id' }
                 },
             },
             {
@@ -165,10 +166,20 @@ const getChatUserList = (req, user, res) => {
                     chatId: { $first: '$chatId' },
                     lastMessage: { $last: '$lastMessage' },
                     timestamp: { $last: '$timestamp' },
+                    job_ids: { $addToSet: '$job_id_ObjectId' }
                 },
             },
             {
                 $sort: { timestamp: -1 },
+            },
+            {
+                $lookup: {
+                    from: 'jobs',
+                    localField: 'job_ids',
+                    foreignField: '_id',
+                    pipeline: [{ $project: { title: 1, client_detail: 1, budget: 1, amount: 1 } }],
+                    as: 'job_details'
+                }
             },
             {
                 $lookup: {
@@ -178,7 +189,7 @@ const getChatUserList = (req, user, res) => {
                         {
                             $match: {
                                 $expr: {
-                                    $eq: ['$userId', '$$userId']
+                                    $eq: ['$user_id', '$$userId']
                                 }
                             }
                         },
@@ -231,72 +242,10 @@ const getChatUserList = (req, user, res) => {
                             then: { $arrayElemAt: ['$clientProfile', 0] },
                             else: { $arrayElemAt: ['$freelancerProfile', 0] }
                         }
-                    }
+                    },
+                    job_details: 1
                 }
             }
-            // // Look up the invitation collection to check the invitation status
-            // {
-            //     $lookup: {
-            //         from: 'invitations',
-            //         let: { chat_sender_id: '$sender_id', chat_receiver_id: '$receiver_id' },
-            //         pipeline: [
-            //             {
-            //                 $match: {
-            //                     $expr: {
-            //                         $or: [
-            //                             {
-            //                                 $and: [
-            //                                     { $eq: ['$sender_id', '$$chat_sender_id'] },
-            //                                     { $eq: ['$receiver_id', '$$chat_receiver_id'] },
-            //                                     { $eq: ['$status', 1] }
-            //                                 ]
-            //                             },
-            //                             {
-            //                                 $and: [
-            //                                     { $eq: ['$sender_id', '$$chat_receiver_id'] },
-            //                                     { $eq: ['$receiver_id', '$$chat_sender_id'] },
-            //                                     { $eq: ['$status', 1] }
-            //                                 ]
-            //                             }
-            //                         ]
-            //                     }
-            //                 }
-            //             }
-            //         ],
-            //         as: 'invitation_details'
-            //     }
-            // },
-            // // Filter those messages where invitation details exist and are accepted
-            // {
-            //     $match: {
-            //         'invitation_details.status': 1
-            //     }
-            // },
-            // {
-            //     $project: {
-            //         chatId: '$_id',
-            //         otherParty: {
-            //             $cond: [
-            //                 { $eq: ['$sender_id', user._id] },
-            //                 '$receiver_id',
-            //                 '$sender_id',
-            //             ],
-            //         },
-            //         lastMessage: '$message',
-            //         timestamp: '$created_at',
-            //     },
-            // },
-            // {
-            //     $group: {
-            //         _id: '$otherParty',
-            //         chatId: { $first: '$chatId' },
-            //         lastMessage: { $last: '$lastMessage' },
-            //         timestamp: { $last: '$timestamp' },
-            //     },
-            // },
-            // {
-            //     $sort: { timestamp: -1 },
-            // }
         ]
         await MessageSchema.aggregate(query).then(async (result) => {
             if (result.length !== 0) {
