@@ -115,8 +115,6 @@ const resendEmailVerification = async (email) => {
     try {
         const user = await UserSchema.findOne({ email });
 
-        console.log("user++", user);
-
         // Check if the user exists
         if (!user) {
             throw new Error('User not found');

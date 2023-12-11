@@ -16,6 +16,17 @@ const sendOffer = async (req, res) => {
     }
 }
 
+const updateOffer = async (req, res) => {
+    try {
+        const response = await offerService.updateOffer(req, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} Update offer API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`Update offer API ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+}
+
 const getOffersList = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
@@ -30,5 +41,6 @@ const getOffersList = async (req, res) => {
 
 module.exports = {
     sendOffer,
-    getOffersList
+    getOffersList,
+    updateOffer
 }

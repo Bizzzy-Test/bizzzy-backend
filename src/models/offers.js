@@ -17,6 +17,10 @@ const OfferSchema = mongoose.Schema({
         ref: 'jobs',
         required: true,
     },
+    status : {
+        type : Number,// 0 - 
+        default:0
+    },
     budget: {
         type: String,
         required: true

@@ -40,6 +40,7 @@ const urlConstants = {
     GET_INVITED_FREELANCERS : '/invited-freelencers',
     GET_INVITED_FREELANCERS_LIST : '/invited-freelancers-list',
     OFFER_SEND: '/offer-send',
+    OFFER_UPDATE:'/offer-update',
     OFFERS_LIST_GET: '/get-offers-list',
     ADD_COMMENT: '/comment',
     ADD_GOAL: '/goal',

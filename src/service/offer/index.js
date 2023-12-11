@@ -79,7 +79,10 @@ const getOffersList = async (userData, res) => {
             const query = [
                 {
                     $match: {
-                        client_id: new ObjectId(userData._id)
+                        $and:[
+                            { client_id: new ObjectId(userData._id) },
+                            { client_id: new ObjectId(userData._id)}
+                        ]
                     }
                 },
                 {
@@ -121,7 +124,51 @@ const getOffersList = async (userData, res) => {
         }
     })
 }
+
+const updateOffer = async (req, res) => {
+    return new Promise(async () => {
+        const { offer_id, status, job_id } = req.body;
+        await OfferSchema.find(
+            {
+                $and: [
+                    { freelencer_id: new ObjectId(req.userId) },
+                    { job_id: new ObjectId(job_id) },
+                    { _id: new ObjectId(offer_id) }
+                ]
+            }
+        ).then(async (result) => {
+            if (result.length !== 0) {
+                await OfferSchema.findOneAndUpdate(
+                    {
+                        $and: [
+                            { _id: new ObjectId(offer_id) },
+                            { freelencer_id: new ObjectId(req.userId) },
+                            { job_id: new ObjectId(job_id) },
+                        ]
+                    },
+                    { $set: { status: status } },
+                    { new: true }
+                ).then((result) => {
+                    if (result.length !== 0) {
+                        logger.info(messageConstants.OFFER_UPDATED_SUCCESSFULLY);
+                        return responseData.success(res, result, messageConstants.OFFER_UPDATED_SUCCESSFULLY);
+                    } else {
+                        logger.error(`Offer ${messageConstants.NOT_FOUND}`);
+                        return responseData.success(res, [], messageConstants.NOT_FOUND);
+                    }
+                })
+            } else {
+                logger.error("You are not allow to perform action");
+                return responseData.fail(res, "You are not allow to perform action", 400);
+            }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        })
+    })
+}
 module.exports = {
     sendOffer,
-    getOffersList
+    getOffersList,
+    updateOffer
 }

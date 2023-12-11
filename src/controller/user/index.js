@@ -5,7 +5,6 @@ const { getUserData } = require('../../middleware');
 
 const uploadImage = async (req, res) => {
     try {
-        console.log("++++++++++++++++++++++ " + req.params['user_id'])
         const response = await authService.uploadImage(req, res);
         logger.info(`${messageConstants.RESPONSE_FROM} uploadImage API`);
         res.send(response);

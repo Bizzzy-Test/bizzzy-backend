@@ -48,6 +48,7 @@ const messageConstants = {
     INVITATION_ALREADY_EXIST:'Invitation already exist',
     INVITATION_NOT_SEND: 'Invitation not send',
     INVITATION_UPDATED_SUCCESSFULLY: 'Invitation updated successfully',
+    OFFER_UPDATED_SUCCESSFULLY: 'Offer updated successfully',
     INVITATION_NOT_FOUND: 'Invitation not found',
     FEEDBACK_SAVED_SUCCESSFULLY: 'Feedback added successfully',
     PROFILE_DETAILS_NOT_FOUND: 'profile details not found',

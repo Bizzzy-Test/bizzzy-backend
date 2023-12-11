@@ -27,16 +27,16 @@ const sendInvitation = async (body, userData, res) => {
             } else {
                 const invitationResponse = await saveInvitation(body);
                 const user = await UserSchema.findOne({ _id: body.receiver_id });
-                const client_details = await ClientSchema.findOne({ userId: userData._id });
+                const client_details = await ClientSchema.findOne({ user_id: userData._id });
                 if (client_details) {
                     const job_details = await JobSchema.findOne({ client_detail: userData._id.toString() });
                     if (job_details) {
                         const mailContent = {
-                            name: user.firstName,
+                            name: user.firstName??"",
                             client_name: client_details.firstName + client_details.lastName,
                             job_title: job_details.title,
                             business_name: client_details.businessName,
-                            email: user.email,
+                            email: user.email??"",
                             message: body.message,
                             link: `${process.env.BASE_URL}/message/invitation?job_id=${body.job_id}&invite_id=${invitationResponse.invite_result._id}`,
                         };
