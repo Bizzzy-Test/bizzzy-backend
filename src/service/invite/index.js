@@ -12,6 +12,7 @@ const ObjectId = mongoose.Types.ObjectId;
 const sendInvitation = async (body, userData, res) => {
     return new Promise(async () => {
         if (userData.role == 2) {
+            console.log("running role 2")
             body['sender_id'] = userData._id;
             const find_invite = await InviteSchema.findOne(
                 {
