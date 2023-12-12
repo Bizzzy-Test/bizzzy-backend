@@ -13,6 +13,7 @@ const getMessageList = (req, user, res) => {
                     lastName: 1,
                     lastMessage: 1,
                     profile_image: 1,
+                    businessName: 1
                 }
             }
         ]
