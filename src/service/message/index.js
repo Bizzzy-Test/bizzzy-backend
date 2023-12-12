@@ -196,7 +196,7 @@ const getChatUserList = (req, user, res) => {
                         },
                         {
                             $project: {
-                                userId: 1,
+                                user_id: 1,
                                 firstName: 1,
                                 lastName: 1,
                                 profile_image: 1,
