@@ -10,7 +10,7 @@ externalDocs:
   description: Bizzzy
   url: fagsfagsf
 servers:
-  - url: "http://localhost:8001/api/v1"
+  - url: "https://bizzzy-test-dev-6ffd12d31812.herokuapp.com/api/v1"
 tags:
   - name: User
     description: Everything about user
