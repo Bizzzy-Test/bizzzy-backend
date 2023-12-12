@@ -28,7 +28,7 @@ const sendInvitation = async (body, userData, res) => {
             } else {
                 const invitationResponse = await saveInvitation(body);
                 const user = await UserSchema.findOne({ _id: body.receiver_id });
-                const client_details = await ClientSchema.findOne({ userId: new ObjectId(userData._id) });
+                const client_details = await ClientSchema.findOne({ user_id: new ObjectId(userData._id) });
                 if (client_details) {
                     const job_details = await JobSchema.findOne({ client_detail: userData._id.toString() });
                     if (job_details) {
@@ -142,9 +142,9 @@ const getInvitationDetails = async (req, res,) => {
                 $lookup: {
                     from: 'client_profiles',
                     localField: 'sender_id',
-                    foreignField: 'userId',
+                    foreignField: 'user_id',
                     pipeline: [
-                        { $project: { _id: 1, userId: 1, firstName: 1, profile_image: 1 } }
+                        { $project: { _id: 1, user_id: 1, firstName: 1, profile_image: 1 } }
                     ],
                     as: 'client_details'
                 }
@@ -246,13 +246,13 @@ const getInvitationDetailForFreelancer = async (req, res,) => {
                 $lookup: {
                     from: 'client_profiles',
                     localField: 'sender_id',
-                    foreignField: 'userId',
+                    foreignField: 'user_id',
                     pipeline: [
                         {
                             $project: {
                                 _id: 1,
                                 location: 1,
-                                userId: 1,
+                                user_id: 1,
                                 firstName: 1,
                                 lastName: 1,
                                 reviews: { $ifNull: ['$reviews', []] } // If reviews is null, return an empty array

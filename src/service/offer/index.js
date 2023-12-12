@@ -32,7 +32,7 @@ const sendOffer = async (body, userData, res) => {
                 await offerSchema.save().then(async (result) => {
                     const find_freelencer = await UserSchema.findOne({ _id:new ObjectId(body.freelencer_id) });
                     if(find_freelencer){
-                        const client_details = await ClientSchema.findOne({ userId: userData._id });
+                        const client_details = await ClientSchema.findOne({ user_id: userData._id });
                         if(client_details){
                             const job_details = await JobSchema.findOne({ client_detail: userData._id.toString() });
                             if(job_details){
