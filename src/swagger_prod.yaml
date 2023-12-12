@@ -10,7 +10,7 @@ externalDocs:
   description: Bizzzy
   url: fagsfagsf
 servers:
-  - url: "https://bizzzy-test-dev-6ffd12d31812.herokuapp.com/api/v1"
+  - url: "http://localhost:8001/api/v1"
 tags:
   - name: User
     description: Everything about user
@@ -735,7 +735,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/500"
 
-  /message/list:
+  /message-list:
     get:
       tags:
         - Message
@@ -743,7 +743,7 @@ paths:
       description: Messages List
       parameters:
         - in: query
-          name: user_id
+          name: receiver_id
           schema:
             type: string
       security:
@@ -2042,6 +2042,23 @@ components:
                 format: date-time
               __v:
                 type: string
+              job_id:
+                type: string
+              job_details:
+                type: array
+                items:
+                  properties:
+                    _id:
+                      type: string
+                      format: uuid
+                    title:
+                      type: string
+                    client_detail:
+                      type: string
+                    budget:
+                      type: number
+                    amount:
+                      type: number
               sender_details:
                 type: array
                 items:
@@ -2053,7 +2070,11 @@ components:
                       type: string
                     lastname:
                       type: string
-                    email:
+                    profile_image:
+                      type: string
+                    user_id:
+                      type: string
+                    businessName:
                       type: string
               receiver_details:
                 type: array
@@ -2066,7 +2087,11 @@ components:
                       type: string
                     lastname:
                       type: string
-                    email:
+                    profile_image:
+                      type: string
+                    user_id:
+                      type: string
+                    businessName:
                       type: string
 
     GetChatUserList200:
@@ -2091,7 +2116,22 @@ components:
                 type: string
               timestamp:
                 type: string
-              user_profile_details:
+              job_details:
+                type: array
+                items:
+                  properties:
+                    _id:
+                      type: string
+                      format: uuid
+                    title:
+                      type: string
+                    client_detail:
+                      type: string
+                    budget:
+                      type: number
+                    amount:
+                      type: number
+              user_details:
                 type: array
                 items:
                   type: object
@@ -2099,9 +2139,13 @@ components:
                     _id:
                       type: string
                       format: uuid
-                    name:
+                    user_id:
                       type: string
                     profile_image:
+                      type: string
+                    firstName:
+                      type: string
+                    lastName:
                       type: string
 
     GetInvitatonList200:
