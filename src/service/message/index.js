@@ -1,14 +1,22 @@
 const { messageConstants, responseData } = require("../../constants");
 const { logger } = require("../../utils");
 const MessageSchema = require('../../models/message');
-const UserSchema = require('../../models/users');
-const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
 
 const getMessageList = (req, user, res) => {
     return new Promise(async () => {
         logger.info(`Message ${messageConstants.LIST_API_CALL_SUCCESSFULLY}`);
-        const recieverData = await getRecieverUserRole(req, res);
+        const pipeline = [
+            {
+                $project: {
+                    user_id: 1,
+                    firstName: 1,
+                    lastName: 1,
+                    lastMessage: 1,
+                    profile_image: 1,
+                    businessName: 1
+                }
+            }
+        ]
         const query = [
             {
                 $match: {
@@ -25,37 +33,89 @@ const getMessageList = (req, user, res) => {
                 }
             },
             {
-                $lookup: {
-                    from: recieverData.role == 2 || user.role == 2 ? 'client_profiles' : 'freelencer_profiles',
-                    let: { senderId: "$sender_id" },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $eq: [recieverData.role == 2 || user.role == 2 ? '$userId' : '$user_id', { $toObjectId: "$$senderId" }] // Use the $$ syntax to refer to variables
-                                }
-                            }
-                        },
-                        { $project: { _id: 1, firstName: 1, lastName: 1, profile_image: 1, location: 1, user_id: 1 } }
-                    ],
-                    as: 'sender_details'
+                $addFields: {
+                    sender_id_ObjectId: { $toObjectId: '$sender_id' },
+                    receiver_id_ObjectId: { $toObjectId: '$receiver_id' },
+                    job_id_ObjectId: { $toObjectId: '$job_id' }
                 }
             },
             {
                 $lookup: {
-                    from: recieverData.role == 2 || user.role == 2 ? 'client_profiles' : 'freelencer_profiles',
-                    let: { receiverId: "$receiver_id" },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $eq: [recieverData.role == 2 || user.role == 2 ? '$userId' : '$user_id', { $toObjectId: "$$receiverId" }]
-                                }
-                            }
-                        },
-                        { $project: { _id: 1, firstName: 1, lastName: 1, profile_image: 1, location: 1, user_id: 1 } }
-                    ],
-                    as: 'receiver_details'
+                    from: 'freelencer_profiles',
+                    localField: 'sender_id_ObjectId',
+                    foreignField: 'user_id',
+                    pipeline: pipeline,
+                    as: 'sender_freelancer'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'client_profiles',
+                    localField: 'sender_id_ObjectId',
+                    foreignField: 'user_id',
+                    pipeline: pipeline,
+                    as: 'sender_client'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'client_profiles',
+                    localField: 'receiver_id_ObjectId',
+                    foreignField: 'user_id',
+                    pipeline: pipeline,
+                    as: 'receiver_client'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'freelencer_profiles',
+                    localField: 'receiver_id_ObjectId',
+                    foreignField: 'user_id',
+                    pipeline: pipeline,
+                    as: 'receiver_freelancer'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'jobs',
+                    localField: 'job_id_ObjectId',
+                    foreignField: '_id',
+                    pipeline: [{
+                        $project: {
+                            title: 1,
+                            client_detail: 1,
+                            amount: 1,
+                            budget: 1
+                        }
+                    }],
+                    as: 'job_details'
+                }
+            },
+            {
+                $addFields: {
+                    sender_details: {
+                        $ifNull: [
+                            { $arrayElemAt: ['$sender_freelancer', 0] },
+                            { $arrayElemAt: ['$sender_client', 0] }
+                        ]
+                    },
+                    receiver_details: {
+                        $ifNull: [
+                            { $arrayElemAt: ['$receiver_client', 0] },
+                            { $arrayElemAt: ['$receiver_freelancer', 0] }
+                        ]
+                    }
+                }
+            },
+            {
+                $project: {
+                    sender_id_ObjectId: 0,
+                    receiver_id_ObjectId: 0,
+                    job_id_ObjectId: 0,
+                    sender_freelancer: 0,
+                    sender_client: 0,
+                    receiver_client: 0,
+                    receiver_freelancer: 0
                 }
             }
         ]
@@ -71,13 +131,6 @@ const getMessageList = (req, user, res) => {
             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
             return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
         })
-    })
-}
-
-const getRecieverUserRole = async (req) => {
-    return new Promise(async (resolve, reject) => {
-        let userData = await UserSchema.findOne({ _id: new ObjectId(req.query.receiver_id) });
-        return resolve(userData);
     })
 }
 
@@ -105,6 +158,7 @@ const getChatUserList = (req, user, res) => {
                     },
                     lastMessage: '$message',
                     timestamp: '$created_at',
+                    job_id_ObjectId: { $toObjectId: '$job_id' }
                 },
             },
             {
@@ -113,10 +167,20 @@ const getChatUserList = (req, user, res) => {
                     chatId: { $first: '$chatId' },
                     lastMessage: { $last: '$lastMessage' },
                     timestamp: { $last: '$timestamp' },
+                    job_ids: { $addToSet: '$job_id_ObjectId' }
                 },
             },
             {
                 $sort: { timestamp: -1 },
+            },
+            {
+                $lookup: {
+                    from: 'jobs',
+                    localField: 'job_ids',
+                    foreignField: '_id',
+                    pipeline: [{ $project: { title: 1, client_detail: 1, budget: 1, amount: 1 } }],
+                    as: 'job_details'
+                }
             },
             {
                 $lookup: {
@@ -126,7 +190,7 @@ const getChatUserList = (req, user, res) => {
                         {
                             $match: {
                                 $expr: {
-                                    $eq: ['$userId', '$$userId']
+                                    $eq: ['$user_id', '$$userId']
                                 }
                             }
                         },
@@ -179,72 +243,10 @@ const getChatUserList = (req, user, res) => {
                             then: { $arrayElemAt: ['$clientProfile', 0] },
                             else: { $arrayElemAt: ['$freelancerProfile', 0] }
                         }
-                    }
+                    },
+                    job_details: 1
                 }
             }
-            // // Look up the invitation collection to check the invitation status
-            // {
-            //     $lookup: {
-            //         from: 'invitations',
-            //         let: { chat_sender_id: '$sender_id', chat_receiver_id: '$receiver_id' },
-            //         pipeline: [
-            //             {
-            //                 $match: {
-            //                     $expr: {
-            //                         $or: [
-            //                             {
-            //                                 $and: [
-            //                                     { $eq: ['$sender_id', '$$chat_sender_id'] },
-            //                                     { $eq: ['$receiver_id', '$$chat_receiver_id'] },
-            //                                     { $eq: ['$status', 1] }
-            //                                 ]
-            //                             },
-            //                             {
-            //                                 $and: [
-            //                                     { $eq: ['$sender_id', '$$chat_receiver_id'] },
-            //                                     { $eq: ['$receiver_id', '$$chat_sender_id'] },
-            //                                     { $eq: ['$status', 1] }
-            //                                 ]
-            //                             }
-            //                         ]
-            //                     }
-            //                 }
-            //             }
-            //         ],
-            //         as: 'invitation_details'
-            //     }
-            // },
-            // // Filter those messages where invitation details exist and are accepted
-            // {
-            //     $match: {
-            //         'invitation_details.status': 1
-            //     }
-            // },
-            // {
-            //     $project: {
-            //         chatId: '$_id',
-            //         otherParty: {
-            //             $cond: [
-            //                 { $eq: ['$sender_id', user._id] },
-            //                 '$receiver_id',
-            //                 '$sender_id',
-            //             ],
-            //         },
-            //         lastMessage: '$message',
-            //         timestamp: '$created_at',
-            //     },
-            // },
-            // {
-            //     $group: {
-            //         _id: '$otherParty',
-            //         chatId: { $first: '$chatId' },
-            //         lastMessage: { $last: '$lastMessage' },
-            //         timestamp: { $last: '$timestamp' },
-            //     },
-            // },
-            // {
-            //     $sort: { timestamp: -1 },
-            // }
         ]
         await MessageSchema.aggregate(query).then(async (result) => {
             if (result.length !== 0) {
