@@ -13,6 +13,7 @@ const uploadImage = async (req, res) => {
         res.send(err);
     }
 }
+
 const getUserList = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
@@ -22,6 +23,18 @@ const getUserList = async (req, res) => {
     } catch (err) {
         logger.error(`GetUserList ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
+    }
+}
+
+const getUserById = async (req, res)=>{
+    try {
+        const userData = await getUserData(req, res);
+        const response = await authService.getUserProfileById(res, userData);
+        logger.info(`${messageConstants.RESPONSE_FROM} Get User By Id API`, JSON.stringify(jsonData));
+        res.send(response);
+    } catch (error) {
+        logger.error(`Get User By Id ${messageConstants.API_FAILED} ${err}`);
+        res.send(err); 
     }
 }
 
@@ -79,5 +92,6 @@ module.exports = {
     forgotPassword,
     changePassword,
     resetPassword,
-    getOptionsList
+    getOptionsList,
+    getUserById
 }

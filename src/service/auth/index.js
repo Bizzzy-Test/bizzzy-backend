@@ -324,6 +324,14 @@ const userProfile = async (body, res) => {
     })
 }
 
+
+const getUserProfileById = async (req, res) => {
+    return new Promise(async () => {
+
+    })
+}
+
+
 const uploadImage = async (req, res) => {
 
 
@@ -436,5 +444,6 @@ module.exports = {
     changePassword,
     resetPassword,
     getOptionsList,
-    resendEmailVerification
+    resendEmailVerification,
+    getUserProfileById
 }
