@@ -45,6 +45,8 @@ const sendOffer = async (body, userData, res) => {
                                     budget:job_details.budget,
                                     email: find_freelencer.email,
                                     message: body.client_message,
+                                    link: `${process.env.BASE_URL}message/offer?job_id=${body.job_id}&offer_id=${result._id}`,
+
                                 };
                                 await mail.sendMailtoUser(mailTemplateConstants.SEND_OFFER, find_freelencer.email, "Job Offer", res, mailContent);
                                 logger.info(messageConstants.JOB_OFFER_SEND_SUCCESSFULLY);
