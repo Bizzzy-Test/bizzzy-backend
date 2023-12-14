@@ -35,7 +35,7 @@ const getMessageList = (req, user, res) => {
             {
                 $addFields: {
                     sender_id_ObjectId: { $toObjectId: '$sender_id' },
-                    receiver_id_ObjectId: { $toObjectId: '$receiver_id' },
+                    // receiver_id_ObjectId: { $toObjectId: '$receiver_id' },
                     job_id_ObjectId: { $toObjectId: '$job_id' }
                 }
             },
@@ -99,12 +99,12 @@ const getMessageList = (req, user, res) => {
                             { $arrayElemAt: ['$sender_client', 0] }
                         ]
                     },
-                    receiver_details: {
-                        $ifNull: [
-                            { $arrayElemAt: ['$receiver_client', 0] },
-                            { $arrayElemAt: ['$receiver_freelancer', 0] }
-                        ]
-                    }
+                    // receiver_details: {
+                    //     $ifNull: [
+                    //         { $arrayElemAt: ['$receiver_client', 0] },
+                    //         { $arrayElemAt: ['$receiver_freelancer', 0] }
+                    //     ]
+                    // }
                 }
             },
             {
