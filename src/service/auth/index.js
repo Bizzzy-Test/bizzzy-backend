@@ -9,6 +9,8 @@ const mongoose = require('mongoose');
 const StrengthsSchema = require('../../models/strengths');
 const ReasonsSchema = require('../../models/reason_for_ending_contract');
 const FeedbackOptionsSchema = require('../../models/feedback_options');
+const clientProfile = require('../../models/clientProfile');
+const freelencer_profile = require('../../models/profile');
 
 const signUp = async (body, res) => {
     return new Promise(async () => {
@@ -325,16 +327,28 @@ const userProfile = async (body, res) => {
 }
 
 
-const getUserProfileById = async (req, res) => {
-    return new Promise(async () => {
-
-    })
-}
+const getUserProfileById = async (userId, res) => {
+    console.log(userId);
+    try {
+        const client_user = await clientProfile.findOne({ user_id: userId });
+        const freelancer_user = await freelencer_profile.findOne({ user_id: userId });
+        console.log(freelancer_user);
+        if (client_user) {
+            return responseData.success(res, client_user, `User profile fetched successfully`);
+        } else if (freelancer_user) {
+            return responseData.success(res, freelancer_user, `User profile fetched successfully`);
+        } else {
+            console.log(`User profile not found`);
+            return responseData.fail(res, `User profile not found`, 404);
+        }
+    } catch (error) {
+        console.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
+        return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`, 500);
+    }
+};
 
 
 const uploadImage = async (req, res) => {
-
-
     return new Promise(async () => {
         // const profileImageURL = req.file ? req.file.path : undefined; // File path saved in 'req.file.path' 
         // const correctedURL = profileImageURL?.replace(/\\/g, '/');

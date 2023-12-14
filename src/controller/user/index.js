@@ -26,15 +26,14 @@ const getUserList = async (req, res) => {
     }
 }
 
-const getUserById = async (req, res)=>{
+const getUserById = async (req, res) => {
     try {
-        const userData = await getUserData(req, res);
-        const response = await authService.getUserProfileById(res, userData);
-        logger.info(`${messageConstants.RESPONSE_FROM} Get User By Id API`, JSON.stringify(jsonData));
+        const userId = req.params.id;
+        const response = await authService.getUserProfileById(userId, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} Get User By Id API`, JSON.stringify(response));
         res.send(response);
     } catch (error) {
-        logger.error(`Get User By Id ${messageConstants.API_FAILED} ${err}`);
-        res.send(err); 
+        return error
     }
 }
 
