@@ -332,7 +332,6 @@ const getUserProfileById = async (userId, res) => {
     try {
         const client_user = await clientProfile.findOne({ user_id: userId });
         const freelancer_user = await freelencer_profile.findOne({ user_id: userId });
-        console.log(freelancer_user);
         if (client_user) {
             return responseData.success(res, client_user, `User profile fetched successfully`);
         } else if (freelancer_user) {
