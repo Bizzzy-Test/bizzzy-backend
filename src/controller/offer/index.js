@@ -51,9 +51,22 @@ const getHiredList = async (req, res) => {
     }
 }
 
+const getAcceptedOfferByFreelancerId = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await offerService.getAcceptedOfferByFreelancerId(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} getAcceptedOfferByFreelancerId API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`getAcceptedOfferByFreelancerId ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+};
+
 module.exports = {
     sendOffer,
     getOffersList,
     updateOffer,
-    getHiredList
+    getHiredList,
+    getAcceptedOfferByFreelancerId
 }
