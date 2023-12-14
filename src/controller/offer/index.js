@@ -1,5 +1,5 @@
 const { messageConstants } = require("../../constants");
-const { getUserData } = require("../../middleware");
+const { getUserData, getFileUrl } = require("../../middleware");
 const offerService = require('../../service/offer');
 const { logger } = require("../../utils");
 
@@ -62,11 +62,24 @@ const getAcceptedOfferByFreelancerId = async (req, res) => {
         res.send(err);
     }
 };
+const submitOfferTask = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const taskFile = await getFileUrl(req);
+        const response = await offerService.submitOfferTask(req, userData, taskFile, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} submitOfferTask API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`submitOfferTask ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+};
 
 module.exports = {
     sendOffer,
     getOffersList,
     updateOffer,
     getHiredList,
-    getAcceptedOfferByFreelancerId
+    getAcceptedOfferByFreelancerId,
+    submitOfferTask,
 }

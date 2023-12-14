@@ -22,6 +22,7 @@ const urlConstants = {
     GET_USER_LIST: '/users/list',
     GET_OPTIONS_LIST: "/getOptionsList",
     GET_ACTIVE_JOB_BY_FREELANCER_ID: '/freelancer/job/active',
+    SUBMIT_OFFER_TASK: '/offer/task/submit',
     // GET_USER_PROFILE: '/users/profile',
 
     SAVE_PAYMENT_DETAILS: '/save-payment-details',
