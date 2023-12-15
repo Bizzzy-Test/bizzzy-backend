@@ -190,12 +190,9 @@ const getHiredList = async (userData, res) => {
                       pipeline: [
                         { 
                             $project: { 
-                                _id: 1, 
-                                user_id: 1, 
                                 name: { $concat: ["$firstName", " ", "$lastName"] },
-                                professional_role: 1, 
                                 profile_image: 1, 
-                                hourly_rate: 1 
+                                title: 1
                             } 
                         }
                     ],
