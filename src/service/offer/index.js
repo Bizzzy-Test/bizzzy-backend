@@ -1,6 +1,6 @@
 
 const { messageConstants, responseData, mailTemplateConstants } = require('../../constants');
-const InviteSchema = require('../../models/invite');
+const OfferTaskSchema = require('../../models/offer_task');
 const UserSchema = require('../../models/users');
 const OfferSchema = require('../../models/offers');
 const JobSchema = require('../../models/job');
@@ -25,24 +25,24 @@ const sendOffer = async (body, userData, res) => {
                 logger.info(`Offer ${messageConstants.ALREADY_EXIST}`);
                 return responseData.fail(res, `Offer ${messageConstants.ALREADY_EXIST}`, 403);
             } else {
-                body.freelencer_id=new ObjectId(body.freelencer_id);
-                body.job_id=new ObjectId(body.job_id);
-                body.client_id=userData._id;
+                body.freelencer_id = new ObjectId(body.freelencer_id);
+                body.job_id = new ObjectId(body.job_id);
+                body.client_id = userData._id;
                 const offerSchema = new OfferSchema({ ...body });
                 await offerSchema.save().then(async (result) => {
-                    const find_freelencer = await UserSchema.findOne({ _id:new ObjectId(body.freelencer_id) });
-                    if(find_freelencer){
-                        const client_details = await ClientSchema.findOne({ userId: userData._id });
-                        if(client_details){
+                    const find_freelencer = await UserSchema.findOne({ _id: new ObjectId(body.freelencer_id) });
+                    if (find_freelencer) {
+                        const client_details = await ClientSchema.findOne({ user_id: userData._id });
+                        if (client_details) {
                             const job_details = await JobSchema.findOne({ client_detail: userData._id.toString() });
-                            if(job_details){
+                            if (job_details) {
                                 const mailContent = {
-                                    name: find_freelencer.firstName +' '+ find_freelencer.lastName,
+                                    name: find_freelencer.firstName + ' ' + find_freelencer.lastName,
                                     client_name: client_details.firstName + client_details.lastName,
                                     job_title: job_details.title,
                                     job_description: job_details.description,
                                     business_name: client_details.businessName,
-                                    budget:job_details.budget,
+                                    budget: job_details.budget,
                                     email: find_freelencer.email,
                                     message: body.client_message,
                                     link: `${process.env.BASE_URL}message/offer?job_id=${body.job_id}&offer_id=${result._id}`,
@@ -51,21 +51,21 @@ const sendOffer = async (body, userData, res) => {
                                 await mail.sendMailtoUser(mailTemplateConstants.SEND_OFFER, find_freelencer.email, "Job Offer", res, mailContent);
                                 logger.info(messageConstants.JOB_OFFER_SEND_SUCCESSFULLY);
                                 return responseData.success(res, result, messageConstants.JOB_OFFER_SEND_SUCCESSFULLY);
-                            }else{
+                            } else {
                                 logger.info(`Job ${messageConstants.NOT_FOUND}`);
                                 return responseData.fail(res, `${messageConstants.NOT_FOUND}`, 400);
                             }
-                        }else{
+                        } else {
                             logger.info(`Client ${messageConstants.NOT_FOUND}`);
                             return responseData.fail(res, `${messageConstants.NOT_FOUND}`, 400);
                         }
-                    }else{
+                    } else {
                         logger.error(`Freelancer ${messageConstants.NOT_FOUND}`);
                         return responseData.fail(res, `Freelancer ${messageConstants.NOT_FOUND}`, 403);
                     }
                 }).catch((err) => {
-                        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-                        return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+                    logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                    return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
                 })
             }
         } else {
@@ -81,30 +81,30 @@ const getOffersList = async (userData, res) => {
             const query = [
                 {
                     $match: {
-                        $and:[
+                        $and: [
                             { client_id: new ObjectId(userData._id) },
-                            { status: 0}
+                            { status: 0 }
                         ]
                     }
                 },
                 {
                     $lookup: {
-                      from: 'freelencer_profiles',
-                      localField: 'freelencer_id',
-                      foreignField: 'user_id',
-                      pipeline: [
-                        { 
-                            $project: { 
-                                _id: 1, 
-                                user_id: 1, 
-                                name: { $concat: ["$firstName", " ", "$lastName"] },
-                                professional_role: 1, 
-                                profile_image: 1, 
-                                hourly_rate: 1 
-                            } 
-                        }
-                    ],
-                      as: 'freelancerDetails'
+                        from: 'freelencer_profiles',
+                        localField: 'freelencer_id',
+                        foreignField: 'user_id',
+                        pipeline: [
+                            {
+                                $project: {
+                                    _id: 1,
+                                    user_id: 1,
+                                    name: { $concat: ["$firstName", " ", "$lastName"] },
+                                    professional_role: 1,
+                                    profile_image: 1,
+                                    hourly_rate: 1
+                                }
+                            }
+                        ],
+                        as: 'freelancerDetails'
                     }
                 }
             ]
@@ -176,9 +176,9 @@ const getHiredList = async (userData, res) => {
             const query = [
                 {
                     $match: {
-                        $and:[
+                        $and: [
                             { client_id: new ObjectId(userData._id) },
-                            { status: 1}
+                            { status: 1 }
                         ]
                     }
                 },
@@ -197,6 +197,7 @@ const getHiredList = async (userData, res) => {
                         }
                     ],
                       as: 'freelancerDetails'
+
                     }
                 }
             ]
@@ -219,9 +220,74 @@ const getHiredList = async (userData, res) => {
     })
 }
 
+const getAcceptedOfferByFreelancerId = async (req, userData, res) => {
+    return new Promise(async () => {
+        const query = [
+            {
+                $match: {
+                    $and: [
+                        { freelencer_id: userData._id, },
+                        { status: 1 }
+                    ]
+                }
+            },
+            {
+                $lookup: {
+                    from: 'client_profiles',
+                    localField: 'client_id',
+                    foreignField: 'user_id',
+                    pipeline: [
+                        {
+                            $project: {
+                                _id: 0,
+                                user_id: 1,
+                                firstName: 1,
+                                lastName: 1,
+                                location: 1,
+                                profile_image: 1,
+                                businessName: 1
+                            }
+                        }
+                    ],
+                    as: 'client_profile'
+                }
+            },
+        ];
+        await OfferSchema.aggregate(query).then(async (result) => {
+            if (result.length !== 0) {
+                logger.info(`Accepted Offer ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                return responseData.success(res, result, `Accepted Offer ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+            } else {
+                logger.info(`Accepted Offer${messageConstants.LIST_NOT_FOUND}`);
+                return responseData.success(res, [], `Accepted Offer ${messageConstants.LIST_NOT_FOUND}`);
+            }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        })
+    })
+}
+
+const submitOfferTask = async (req, userData, taskFile, res) => {
+    return new Promise(async () => {
+        req.body['freelencer_id'] = userData._id
+        req.body['file'] = taskFile
+        const offerTaskSchema = new OfferTaskSchema(req.body);
+        await offerTaskSchema.save().then(async (result) => {
+            logger.info('Task submitted successfully');
+            return responseData.success(res, result, 'Task submitted successfully');
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        })
+    })
+}
+
 module.exports = {
     sendOffer,
     getOffersList,
     updateOffer,
-    getHiredList
+    getHiredList,
+    getAcceptedOfferByFreelancerId,
+    submitOfferTask,
 }

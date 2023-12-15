@@ -153,7 +153,7 @@ const getUserProfile = async (userData, res) => {
         const userId = userData._id.toString();
         let profile;
         if(userData.role==2){
-            profile = await ClientProfileSchema.findOne({ userId: userId });
+            profile = await ClientProfileSchema.findOne({ user_id: userId });
         }else{
             profile = await ProfileSchema.findOne({ user_id: userId });
         }
@@ -173,7 +173,7 @@ const profileImageUpload = async (req, userData, res) => {
     try {
         let profile;
         if(userData.role==2){
-            profile = await ClientProfileSchema.findOne({ userId: new ObjectId(req.userId) });
+            profile = await ClientProfileSchema.findOne({ user_id: new ObjectId(req.userId) });
         }else{
             profile = await ProfileSchema.findOne({ user_id: new ObjectId(req.userId) });
         }

@@ -8,6 +8,7 @@ const urlConstants = {
     USER_PROFILE: '/profile',
     USER_LOGIN: '/login',
     GET_USER_PROFILE: '/get-user-profile',
+    GET_USER_BY_ID: '/user/:id',
     USER_PROFILE_IMAGE: '/user-profile-image',
     SEARCH_FREELENCERS: '/search-freelencers',
     PROFILE_DETAILS: '/profile-details',
@@ -19,14 +20,16 @@ const urlConstants = {
     CREATE_SUBSCRIPTION: '/create/subscription',
     MESSAGE_LIST: '/message-list',
     GET_USER_LIST: '/users/list',
-    GET_OPTIONS_LIST:"/getOptionsList",
+    GET_OPTIONS_LIST: "/getOptionsList",
+    GET_ACTIVE_JOB_BY_FREELANCER_ID: '/freelancer/job/active',
+    SUBMIT_OFFER_TASK: '/offer/task/submit',
     // GET_USER_PROFILE: '/users/profile',
 
     SAVE_PAYMENT_DETAILS: '/save-payment-details',
     CHAT_USER_LIST: '/user-chat-list',
     CREATE_PAYMENT_INTENT: '/create/payment/intent',
-    ONE_TIME_PAYMENT:'/payment-onetime',
-    CHECKOUT_PAYMENT:'/payment-checkout',
+    ONE_TIME_PAYMENT: '/payment-onetime',
+    CHECKOUT_PAYMENT: '/payment-checkout',
     CHECKOUT_SUBSCRIPTION: '/subscription-checkout',
     CHECKOUT_SUBSCRIPTION_FREE_TRIAL: '/subscription-checkout-free-trial',
     GET_NOTIFICATION_LIST: '/notification/list',
@@ -36,16 +39,18 @@ const urlConstants = {
     SEND_INVITATION: '/invitation-send',
     UPDATE_INVITATION_STATUS: '/invitation-status-update',
     CLIENT_INVITATION_DETAILS: '/client-invitation-details',
-    FREELANCER_INVITATION_DETAILS: '/freelancer-invitation-details',
-    GET_INVITED_FREELANCERS : '/invited-freelencers',
-    GET_INVITED_FREELANCERS_LIST : '/invited-freelancers-list',
+    FREELANCER_INVITATION_DETAILS: '/freelancer/invitation-details',
+    GET_INVITED_FREELANCERS: '/freelencers/invited',
+
+    // GET_INVITED_FREELANCERS_LIST: '/invited-freelancers-list',
+
     OFFER_SEND: '/offer-send',
-    OFFER_UPDATE:'/offer-update',
+    OFFER_UPDATE: '/offer-update',
     OFFERS_LIST_GET: '/get-offers-list',
     HIRED_LIST_GET: '/client/hired',
     ADD_COMMENT: '/comment',
     ADD_GOAL: '/goal',
-    GET_GOAL_LIST:'/goal',
+    GET_GOAL_LIST: '/goal',
     UPDATE_GOAL_IS_COMPLETED: '/updateIsCompleted',
     REPLY_COMMENT: '/reply-comment',
     COMMENT_LIST: '/comment/list',
@@ -64,9 +69,9 @@ const urlConstants = {
     GET_USER_SESSION_LIST: '/user/session',
     GET_PAID_SESSION_LIST: '/paid/user/session',
     GET_PROFILE_IMAGE: '/load-profile-image',
-    ADD_TO_BOARD:'/add/board',
-    REMOVE_ADVISOR_FROM_BOARD:'/remove/advisor',
-    LIST_BOARD_MEMBER:'/list/board/memeber',
+    ADD_TO_BOARD: '/add/board',
+    REMOVE_ADVISOR_FROM_BOARD: '/remove/advisor',
+    LIST_BOARD_MEMBER: '/list/board/memeber',
 
 
     CREATE_JOB_PROPOSAL: '/job-proposal',
@@ -89,7 +94,7 @@ const urlConstants = {
     UPDATE_JOB: '/job/update/:id',
     JOB_SEARCH: '/job/search',
     // = Job post url =
-  
+
 }
 
 module.exports = urlConstants;

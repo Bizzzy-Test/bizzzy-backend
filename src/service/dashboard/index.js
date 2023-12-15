@@ -19,14 +19,14 @@ const getJobForDashboard = async (req, res) => {
                         {
                             $match: {
                                 $expr: {
-                                    $eq: ['$userId', '$$clientId'] // Match with the userId field of client_profiles
+                                    $eq: ['$user_id', '$$clientId'] // Match with the userId field of client_profiles
                                 }
                             }
                         },
                         {
                             $project: {
                                 _id: 0,
-                                userId: 1,
+                                user_id: 1,
                                 firstName: 1,
                                 lastName: 1,
                                 location: 1,
