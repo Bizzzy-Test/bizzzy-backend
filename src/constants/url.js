@@ -38,7 +38,7 @@ const urlConstants = {
     SEND_INVITATION: '/invitation-send',
     UPDATE_INVITATION_STATUS: '/invitation-status-update',
     CLIENT_INVITATION_DETAILS: '/client-invitation-details',
-    FREELANCER_INVITATION_DETAILS: '/freelancer-invitation-details',
+    FREELANCER_INVITATION_DETAILS: '/freelancer/invitation-details',
     GET_INVITED_FREELANCERS: '/freelencers/invited',
 
     // GET_INVITED_FREELANCERS_LIST: '/invited-freelancers-list',
