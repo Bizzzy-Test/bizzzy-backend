@@ -12,8 +12,7 @@ const inviteValidation = (req, res, next) => {
 const updateInviteValidation = (req, res, next) => {
     const schema = Joi.object({
         invite_id: Joi.string().required(),
-        job_id: Joi.string().required(),
-        status: Joi.string().required()
+        status: Joi.number().required()
     })
     validateRequest(req, res, schema, next);
 }

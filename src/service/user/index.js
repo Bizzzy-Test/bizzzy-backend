@@ -131,10 +131,11 @@ const forgotPasswordLink = async (res, user) => {
     return responseData.success(res, {}, messageConstants.EMAIL_SENT_FORGOT_PASSWORD);
 }
 
+
 module.exports = {
     uploadImage,
     getUserList,
     forgotPassword,
     changePassword,
-    resetPassword
+    resetPassword,
 }
