@@ -185,22 +185,20 @@ const getHiredList = async (userData, res) => {
                 },
                 {
                     $lookup: {
-                        from: 'freelencer_profiles',
-                        localField: 'freelencer_id',
-                        foreignField: 'user_id',
-                        pipeline: [
-                            {
-                                $project: {
-                                    _id: 1,
-                                    user_id: 1,
-                                    name: { $concat: ["$firstName", " ", "$lastName"] },
-                                    professional_role: 1,
-                                    profile_image: 1,
-                                    hourly_rate: 1
-                                }
-                            }
-                        ],
-                        as: 'freelancerDetails'
+                      from: 'freelencer_profiles',
+                      localField: 'freelencer_id',
+                      foreignField: 'user_id',
+                      pipeline: [
+                        { 
+                            $project: { 
+                                name: { $concat: ["$firstName", " ", "$lastName"] },
+                                profile_image: 1, 
+                                title: 1
+                            } 
+                        }
+                    ],
+                      as: 'freelancerDetails'
+
                     }
                 }
             ]

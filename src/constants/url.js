@@ -48,7 +48,15 @@ const urlConstants = {
     OFFER_UPDATE: '/offer-update',
     OFFERS_LIST_GET: '/get-offers-list',
     FREELANCER_OFFER_DETAILS: '/freelancer/offer-details',
-    HIRED_LIST_GET: '/get-hired-list',
+
+    HIRED_LIST_GET: '/client/hired',
+    ADD_COMMENT: '/comment',
+    ADD_GOAL: '/goal',
+    GET_GOAL_LIST: '/goal',
+    UPDATE_GOAL_IS_COMPLETED: '/updateIsCompleted',
+    REPLY_COMMENT: '/reply-comment',
+    COMMENT_LIST: '/comment/list',
+    ADD_EVENT: '/event',
     LIST_CATEGORY: '/getAllCategories',
 
     FORGOT_PASSWORD: '/forgot-password',
