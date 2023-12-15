@@ -45,7 +45,7 @@ const sendOffer = async (body, userData, res) => {
                                     budget: job_details.budget,
                                     email: find_freelencer.email,
                                     message: body.client_message,
-                                    link: `${process.env.BASE_URL}message/offer?job_id=${body.job_id}&offer_id=${result._id}`,
+                                    link: `${process.env.BASE_URL}/message/offer?job_id=${body.job_id}&offer_id=${result._id}`,
 
                                 };
                                 await mail.sendMailtoUser(mailTemplateConstants.SEND_OFFER, find_freelencer.email, "Job Offer", res, mailContent);
@@ -128,6 +128,7 @@ const getOffersList = async (userData, res) => {
 }
 
 const updateOffer = async (req, res) => {
+    console.log(req);
     return new Promise(async () => {
         const { offer_id, status, job_id } = req.body;
         await OfferSchema.find(
@@ -270,6 +271,62 @@ const getAcceptedOfferByFreelancerId = async (req, userData, res) => {
     })
 }
 
+const getOfferDetails = async (req, res,) => {
+    return new Promise(async () => {
+        const { offer_id } = req.query;
+        const query = [
+            {
+                $match: {
+                    _id: new ObjectId(offer_id)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'client_profiles',
+                    localField: 'client_id',
+                    foreignField: 'user_id',
+                    pipeline: [
+                        {
+                            $project: {
+                                _id: 1,
+                                location: 1,
+                                user_id: 1,
+                                firstName: 1,
+                                lastName: 1,
+                                reviews: { $ifNull: ['$reviews', []] } // If reviews is null, return an empty array
+                            }
+                        }
+                    ],
+                    as: 'client_details'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'jobs',
+                    localField: 'job_id',
+                    foreignField: '_id',
+                    pipeline: [
+                        { $project: { file: 0, client_detail: 0, } }
+                    ],
+                    as: 'job_details'
+                }
+            }
+        ]
+        await OfferSchema.aggregate(query).then(async (result) => {
+            if (result.length !== 0) {
+                logger.info(`Offer ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                return responseData.success(res, result, `Offer ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+            } else {
+                logger.info(`Invitation ${messageConstants.LIST_NOT_FOUND}`);
+                return responseData.success(res, [], `Offer ${messageConstants.LIST_NOT_FOUND}`);
+            }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        })
+    })
+}
+
 const submitOfferTask = async (req, userData, taskFile, res) => {
     return new Promise(async () => {
         req.body['freelencer_id'] = userData._id
@@ -292,4 +349,5 @@ module.exports = {
     getHiredList,
     getAcceptedOfferByFreelancerId,
     submitOfferTask,
+    getOfferDetails
 }
