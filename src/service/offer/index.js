@@ -1,6 +1,6 @@
 
 const { messageConstants, responseData, mailTemplateConstants } = require('../../constants');
-const InviteSchema = require('../../models/invite');
+const OfferTaskSchema = require('../../models/offer_task');
 const UserSchema = require('../../models/users');
 const OfferSchema = require('../../models/offers');
 const JobSchema = require('../../models/job');
@@ -270,10 +270,26 @@ const getAcceptedOfferByFreelancerId = async (req, userData, res) => {
     })
 }
 
+const submitOfferTask = async (req, userData, taskFile, res) => {
+    return new Promise(async () => {
+        req.body['freelencer_id'] = userData._id
+        req.body['file'] = taskFile
+        const offerTaskSchema = new OfferTaskSchema(req.body);
+        await offerTaskSchema.save().then(async (result) => {
+            logger.info('Task submitted successfully');
+            return responseData.success(res, result, 'Task submitted successfully');
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        })
+    })
+}
+
 module.exports = {
     sendOffer,
     getOffersList,
     updateOffer,
     getHiredList,
-    getAcceptedOfferByFreelancerId
+    getAcceptedOfferByFreelancerId,
+    submitOfferTask,
 }
