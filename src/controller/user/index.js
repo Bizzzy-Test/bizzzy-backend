@@ -39,7 +39,8 @@ const getUserById = async (req, res) => {
 
 const getOptionsList = async (req, res) => {
     try {
-        const response = await authService.getOptionsList(req, res);
+        const userData = await getUserData(req, res);
+        const response = await authService.getOptionsList(req, userData, res);
         logger.info(`${messageConstants.RESPONSE_FROM} getOptionsList API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {

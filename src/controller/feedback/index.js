@@ -5,7 +5,8 @@ const { logger } = require('../../utils');
 
 const postFeedback = async (req, res) => {
     try {
-        const response = await feedbackService.postFeedback(req.body, res);
+        const userData = await getUserData(req, res)
+        const response = await feedbackService.postFeedback(req.body, userData, res);
         logger.info(`${messageConstants.RESPONSE_FROM} postFeedback API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {

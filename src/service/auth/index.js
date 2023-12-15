@@ -256,11 +256,11 @@ const getUserList = async (res, userData) => {
     })
 }
 
-const getOptionsList = async (req, res) => {
+const getOptionsList = async (req, userData, res) => {
     return new Promise(async () => {
         try {
             const strengths = await StrengthsSchema.find({});
-            const reasons = await ReasonsSchema.find({ user_type: req.query.user_type });
+            const reasons = await ReasonsSchema.find({ user_type: userData.role });
             const feedbackOptions = await FeedbackOptionsSchema.find({});
             const result = {
                 strengths: strengths,
