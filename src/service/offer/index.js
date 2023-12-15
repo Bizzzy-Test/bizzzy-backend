@@ -219,9 +219,62 @@ const getHiredList = async (userData, res) => {
     })
 }
 
+const getJobHiredList = async (userData, req, res) => {
+    return new Promise(async () => {
+        const { job_id } = req.query;
+
+        if (userData.role == 2) {
+            const query = [
+                {
+                    $match: {
+                        $and:[
+                            { client_id: new ObjectId(userData._id) },
+                            { job_id: new ObjectId(job_id)},
+                            { status: 1}
+                        ]
+                    }
+                },
+                {
+                    $lookup: {
+                      from: 'freelencer_profiles',
+                      localField: 'freelencer_id',
+                      foreignField: 'user_id',
+                      pipeline: [
+                        { 
+                            $project: { 
+                                name: { $concat: ["$firstName", " ", "$lastName"] },
+                                profile_image: 1, 
+                                title: 1
+                            } 
+                        }
+                    ],
+                      as: 'freelancerDetails'
+                    }
+                }
+            ]
+            await OfferSchema.aggregate(query).then(async (result) => {
+                if (result.length !== 0) {
+                    logger.info(`Get User hired details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                    return responseData.success(res, result, `Get User hired details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                } else {
+                    logger.info(`User ${messageConstants.HIRED_DETAILS_NOT_FOUND}`);
+                    return responseData.fail(res, `User ${messageConstants.HIRED_DETAILS_NOT_FOUND}`, 200);
+                }
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            })
+        } else {
+            logger.info(messageConstants.NOT_ALLOWED);
+            return responseData.fail(res, `${messageConstants.NOT_ALLOWED}`, 401);
+        }
+    })
+}
+
 module.exports = {
     sendOffer,
     getOffersList,
     updateOffer,
-    getHiredList
+    getHiredList,
+    getJobHiredList
 }

@@ -43,6 +43,18 @@ const getHiredList = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
         const response = await offerService.getHiredList(userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} Get all hired List API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`Get all hired List API ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+}
+
+const getJobHiredList = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await offerService.getJobHiredList(userData, req, res);
         logger.info(`${messageConstants.RESPONSE_FROM} Get hired List API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
@@ -55,5 +67,6 @@ module.exports = {
     sendOffer,
     getOffersList,
     updateOffer,
-    getHiredList
+    getHiredList,
+    getJobHiredList
 }

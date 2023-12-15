@@ -7,4 +7,5 @@ module.exports = (app) => {
     app.post(urlConstants.OFFER_UPDATE, jsonWebToken.validateToken, offerValidator.offerUpdateValidation, api.updateOffer); 
     app.get(urlConstants.OFFERS_LIST_GET, jsonWebToken.validateToken, api.getOffersList);
     app.get(urlConstants.HIRED_LIST_GET, jsonWebToken.validateToken, api.getHiredList);
+    app.get(urlConstants.JOB_HIRED_LIST_GET, jsonWebToken.validateToken, api.getJobHiredList);
 }
