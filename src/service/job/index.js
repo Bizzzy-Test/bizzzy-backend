@@ -5,26 +5,25 @@ const { logger } = require("../../utils");
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
-
 // ==== create job post ==== service
-const createJobPost = async (payload, userToken) => {
-    console.log({ "sagar": payload });
-    try {
-        const user = jwt.decode(userToken);
-        const clientDetail = user?.id;
-        payload.client_detail = clientDetail;
-
-        if (user.role != "2") {
-            throw new Error(`${messageConstants.USER_NOT_AUTHORIZED}`);
+const createJobPost = async (req, userData, taskFile, res) => {
+    return new Promise(async () => {
+        req.body['client_detail'] = userData._id
+        req.body['file'] = taskFile
+        if (userData.role == 2) {
+            const jobSchema = new JobSchema(req.body);
+            await jobSchema.save().then(async (result) => {
+                logger.info('job created successfully');
+                return responseData.success(res, result, 'job created successfully');
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            })
         } else {
-            const newJobData = new JobSchema(payload);
-            const data = await newJobData.save();
-            return data;
+            logger.error('Only client can create new job');
+            return responseData.fail(res, 'Only client can create new job', 401);
         }
-    } catch (error) {
-        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
-        return error
-    }
+    })
 };
 
 // ==== get all job post ==== service
@@ -122,21 +121,21 @@ const searchJobPosts = async (payload, userToken) => {
 
 const searchJobPost = async (req, userData, res) => {
     return new Promise(async () => {
-        if(userData.role==2){
+        if (userData.role == 2) {
             logger.info(`Search Job Post ${messageConstants.NOT_ALLOWED}`);
             return responseData.fail(res, `${messageConstants.NOT_ALLOWED}`, 404);
-        }else{
+        } else {
             const body = req.body;
             let result;
-            if(body?.experience=='' && body?.budget=='' && body?.category?.length==0 && body?.skills?.length==0 && body?.title=='' && body?.description=='' ){
-                result=await JobSchema.find({});
-            }else{
-                result=await JobSchema.find({
-                    $or:[
+            if (body?.experience == '' && body?.budget == '' && body?.category?.length == 0 && body?.skills?.length == 0 && body?.title == '' && body?.description == '') {
+                result = await JobSchema.find({});
+            } else {
+                result = await JobSchema.find({
+                    $or: [
                         // {experience: body?.experience},
                         // {budget: body?.budget},
-                        {tags: { $in: body?.category?.map(category => new RegExp(category, 'i')) }},
-                        {skills: { $in: body?.skills?.map(skills => new RegExp(skills, 'i')) }},
+                        { tags: { $in: body?.category?.map(category => new RegExp(category, 'i')) } },
+                        { skills: { $in: body?.skills?.map(skills => new RegExp(skills, 'i')) } },
                         { experience: body?.experience },
                         { budget: body?.budget },
                         { title: { $regex: body?.title, $options: 'i' } },
@@ -144,10 +143,10 @@ const searchJobPost = async (req, userData, res) => {
                     ]
                 });
             }
-            if(result.length>0){
+            if (result.length > 0) {
                 logger.info(`Search Job Post ${messageConstants.DATA_FOUND}`);
                 return responseData.success(res, result, `Search Job Post ${messageConstants.DATA_FOUND}`);
-            }else{
+            } else {
                 logger.info(`Search Job Post ${messageConstants.LIST_NOT_FOUND}`);
                 return responseData.success(res, [], `${messageConstants.LIST_NOT_FOUND}`, 200);
             }
