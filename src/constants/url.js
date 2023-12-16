@@ -47,10 +47,13 @@ const urlConstants = {
     OFFER_SEND: '/offer-send',
     OFFER_UPDATE: '/offer-update',
     OFFERS_LIST_GET: '/get-offers-list',
-    // HIRED_LIST_GET: '/client/hired',
+
     // JOB_HIRED_LIST_GET: '/client/all-hired',
     HIRED_LIST_GET: '/client/all-hired',
     JOB_HIRED_LIST_GET: '/client/hired',
+
+    FREELANCER_OFFER_DETAILS: '/freelancer/offer-details',
+
     ADD_COMMENT: '/comment',
     ADD_GOAL: '/goal',
     GET_GOAL_LIST: '/goal',
@@ -59,22 +62,12 @@ const urlConstants = {
     COMMENT_LIST: '/comment/list',
     ADD_EVENT: '/event',
     LIST_CATEGORY: '/getAllCategories',
-    LIST_ADVISORS: '/getAllAdvisors',
+
     FORGOT_PASSWORD: '/forgot-password',
     CHANGE_PASSWORD: '/change-password',
     RESET_PASSWORD: '/reset-password',
-    CREATE_SESSION: '/create-session',
-    GET_SESSION_LIST: '/session',
-    BOOK_SESSION: '/book-session',
     LIST_COUNTRIES: '/get-countries',
-    ADD_ADVISOR_RATE: '/addAdvisorRate',
-    GET_ADVISOR_RATE: '/getAdvisorRate',
-    GET_USER_SESSION_LIST: '/user/session',
-    GET_PAID_SESSION_LIST: '/paid/user/session',
     GET_PROFILE_IMAGE: '/load-profile-image',
-    ADD_TO_BOARD: '/add/board',
-    REMOVE_ADVISOR_FROM_BOARD: '/remove/advisor',
-    LIST_BOARD_MEMBER: '/list/board/memeber',
 
 
     CREATE_JOB_PROPOSAL: '/job-proposal',

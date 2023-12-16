@@ -2,39 +2,20 @@ const JobService = require("../../service/job/index.js");
 const { messageConstants } = require('../../constants/index.js');
 const { logger } = require('../../utils/index.js');
 const { uploadFile, deleteFile } = require("../../middleware/aws/aws.js");
-const { getUserData } = require("../../middleware/index.js");
+const { getUserData, getFileUrl } = require("../../middleware/index.js");
 
 // ==== create job post ==== controller
 
 const createJobPost = async (req, res) => {
     try {
-        const userToken = req.headers.token;
-        const jobData = req.body;
-        let fileUrl = "";
-
-        if (req.file) {
-            const fileBuffer = req.file.path;
-            const folderName = "job_files";
-            // Upload the file buffer to S3 and get its access URL
-            fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folderName);
-        }
-        // Add the file URL to the jobData object
-        jobData.file = fileUrl === "" ? "null" : fileUrl;
-
-        const response = await JobService.createJobPost(jobData, userToken);
-
-        res.status(200).json({
-            data: response,
-            success: true,
-            message: messageConstants.JOB_CREATED_SUCCESSFULLY,
-        });
-    } catch (error) {
-        console.error("Error creating job post:", error);
-        res.status(500).json({
-            data: error,
-            success: false,
-            message: messageConstants.INTERNAL_SERVER_ERROR,
-        });
+        const userData = await getUserData(req, res);
+        const taskFile = await getFileUrl(req);
+        const response = await JobService.createJobPost(req, userData, taskFile, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} createJobPost API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`createJobPost ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
     }
 };
 
@@ -92,7 +73,7 @@ const searchJobPost = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
         const response = await JobService.searchJobPost(req, userData, res);
-        if (response != null){
+        if (response != null) {
             res.sendFile(response);
         }
     } catch (err) {

@@ -4,8 +4,9 @@ const { logger } = require("../../utils");
 const FeedbackSchema = require('../../models/feedback');
 const mongoose = require('mongoose');
 
-const postFeedback = async (body, res) => {
+const postFeedback = async (body, userData, res) => {
     return new Promise(async () => {
+        body['user_id_giver'] = userData._id
         const feedbackSchema = new FeedbackSchema(body);
         await feedbackSchema.save().then((result) => {
             logger.info(`${messageConstants.FEEDBACK_SAVED_SUCCESSFULLY}`);
@@ -19,45 +20,64 @@ const postFeedback = async (body, res) => {
 
 const getFeedback = async (req, userData, res) => {
     return new Promise(async () => {
-        const role = req.query.role;
-        let project = role == 2 ?
-            {
-                _id: 0,
-                user_id: 1,
-                firstName: 1,
-                lastName: 1,
-                location: 1,
-                professional_role: 1,
-                profile_image: 1,
-                categories: 1
-            } :
-            {
-                _id: 0,
-                userId: 1,
-                firstName: 1,
-                lastName: 1,
-                location: 1,
-                businessName: 1,
-                profile_image: 1
-            }
+        const project = {
+            _id: 0,
+            user_id: 1,
+            firstName: 1,
+            lastName: 1,
+            location: 1,
+            businessName: 1,
+            profile_image: 1
+        }
         const query = [
             {
                 $match: {
                     $or: [
                         { user_id_feedbacker: new mongoose.Types.ObjectId(req.query.user_id) },
-                        { user_id_feedbacker: userData._id }
+                        { user_id_feedbacker: new mongoose.Types.ObjectId(userData._id) }
                     ]
                 }
             },
             {
                 $lookup: {
-                    from: role == 2 ? 'freelencer_profiles' : 'client_profiles',
+                    from: 'freelencer_profiles',
                     localField: 'user_id_giver',
-                    foreignField: role == 2 ? 'user_id' : 'userId',
+                    foreignField: 'user_id',
                     pipeline: [
-                        { $project: project }
+                        {
+                            $project: project
+                        }
                     ],
-                    as: role == 2 ? 'freelencer_details' : 'client_details'
+                    as: 'freelencer_profiles'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'client_profiles',
+                    localField: 'user_id_giver',
+                    foreignField: 'user_id',
+                    pipeline: [
+                        {
+                            $project: project
+                        }
+                    ],
+                    as: 'client_details'
+                }
+            },
+            {
+                $addFields: {
+                    user_details: {
+                        $ifNull: [
+                            { $arrayElemAt: ['$freelencer_profiles', 0] },
+                            { $arrayElemAt: ['$client_details', 0] }
+                        ]
+                    },
+                }
+            },
+            {
+                $project: {
+                    freelencer_profiles: 0,
+                    client_details: 0,
                 }
             }
         ];

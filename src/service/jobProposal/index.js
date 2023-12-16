@@ -5,33 +5,42 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
-const createJobProposal = async (payload, userToken, res) => {
+const createJobProposal = async (req, userData, taskFile, res) => {
 	return new Promise(async () => {
-		const userData = jwt.decode(userToken);
-		payload.userId = userData.id;
-		const jobProposal = JobProposalSchema(payload);
-		await jobProposal
-			.save()
-			.then((response) => {
-				responseData.success(res, response, `job proposal created succesfully`);
-			})
-			.catch((err) => {
-				logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-				return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
-			});
-	});
-};
+		req.body['userId'] = userData._id
+		req.body['file'] = taskFile
+		await JobProposalSchema.find({
+			userId: new ObjectId(userData._id),
+			jobId: new ObjectId(req.body.jobId)
+		}).then(async (result) => {
+			if (result?.length !== 0) {
+				logger.error('You have already applied for this proposal.');
+				return responseData.fail(res, 'You have already applied for this proposal.', 400);
+			} else {
+				const jobProposalSchema = new JobProposalSchema(req.body);
+				await jobProposalSchema.save().then(async (result) => {
+					logger.info('job proposal submitted successfully');
+					return responseData.success(res, result, 'job proposal submitted successfully');
+				}).catch((err) => {
+					logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+					return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+				})
+			}
+		})
+
+	})
+}
 
 const getJobProposalByUsersId = async (userToken, res) => {
 	return new Promise(async () => {
-        const user = jwt.decode(userToken);
-        const userId = user?.id;
+		const user = jwt.decode(userToken);
+		const userId = user?.id;
 
 		await JobProposalSchema.find({ userId: userId }).populate('jobId')
 			.then(async (result) => {
 				return responseData.success(res, result, `job proposal fetched succesfully`);
 			})
-			.catch((err) => { 
+			.catch((err) => {
 				logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
 				return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
 			});
@@ -58,14 +67,14 @@ const getJobProposalByUsersId = async (userToken, res) => {
 
 
 const getJobProposalByUserId = async (req, res) => {
-    return new Promise(async () => {
-        await JobProposalSchema.find({ userId: req.userId }).then(async (result) => {
-            return responseData.success(res, result, `job proposal fetched succesfully`);
-        }).catch((err) => {
-            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
-        })
-    })
+	return new Promise(async () => {
+		await JobProposalSchema.find({ userId: req.userId }).then(async (result) => {
+			return responseData.success(res, result, `job proposal fetched succesfully`);
+		}).catch((err) => {
+			logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+			return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+		})
+	})
 }
 
 const getJobProposalByJobId = async (req, res) => {
@@ -112,5 +121,5 @@ module.exports = {
 	createJobProposal,
 	getJobProposalByUserId,
 	getJobProposalByJobId,
-    getJobProposalByUsersId
+	getJobProposalByUsersId
 };
