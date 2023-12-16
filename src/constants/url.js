@@ -47,9 +47,13 @@ const urlConstants = {
     OFFER_SEND: '/offer-send',
     OFFER_UPDATE: '/offer-update',
     OFFERS_LIST_GET: '/get-offers-list',
+
+    // JOB_HIRED_LIST_GET: '/client/all-hired',
+    HIRED_LIST_GET: '/client/all-hired',
+    JOB_HIRED_LIST_GET: '/client/hired',
+
     FREELANCER_OFFER_DETAILS: '/freelancer/offer-details',
 
-    HIRED_LIST_GET: '/client/hired',
     ADD_COMMENT: '/comment',
     ADD_GOAL: '/goal',
     GET_GOAL_LIST: '/goal',
