@@ -185,19 +185,19 @@ const getHiredList = async (userData, res) => {
                 },
                 {
                     $lookup: {
-                      from: 'freelencer_profiles',
-                      localField: 'freelencer_id',
-                      foreignField: 'user_id',
-                      pipeline: [
-                        { 
-                            $project: { 
-                                name: { $concat: ["$firstName", " ", "$lastName"] },
-                                profile_image: 1, 
-                                title: 1
-                            } 
-                        }
-                    ],
-                      as: 'freelancerDetails'
+                        from: 'freelencer_profiles',
+                        localField: 'freelencer_id',
+                        foreignField: 'user_id',
+                        pipeline: [
+                            {
+                                $project: {
+                                    name: { $concat: ["$firstName", " ", "$lastName"] },
+                                    profile_image: 1,
+                                    professional_role: 1
+                                }
+                            }
+                        ],
+                        as: 'freelancerDetails'
 
                     }
                 }
@@ -229,28 +229,28 @@ const getJobHiredList = async (userData, req, res) => {
             const query = [
                 {
                     $match: {
-                        $and:[
+                        $and: [
                             { client_id: new ObjectId(userData._id) },
-                            { job_id: new ObjectId(job_id)},
-                            { status: 1}
+                            { job_id: new ObjectId(job_id) },
+                            { status: 1 }
                         ]
                     }
                 },
                 {
                     $lookup: {
-                      from: 'freelencer_profiles',
-                      localField: 'freelencer_id',
-                      foreignField: 'user_id',
-                      pipeline: [
-                        { 
-                            $project: { 
-                                name: { $concat: ["$firstName", " ", "$lastName"] },
-                                profile_image: 1, 
-                                title: 1
-                            } 
-                        }
-                    ],
-                      as: 'freelancerDetails'
+                        from: 'freelencer_profiles',
+                        localField: 'freelencer_id',
+                        foreignField: 'user_id',
+                        pipeline: [
+                            {
+                                $project: {
+                                    name: { $concat: ["$firstName", " ", "$lastName"] },
+                                    profile_image: 1,
+                                    title: 1
+                                }
+                            }
+                        ],
+                        as: 'freelancerDetails'
                     }
                 }
             ]
@@ -272,6 +272,7 @@ const getJobHiredList = async (userData, req, res) => {
         }
     })
 }
+
 const getAcceptedOfferByFreelancerId = async (req, userData, res) => {
     return new Promise(async () => {
         const query = [
@@ -304,6 +305,26 @@ const getAcceptedOfferByFreelancerId = async (req, userData, res) => {
                     as: 'client_profile'
                 }
             },
+            {
+                $lookup: {
+                    from: 'jobs',
+                    localField: 'job_id',
+                    foreignField: '_id',
+                    pipeline: [
+                        {
+                            $project: {
+                                _id: 0,
+                                title: 1,
+                                description: 1,
+                                amount: 1,
+                                budget: 1,
+                                experience: 1,
+                            }
+                        }
+                    ],
+                    as: 'job_details'
+                }
+            }
         ];
         await OfferSchema.aggregate(query).then(async (result) => {
             if (result.length !== 0) {
