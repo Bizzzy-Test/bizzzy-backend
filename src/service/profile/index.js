@@ -397,117 +397,6 @@ const searchFreelencers = async (req, userData, res) => {
     })
 }
 
-const getInvitedFreelancers = async (req, userData, res) => {
-    return new Promise(async () => {
-        if(userData.role==1){
-            logger.info(`Search freelencers ${messageConstants.NOT_ALLOWED}`);
-            return responseData.fail(res, `${messageConstants.NOT_ALLOWED}`, 404);
-        }else{
-            let getInvitedFreelancers = await InvitationSchema.aggregate([
-                {
-                    $match: {
-                        // sender_id: userData._id.toString()
-                        sender_id: userData._id
-                    }
-                },
-                {
-                    $lookup: {
-                      from: "jobs",
-                      localField: "job_id",
-                      foreignField: "_id",
-                      as: "jobDetails",
-                    },
-                  },
-                  {
-                    $unwind: "$jobDetails",
-                  },
-                  {
-                    $lookup: {
-                      from: "freelencer_profiles",
-                      let: { receiverId: "$receiver_id" },
-                      pipeline: [
-                        {
-                          $match: {
-                            $expr: {
-                              $eq: [
-                                "$user_id",
-                                { $toObjectId: "$$receiverId" },
-                              ],
-                            },
-                          },
-                        },
-                      ],
-                      as: "freelencerProfileDetails",
-                    },
-                  },
-                  {
-                    $unwind: "$freelencerProfileDetails",
-                  },
-                  {
-                    $lookup: {
-                      from: "users",
-                      let: { receiverId: "$receiver_id" },
-                      pipeline: [
-                        {
-                          $match: {
-                            $expr: {
-                              $eq: [
-                                "$_id",
-                                { $toObjectId: "$$receiverId" },
-                              ],
-                            },
-                          },
-                        },
-                      ],
-                      as: "receiverDetails",
-                    },
-                  },
-                  {
-                    $unwind: "$receiverDetails",
-                  },
-                //   {
-                //     $project: {
-                //       receiverDetails: 1,
-                //       jobDetails: 1,
-                //       job_id: 1,
-                //       sender_id: 1,
-                //       receiver_id: 1,
-                //       message: 1,
-                //       status: 1,
-                //       is_deleted: 1,
-                //       created_at: 1,
-                //       updated_at: 1,
-                //       freelencerProfileDetails: 1,
-                //     },
-                //   },
-                {
-                    $project: {
-                        _id: '$freelencerProfileDetails.result',
-                        user_id: '$freelencerProfileDetails.user_id',
-                        professional_role: '$freelencerProfileDetails.professional_role',
-                        profile_image: '$freelencerProfileDetails.profile_image',
-                        title: '$freelencerProfileDetails.title',
-                        hourly_rate: '$freelencerProfileDetails.hourly_rate',
-                        description: '$freelencerProfileDetails.description',
-                        categories: '$freelencerProfileDetails.categories',
-                        is_deleted: '$freelencerProfileDetails.is_deleted',
-                        experience: '$freelencerProfileDetails.experience',
-                        education: '$freelencerProfileDetails.education',
-                        portfolio: '$freelencerProfileDetails.portfolio',
-                        firstName: '$freelencerProfileDetails.firstName',
-                        lastName: '$freelencerProfileDetails.lastName',
-                        location: '$freelencerProfileDetails.location',
-                        skills: '$freelencerProfileDetails.skills',
-                        invitation_status: '$status'
-                    }
-                }
-            ]);
-
-            return responseData.success(res, getInvitedFreelancers, `Get Invited Freelencers ${messageConstants.DATA_FOUND}`);
-        }
-    })
-}
-
 module.exports = {
     freelencerProfile,
     clientProfile,
@@ -518,6 +407,5 @@ module.exports = {
     searchFreelencers,
     editFreelencerProfile,
     editClientProfile,
-    deleteExperience,
-    getInvitedFreelancers
+    deleteExperience
 }

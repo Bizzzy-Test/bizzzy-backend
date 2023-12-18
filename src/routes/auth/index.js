@@ -3,7 +3,7 @@ const { authValidator, jsonWebToken } = require("../../middleware");
 const api = require('../../controller/auth');
 const profileAPI = require('../../controller/profile');
 const userAPI = require("../../controller/user")
-const upload = require('../../middleware/image_upload');
+// const upload = require('../../middleware/image_upload');
 
 module.exports = (app) => {
     app.post(urlConstants.USER_REGISTER, authValidator.signUpValidation, api.signUp);
@@ -19,7 +19,6 @@ module.exports = (app) => {
     // app.post(urlConstants.USER_PROFILE_IMAGE, jsonWebToken.validateToken, upload.single('file'), profileAPI.profileImageUpload);
     app.post(urlConstants.SEARCH_FREELENCERS, jsonWebToken.validateToken, profileAPI.searchFreelencers);
     // app.get(urlConstants.GET_SKILLS, jsonWebToken.validateToken, profileAPI.getAllSkills);
-    app.get(urlConstants.GET_INVITED_FREELANCERS, jsonWebToken.validateToken, profileAPI.getInvitedFreelancers);
 
     // app.post(urlConstants.UPLOAD_IMAGE + "/:user_id", upload.single('image'), userAPI.uploadImage);
     app.get(urlConstants.GET_USER_BY_ID, jsonWebToken.validateToken, userAPI.getUserById);
