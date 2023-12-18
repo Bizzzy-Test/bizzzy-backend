@@ -98,6 +98,18 @@ const submitOfferTask = async (req, res) => {
     }
 };
 
+const endContract = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await offerService.endContract(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} endContract API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`End Contract ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+};
+
 module.exports = {
     sendOffer,
     getOffersList,
@@ -106,5 +118,6 @@ module.exports = {
     getJobHiredList,
     getAcceptedOfferByFreelancerId,
     submitOfferTask,
-    getOfferDetails
+    getOfferDetails,
+    endContract
 }
