@@ -41,8 +41,9 @@ const urlConstants = {
     CLIENT_INVITATION_DETAILS: '/client-invitation-details',
     FREELANCER_INVITATION_DETAILS: '/freelancer/invitation-details',
     GET_INVITED_FREELANCERS: '/freelencers/invited',
+    END_CONTRACT: '/contract/end',
 
-    GET_INVITED_FREELANCERS_LIST: '/invited-freelancers-list',
+    // GET_INVITED_FREELANCERS_LIST: '/invited-freelancers-list',
 
     OFFER_SEND: '/offer-send',
     OFFER_UPDATE: '/offer-update',

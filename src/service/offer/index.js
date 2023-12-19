@@ -412,6 +412,39 @@ const submitOfferTask = async (req, userData, taskFile, res) => {
     })
 }
 
+const endContract = async (req, userData, res) => {
+    return new Promise(async () => {
+        let query = {};
+        if (userData?.role == 2) {
+            query = {
+                client_id: new ObjectId(userData?._id),
+                freelencer_id: new ObjectId(req?.body?.user_id)
+            }
+        } else {
+            query = {
+                client_id: new ObjectId(req?.body?.user_id),
+                freelencer_id: new ObjectId(userData?._id)
+            }
+        }
+        await OfferSchema.updateOne(
+            {
+                job_id: new ObjectId(req?.body?.job_id),
+                ...query
+            },
+            { $set: { status: req?.body?.status } },
+            { new: true }
+        ).then(async (result) => {
+            if (result?.modifiedCount !== 0) {
+                logger.info('Contract Ended Successfully');
+                return responseData.success(res, result, 'Contract Ended Successfully');
+            } else {
+                logger.error('Contract Not Found');
+                return responseData.success(res, result, 'Contract Not Found');
+            }
+        })
+    })
+}
+
 module.exports = {
     sendOffer,
     getOffersList,
@@ -420,5 +453,6 @@ module.exports = {
     getJobHiredList,
     getAcceptedOfferByFreelancerId,
     submitOfferTask,
-    getOfferDetails
+    getOfferDetails,
+    endContract
 }

@@ -139,7 +139,7 @@ const getInvitationDetails = async (req, res,) => {
 // Get invited freelancers list
 const getInvitedFreelancers = async (userData, res) => {
     return new Promise(async () => {
-        if (userData.role == 2) {
+        if (userData?.role == 2) {
             const query = [
                 {
                     $match: {
@@ -152,6 +152,21 @@ const getInvitedFreelancers = async (userData, res) => {
                         from: 'freelencer_profiles',
                         localField: 'receiver_id',
                         foreignField: 'user_id',
+                        pipeline: [
+                            {
+                                $project: {
+                                    _id: 0,
+                                    user_id: 1,
+                                    firstName: 1,
+                                    lastName: 1,
+                                    location: 1,
+                                    professional_role: 1,
+                                    profile_image: 1,
+                                    hourly_rate: 1,
+                                    skills: 1
+                                }
+                            }
+                        ],
                         as: 'freelancer_details'
                     }
                 },
@@ -160,6 +175,18 @@ const getInvitedFreelancers = async (userData, res) => {
                         from: 'jobs',
                         localField: 'job_id',
                         foreignField: '_id',
+                        pipeine: [{
+                            $project: {
+                                _id: 1,
+                                title: 1,
+                                description: 1,
+                                client_detail: 1,
+                                budget: 1,
+                                amount: 1,
+                                file: 1,
+                                experience: 1,
+                            }
+                        }],
                         as: 'job_details'
                     }
                 }
