@@ -83,7 +83,7 @@ const getOffersList = async (userData, res) => {
                     $match: {
                         $and: [
                             { client_id: new ObjectId(userData._id) },
-                            { status: 0 }
+                            { status: 'pending' }
                         ]
                     }
                 },
@@ -179,7 +179,7 @@ const getHiredList = async (userData, res) => {
                     $match: {
                         $and: [
                             { client_id: new ObjectId(userData._id) },
-                            { status: 1 }
+                            { status: 'accepted' }
                         ]
                     }
                 },
@@ -232,7 +232,7 @@ const getJobHiredList = async (userData, req, res) => {
                         $and: [
                             { client_id: new ObjectId(userData._id) },
                             { job_id: new ObjectId(job_id) },
-                            { status: 1 }
+                            { status: 'accepted' }
                         ]
                     }
                 },
@@ -280,7 +280,7 @@ const getAcceptedOfferByFreelancerId = async (req, userData, res) => {
                 $match: {
                     $and: [
                         { freelencer_id: userData._id, },
-                        { status: 1 }
+                        { status: 'accepted' }
                     ]
                 }
             },

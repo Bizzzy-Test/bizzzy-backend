@@ -17,12 +17,12 @@ const OfferSchema = mongoose.Schema({
         ref: 'jobs',
         required: true,
     },
-    status : {
-        type : Number,// 0 - 
-        default:0
+    status: {
+        type: String,
+        required: true
     },
     budget: {
-        type: String,
+        type: Number,
         required: true
     },
     created_at: {

@@ -42,6 +42,7 @@ const urlConstants = {
     FREELANCER_INVITATION_DETAILS: '/freelancer/invitation-details',
     GET_INVITED_FREELANCERS: '/freelencers/invited',
     END_CONTRACT: '/contract/end',
+    GET_REPORT_DATA: '/reports',
 
     // GET_INVITED_FREELANCERS_LIST: '/invited-freelancers-list',
 
