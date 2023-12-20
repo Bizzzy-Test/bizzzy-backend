@@ -17,6 +17,9 @@ const OfferSchema = mongoose.Schema({
         ref: 'jobs',
         required: true,
     },
+    job_type: {
+        type: String
+    },
     status: {
         type: String,
         required: true
