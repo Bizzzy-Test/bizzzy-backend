@@ -94,7 +94,7 @@ const profileSchema = mongoose.Schema({
         default: 'null'
     },
     hourly_rate: {
-        type: String,
+        type: Number,
         default: 'null'
     },
     description: {
