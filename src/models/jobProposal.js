@@ -32,15 +32,31 @@ const jobProposalSchema = mongoose.Schema(
 			required: true
 		},
 		projectFilesLink: {
-			type: [ String ],
+			type: [String],
 			required: false
 		},
 		file: {
 			type: String
+		},
+		created_at: {
+			type: Date,
+			required: true,
+			default: Date.now
+		},
+		updated_at: {
+			type: Date,
+			required: true,
+			default: Date.now
+		},
+		is_deleted: {
+			type: Boolean,
+			default: false
+		},
+		status: {
+			type: Number,
+			required: true,
+			default: 1
 		}
-	},
-	{
-		timestamps: true
 	}
 );
 
