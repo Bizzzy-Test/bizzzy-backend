@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 
 const feedbackSchema = mongoose.Schema({
     //This field represents the user ID of the person giving the feedback.
-    user_id_giver: {
+    sender_id: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
     //This field represents the user ID of the person receiving the feedback.
-    user_id_feedbacker: {
+    reciever_id: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
@@ -17,16 +17,12 @@ const feedbackSchema = mongoose.Schema({
             type: String,
             required: true
         },
-        recommending_to_others: {
+        recommending_others: {
             type: Number,
             required: true
         },
-        strengths: [{
-            type: String,
-        }],
         status: {
             type: Number,
-            required: true,
             default: 1
         },
         is_deleted: {
@@ -45,12 +41,16 @@ const feedbackSchema = mongoose.Schema({
                 required: true
             }
         }],
+        average_rating: {
+            type: String,
+            required: true
+        },
         feedback_message: {
-            type: String
+            type: String,
+            required: true
         },
         status: {
             type: Number,
-            required: true,
             default: 1
         },
         is_deleted: {
@@ -74,7 +74,6 @@ const feedbackSchema = mongoose.Schema({
     },
     status: {
         type: Number,
-        required: true,
         default: 1
     }
 });

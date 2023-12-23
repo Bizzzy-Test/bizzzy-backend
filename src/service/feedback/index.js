@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 
 const postFeedback = async (body, userData, res) => {
     return new Promise(async () => {
-        body['user_id_giver'] = userData._id
+        body['sender_id'] = userData._id
         const feedbackSchema = new FeedbackSchema(body);
         await feedbackSchema.save().then((result) => {
             logger.info(`${messageConstants.FEEDBACK_SAVED_SUCCESSFULLY}`);
@@ -33,15 +33,15 @@ const getFeedback = async (req, userData, res) => {
             {
                 $match: {
                     $or: [
-                        { user_id_feedbacker: new mongoose.Types.ObjectId(req.query.user_id) },
-                        { user_id_feedbacker: new mongoose.Types.ObjectId(userData._id) }
+                        { reciever_id: new mongoose.Types.ObjectId(req.query.user_id) },
+                        { reciever_id: new mongoose.Types.ObjectId(userData._id) }
                     ]
                 }
             },
             {
                 $lookup: {
                     from: 'freelencer_profiles',
-                    localField: 'user_id_giver',
+                    localField: 'sender_id',
                     foreignField: 'user_id',
                     pipeline: [
                         {
@@ -54,7 +54,7 @@ const getFeedback = async (req, userData, res) => {
             {
                 $lookup: {
                     from: 'client_profiles',
-                    localField: 'user_id_giver',
+                    localField: 'sender_id',
                     foreignField: 'user_id',
                     pipeline: [
                         {
