@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 const StrengthsSchema = require('../../models/strengths');
 const ReasonsSchema = require('../../models/reason_for_ending_contract');
 const FeedbackOptionsSchema = require('../../models/feedback_options');
-const clientProfile = require('../../models/clientProfile');
+const client_profile = require('../../models/clientProfile');
 const freelencer_profile = require('../../models/profile');
 
 const signUp = async (body, res) => {
@@ -42,23 +42,74 @@ const signUp = async (body, res) => {
     })
 }
 
+// const signIn = async (body, res) => {
+//     return new Promise(async () => {
+//         body['password'] = cryptoGraphy.encrypt(body.password);
+//         const user = await UserSchema.findOne({
+//             email: body.email
+//         });
+//         if (user) {
+//             if (!user.is_email_verified) {
+//                 logger.error(messageConstants.USER_NOT_VERIFIED);
+//                 return responseData.fail(res, messageConstants.USER_NOT_VERIFIED, 405);
+//             }
+//             if (user.password === body.password) {
+//                 const token = await jsonWebToken.createToken(user);
+//                 logger.info(`User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
+//                 return responseData.success(res, { id: user._id, token, email: user.email, role: user.role, name: `${user.firstName} ${user.lastName}` }, `User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
+
+
+//             } else {
+//                 logger.error(messageConstants.EMAIL_PASS_INCORRECT);
+//                 return responseData.fail(res, messageConstants.EMAIL_PASS_INCORRECT, 403);
+//             }
+//         } else {
+//             logger.error(messageConstants.EMAIL_NOT_FOUND);
+//             return responseData.fail(res, messageConstants.EMAIL_NOT_FOUND, 403);
+//         }
+//     }).catch((err) => {
+//         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+//         return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+//     });
+// }
+
 const signIn = async (body, res) => {
     return new Promise(async () => {
         body['password'] = cryptoGraphy.encrypt(body.password);
         const user = await UserSchema.findOne({
             email: body.email
         });
+
         if (user) {
             if (!user.is_email_verified) {
                 logger.error(messageConstants.USER_NOT_VERIFIED);
                 return responseData.fail(res, messageConstants.USER_NOT_VERIFIED, 405);
             }
+
+            let userProfile = await freelencer_profile.findOne({ user_id: user._id });
+
+            // If the user ID is not found in freelancer_profile, try client_profile
+            if (!userProfile) {
+                userProfile = await client_profile.findOne({ user_id: user._id });
+            }
+
             if (user.password === body.password) {
                 const token = await jsonWebToken.createToken(user);
                 logger.info(`User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
-                return responseData.success(res, { id: user._id, token, email: user.email, role: user.role, name: `${user.firstName} ${user.lastName}` }, `User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
 
+                // Include 'profile_image' in the response
+                const responsePayload = {
+                    id: user._id,
+                    token,
+                    email: user.email,
+                    role: user.role,
+                    name: `${user.firstName} ${user.lastName}`,
+                    professional_role: userProfile ? userProfile.professional_role : null,
+                    business_name: userProfile ? userProfile.businessName : null,
+                    profile_image: userProfile ? userProfile.profile_image : null
+                };
 
+                return responseData.success(res, responsePayload, `User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
             } else {
                 logger.error(messageConstants.EMAIL_PASS_INCORRECT);
                 return responseData.fail(res, messageConstants.EMAIL_PASS_INCORRECT, 403);
@@ -72,6 +123,8 @@ const signIn = async (body, res) => {
         return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
     });
 }
+
+
 
 const verifyEmail = async (body, res) => {
     return new Promise(async () => {
@@ -330,7 +383,7 @@ const userProfile = async (body, res) => {
 const getUserProfileById = async (userId, res) => {
     console.log(userId);
     try {
-        const client_user = await clientProfile.findOne({ user_id: userId });
+        const client_user = await client_profile.findOne({ user_id: userId });
         const freelancer_user = await freelencer_profile.findOne({ user_id: userId });
         if (client_user) {
             return responseData.success(res, client_user, `User profile fetched successfully`);
