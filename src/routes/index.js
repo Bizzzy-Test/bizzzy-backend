@@ -13,7 +13,8 @@ const routes = [
     `feedback`,
     `dashboard`,
     `userProfile`,
-    `reports`
+    `reports`,
+    `skills`
 ];
 
 routes.forEach((route) => require(`./${route}`)(api))

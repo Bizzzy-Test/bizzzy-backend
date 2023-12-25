@@ -43,7 +43,9 @@ const urlConstants = {
     GET_INVITED_FREELANCERS: '/freelencers/invited',
     END_CONTRACT: '/contract/end',
     GET_REPORT_DATA: '/reports',
-
+    GET_CATEGORIES: '/category',
+    ADD_SKILLS: '/add/skill',
+    GET_SKILLS: '/skills',
     // GET_INVITED_FREELANCERS_LIST: '/invited-freelancers-list',
 
     OFFER_SEND: '/offer-send',
