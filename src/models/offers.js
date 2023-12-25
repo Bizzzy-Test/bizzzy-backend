@@ -19,7 +19,7 @@ const OfferSchema = mongoose.Schema({
     },
     status: {
         type: String,
-        required: true
+        default:'pending'
     },
     budget: {
         type: Number,

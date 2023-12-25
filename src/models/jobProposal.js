@@ -35,6 +35,10 @@ const jobProposalSchema = mongoose.Schema(
 			type: [ String ],
 			required: false
 		},
+		created_at: {
+			type: Date,
+			default: Date.now
+		},
 		file: {
 			type: String
 		}
