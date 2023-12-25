@@ -5,7 +5,7 @@ const offerValidation = (req, res, next) => {
     const schema = Joi.object({
         freelencer_id: Joi.string().required(),
         job_id: Joi.string().required(),
-        budget: Joi.string().required()
+        budget: Joi.number().required()
     })
     validateRequest(req, res, schema, next);
 }

@@ -29,13 +29,18 @@ const createJobPost = async (req, userData, taskFile, res) => {
 // ==== get all job post ==== service
 const getAllJobPost = async () => {
     try {
-        const jobSchema = await JobSchema.find().populate('client_detail');
+        const jobSchema = await JobSchema.find().populate({
+            path: 'client_detail',
+            select: 'country firstName lastName',
+        });
+
         return jobSchema;
     } catch (error) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
-        return error
+        return error;
     }
-}
+};
+
 
 // ==== search job post ==== service
 const searchJobPosts = async (payload, userToken) => {
@@ -156,7 +161,10 @@ const searchJobPost = async (req, userData, res) => {
 // ==== get single job post ==== service
 const getSingleJobPost = async (jobId) => {
     try {
-        const jobSchema = await JobSchema.findById({ _id: jobId }).populate('client_detail');
+        const jobSchema = await JobSchema.findById({ _id: jobId }).populate({
+            path: 'client_detail',
+            select: 'country firstName lastName',
+        });
         return jobSchema;
     } catch (error) {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
