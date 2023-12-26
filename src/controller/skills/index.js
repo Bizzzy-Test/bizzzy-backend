@@ -13,16 +13,16 @@ const getAllCategories = async (req, res) => {
         res.send(err);
     }
 }
-const addSkills = async (req, res) => {
-    try {
-        const response = await skillsService.addSkills(req, res);
-        logger.info(`${messageConstants.RESPONSE_FROM} addSkills API`, JSON.stringify(response));
-        res.send(response);
-    } catch (err) {
-        logger.error(`addSkills API ${messageConstants.API_FAILED} ${err}`);
-        res.send(err);
-    }
-}
+// const addSkills = async (req, res) => {
+//     try {
+//         const response = await skillsService.addSkills(req, res);
+//         logger.info(`${messageConstants.RESPONSE_FROM} addSkills API`, JSON.stringify(response));
+//         res.send(response);
+//     } catch (err) {
+//         logger.error(`addSkills API ${messageConstants.API_FAILED} ${err}`);
+//         res.send(err);
+//     }
+// }
 const getSkillsOfCategory = async (req, res) => {
     try {
         const response = await skillsService.getSkillsOfCategory(req, res);
@@ -36,6 +36,6 @@ const getSkillsOfCategory = async (req, res) => {
 
 module.exports = {
     getAllCategories,
-    addSkills,
+    // addSkills,
     getSkillsOfCategory
 }
