@@ -18,15 +18,8 @@ const getReportData = async (req, userData, res) => {
             let gross_earnings = 0;
             let application_sent = 0;
             let invitation_receive = 0;
-            let query = {}
-            if (userData?.role == 1) {
-                query = {
-                    freelencer_id: userData._id
-                }
-            } else {
-                query = {
-                    client_id: userData._id
-                }
+            let query = {
+                freelencer_id: userData._id
             }
             await JobProposalSchema.find(
                 {
