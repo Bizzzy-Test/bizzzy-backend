@@ -22,7 +22,7 @@ const endContractValidation = (req, res, next) => {
     const schema = Joi.object({
         user_id: Joi.string().required(),
         job_id: Joi.string().required(),
-        status: Joi.number().required()
+        status: Joi.string().required()
     })
     validateRequest(req, res, schema, next);
 }
