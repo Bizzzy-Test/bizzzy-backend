@@ -3,7 +3,8 @@ const responseData = require("../../constants/responses");
 const JobSchema = require("../../models/job")
 const { logger } = require("../../utils");
 const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 
 // ==== create job post ==== service
 const createJobPost = async (req, userData, taskFile, res) => {
@@ -22,6 +23,38 @@ const createJobPost = async (req, userData, taskFile, res) => {
         } else {
             logger.error('Only client can create new job');
             return responseData.fail(res, 'Only client can create new job', 401);
+        }
+    })
+};
+
+const closeJob = async (req, userData, res) => {
+    return new Promise(async () => {
+        if (userData.role !== 2) {
+            logger.error('Only client can close the job');
+            return responseData.fail(res, 'Only client can close the job', 401);
+        } else {
+            await JobSchema.updateOne(
+                {
+                    client_detail: userData._id.toString(),
+                    _id: new ObjectId(req.body.job_id)
+                },
+                { $set: { status: 'closed' } },
+                { new: true }
+            ).then((result) => {
+                if (result?.modifiedCount !== 0) {
+                    logger.info('Job closed successfully');
+                    return responseData.success(res, result, 'Job closed successfully');
+                } else if (result?.matchedCount !== 0) {
+                    logger.info("Job already closed");
+                    return responseData.success(res, result, "Job already closed");
+                } else {
+                    logger.error('Job Not Found');
+                    return responseData.success(res, result, 'Job Not Found');
+                }
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            })
         }
     })
 };
@@ -251,4 +284,5 @@ module.exports = {
     deleteJobPost,
     searchJobPost,
     getSingleJobPost,
+    closeJob
 };
