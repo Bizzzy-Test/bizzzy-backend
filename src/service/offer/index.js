@@ -128,9 +128,42 @@ const getOffersList = async (userData, res) => {
 }
 
 const updateOffer = async (req, res) => {
-    console.log(req);
     return new Promise(async () => {
         const { offer_id, status, job_id } = req.body;
+
+        const existingOffer = await OfferSchema.findOne({
+            _id: new ObjectId(offer_id),
+            freelencer_id: new ObjectId(req.userId),
+            job_id: new ObjectId(job_id),
+        });
+
+        if (!existingOffer) {
+            // Offer not found
+            logger.error(`${messageConstants.NOT_FOUND}`);
+            return responseData.fail(res, [], messageConstants.NOT_FOUND);
+        }
+
+        if (existingOffer.status == 'accepted') {
+            logger.error("You've already accept the offer");
+            return responseData.fail(
+                res, "You've already accept the offer", 400
+            );
+        }
+
+        if (existingOffer.status == 'rejected') {
+            logger.error("You've already reject the offer");
+            return responseData.fail(
+                res, "You've already reject the offer", 400
+            );
+        }
+
+        if (existingOffer.status !== 'pending') {
+            logger.error("You've already reject the offer");
+            return responseData.fail(
+                res, "You've already reject the offer", 400
+            );
+        }
+
         await OfferSchema.find(
             {
                 $and: [

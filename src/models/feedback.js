@@ -12,6 +12,11 @@ const feedbackSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
+
+    job_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
     private_feedback: {
         reason_for_ending_contract: {
             type: String,
