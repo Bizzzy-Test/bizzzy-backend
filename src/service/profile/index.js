@@ -1,5 +1,7 @@
 const { responseData, messageConstants } = require("../../constants");
 const UserSchema = require('../../models/users');
+const JobSchema = require('../../models/job');
+const OfferSchema = require('../../models/offers');
 const ProfileSchema = require('../../models/profile');
 const ClientProfileSchema = require('../../models/clientProfile');
 const InvitationSchema = require('../../models/invite');
@@ -154,11 +156,23 @@ const getUserProfile = async (userData, res) => {
         let profile;
         if (userData.role == 2) {
             profile = await ClientProfileSchema.findOne({ user_id: userId });
+            profile = profile.toObject();
+            job_posted = await JobSchema.find({ client_detail: userId })
+            job_open = await JobSchema.find({ client_detail: userId, status: 'open' })
+            hired_freelancers = await OfferSchema.distinct('freelencer_id', { client_id: userData._id, status: { $ne: 'pending' } });
+            active_freelancers = await OfferSchema.distinct('freelencer_id', { client_id: userData._id, status: 'accepted' });
+            profile.job_posted = job_posted?.length || 0;
+            profile.job_open = job_open?.length || 0;
+            profile.hired_freelancers = hired_freelancers?.length || 0;
+            profile.active_freelancers = active_freelancers?.length || 0;
+            profile.total_amount_spend =  0;
+            profile.avg_review =  4.2;
+            profile.total_hours =  5;
         } else {
             profile = await ProfileSchema.findOne({ user_id: userId });
+            profile = profile.toObject();
         }
         if (profile) {
-            profile = profile.toObject();
             profile.role = userData.role;
             logger.info(`User details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
             return responseData.success(res, profile, `User details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);

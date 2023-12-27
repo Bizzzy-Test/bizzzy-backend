@@ -19,6 +19,18 @@ const createJobPost = async (req, res) => {
     }
 };
 
+const closeJob = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await JobService.closeJob(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} closeJob API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`closeJob ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+};
+
 
 // ==== get all job post ==== controller
 const getAllJobPost = async (req, res) => {
@@ -206,5 +218,6 @@ module.exports = {
     updateJobPost,
     deleteJobPost,
     searchJobPost,
-    getSingleJobPost
+    getSingleJobPost,
+    closeJob
 };

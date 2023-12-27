@@ -29,6 +29,11 @@ const JobSchema = mongoose.Schema({
         type: Number,
         required: true
     },
+    // status can be open or close
+    status: {
+        type: String,
+        default: 'open'
+    },
     file: {
         type: String
     },
