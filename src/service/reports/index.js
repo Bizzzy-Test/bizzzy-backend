@@ -68,13 +68,28 @@ const getReportData = async (req, userData, res) => {
                 pending,
                 available
             },
-            stats: {
-                application_sent,
-                invitation_receive,
-                job_completed,
-                total_worked_hours,
-                gross_earnings
-            }
+            stats: [
+                {
+                    title: "Application Sent",
+                    number: application_sent,
+                },
+                {
+                    title: "Invitations Received",
+                    number: invitation_receive,
+                },
+                {
+                    title: "Job Completed",
+                    number: job_completed,
+                },
+                {
+                    title: "Total Hours Worked",
+                    number: total_worked_hours,
+                },
+                {
+                    title: "Gross Earning",
+                    number: gross_earnings,
+                },
+            ]
         };
         logger.info("Report Fetched succesfully");
         return responseData.success(res, result, "Report Fetched succesfully");

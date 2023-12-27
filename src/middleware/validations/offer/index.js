@@ -14,7 +14,7 @@ const offerUpdateValidation = (req, res, next) => {
     const schema = Joi.object({
         offer_id: Joi.string().required(),
         job_id: Joi.string().required(),
-        status: Joi.number().required()
+        status: Joi.string().required()
     })
     validateRequest(req, res, schema, next);
 }

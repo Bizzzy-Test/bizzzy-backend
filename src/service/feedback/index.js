@@ -5,9 +5,15 @@ const FeedbackSchema = require('../../models/feedback');
 const mongoose = require('mongoose');
 
 const postFeedback = async (body, userData, res) => {
+    console.log({
+        "userdata": userData,
+        "body": body
+    });
+
     return new Promise(async () => {
         body['sender_id'] = userData._id
         const feedbackSchema = new FeedbackSchema(body);
+        if (userData.role === 1) { } else { }
         await feedbackSchema.save().then((result) => {
             logger.info(`${messageConstants.FEEDBACK_SAVED_SUCCESSFULLY}`);
             return responseData.success(res, result, messageConstants.FEEDBACK_SAVED_SUCCESSFULLY);
