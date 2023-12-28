@@ -1,9 +1,9 @@
 const urlConstants = {
     USER_REGISTER: '/register',
-    VERIFY_EMAIL: '/verify-email',
+    VERIFY_EMAIL: '/email/verification',
 
     //==
-    RESEND_VERIFY_EMAIL: '/resend-verify-email',
+    RESEND_VERIFY_EMAIL: '/email/resend-verification',
     // ===
     USER_PROFILE: '/profile',
     USER_LOGIN: '/login',
@@ -44,28 +44,19 @@ const urlConstants = {
     END_CONTRACT: '/contract/end',
     GET_REPORT_DATA: '/reports',
     GET_CATEGORIES: '/category',
-    ADD_SKILLS: '/add/skill',
+    ADD_SKILLS: '/skill/add',
     GET_SKILLS: '/skills',
     // GET_INVITED_FREELANCERS_LIST: '/invited-freelancers-list',
 
-    OFFER_SEND: '/offer-send',
-    OFFER_UPDATE: '/offer-update',
-    OFFERS_LIST_GET: '/get-offers-list',
+    OFFER_SEND: '/offer/send',
+    OFFER_UPDATE: '/offer/update',
+    OFFERS_LIST_GET: '/offers/list',
 
     // JOB_HIRED_LIST_GET: '/client/all-hired',
     HIRED_LIST_GET: '/client/all-hired',
     JOB_HIRED_LIST_GET: '/client/hired',
-
     FREELANCER_OFFER_DETAILS: '/freelancer/offer-details',
 
-    ADD_COMMENT: '/comment',
-    ADD_GOAL: '/goal',
-    GET_GOAL_LIST: '/goal',
-    UPDATE_GOAL_IS_COMPLETED: '/updateIsCompleted',
-    REPLY_COMMENT: '/reply-comment',
-    COMMENT_LIST: '/comment/list',
-    ADD_EVENT: '/event',
-    LIST_CATEGORY: '/getAllCategories',
 
     FORGOT_PASSWORD: '/forgot-password',
     CHANGE_PASSWORD: '/change-password',
@@ -79,7 +70,7 @@ const urlConstants = {
     GET_JOB_PROPOSALS_BY_JOB_ID: '/job/:jobId/proposal',
     GET_PROPOSAL_BY_USER: '/job-proposal-by-user',
 
-    POST_FEEDBACK: '/add/feedback',
+    POST_FEEDBACK: '/feedback/add',
     GET_FEEDBACK: '/feedback',
 
     // Dashboard
