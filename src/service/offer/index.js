@@ -140,7 +140,7 @@ const updateOffer = async (req, res) => {
         if (!existingOffer) {
             // Offer not found
             logger.error(`${messageConstants.NOT_FOUND}`);
-            return responseData.fail(res, [], messageConstants.NOT_FOUND);
+            return responseData.fail(res, "You're not able to accept of reject this offer", 404);
         }
 
         if (existingOffer.status == 'accepted') {
@@ -158,9 +158,9 @@ const updateOffer = async (req, res) => {
         }
 
         if (existingOffer.status !== 'pending') {
-            logger.error("You've already reject the offer");
+            logger.error("You can't accept or reject this offer");
             return responseData.fail(
-                res, "You've already reject the offer", 400
+                res, "You can't accept or reject this offer", 400
             );
         }
 
