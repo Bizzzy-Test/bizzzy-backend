@@ -16,13 +16,14 @@ const sendOffer = async (req, res) => {
     }
 }
 
-const updateOffer = async (req, res) => {
+const updateOfferStatus = async (req, res) => {
     try {
-        const response = await offerService.updateOffer(req, res);
-        logger.info(`${messageConstants.RESPONSE_FROM} Update offer API`, JSON.stringify(response));
+        const userData = await getUserData(req, res);
+        const response = await offerService.updateOfferStatus(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} updateOfferStatus API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
-        logger.error(`Update offer API ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`updateOfferStatus ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 }
@@ -113,7 +114,7 @@ const endContract = async (req, res) => {
 module.exports = {
     sendOffer,
     getOffersList,
-    updateOffer,
+    updateOfferStatus,
     getHiredList,
     getJobHiredList,
     getAcceptedOfferByFreelancerId,

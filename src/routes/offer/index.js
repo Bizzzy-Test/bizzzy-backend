@@ -5,7 +5,7 @@ const upload = require('../../middleware/image_upload');
 
 module.exports = (app) => {
     app.post(urlConstants.OFFER_SEND, jsonWebToken.validateToken, offerValidator.offerValidation, api.sendOffer);
-    app.post(urlConstants.OFFER_UPDATE, jsonWebToken.validateToken, offerValidator.offerUpdateValidation, api.updateOffer);
+    app.post(urlConstants.OFFER_UPDATE, jsonWebToken.validateToken, api.updateOfferStatus);
     app.get(urlConstants.OFFERS_LIST_GET, jsonWebToken.validateToken, api.getOffersList);
     app.get(urlConstants.FREELANCER_OFFER_DETAILS, jsonWebToken.validateToken, api.getOfferDetails);
     app.get(urlConstants.HIRED_LIST_GET, jsonWebToken.validateToken, api.getHiredList);
