@@ -2,6 +2,7 @@ const { responseData, messageConstants } = require("../../constants");
 const UserSchema = require('../../models/users');
 const JobSchema = require('../../models/job');
 const OfferSchema = require('../../models/offers');
+const HiredFreelancersSchema = require('../../models/hiredFreelancers');
 const ProfileSchema = require('../../models/profile');
 const ClientProfileSchema = require('../../models/clientProfile');
 const InvitationSchema = require('../../models/invite');
@@ -159,15 +160,15 @@ const getUserProfile = async (userData, res) => {
             profile = profile.toObject();
             job_posted = await JobSchema.find({ client_detail: userId })
             job_open = await JobSchema.find({ client_detail: userId, status: 'open' })
-            hired_freelancers = await OfferSchema.distinct('freelencer_id', { client_id: userData._id, status: { $ne: 'pending' } });
+            hired_freelancers = await HiredFreelancersSchema.distinct('freelencer_id', { client_id: userData._id });
             active_freelancers = await OfferSchema.distinct('freelencer_id', { client_id: userData._id, status: 'accepted' });
             profile.job_posted = job_posted?.length || 0;
             profile.job_open = job_open?.length || 0;
             profile.hired_freelancers = hired_freelancers?.length || 0;
             profile.active_freelancers = active_freelancers?.length || 0;
-            profile.total_amount_spend =  0;
-            profile.avg_review =  4.2;
-            profile.total_hours =  5;
+            profile.total_amount_spend = 0;
+            profile.avg_review = 4.2;
+            profile.total_hours = 5;
         } else {
             profile = await ProfileSchema.findOne({ user_id: userId });
             profile = profile.toObject();
@@ -397,5 +398,4 @@ module.exports = {
     searchFreelencers,
     editFreelencerProfile,
     editClientProfile,
-    deleteExperience
 }

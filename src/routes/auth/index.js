@@ -7,8 +7,8 @@ const userAPI = require("../../controller/user")
 
 module.exports = (app) => {
     app.post(urlConstants.USER_REGISTER, authValidator.signUpValidation, api.signUp);
-    app.post(urlConstants.VERIFY_EMAIL, authValidator.emailVerifyValidation, api.verifyEmail);
-    app.post(urlConstants.RESEND_VERIFY_EMAIL, authValidator.emailVerifyValidation, api.resendEmailVerification);
+    app.post(urlConstants.VERIFY_EMAIL, api.verifyEmail);
+    app.post(urlConstants.RESEND_VERIFY_EMAIL, api.resendEmailVerification);
     app.post(urlConstants.USER_LOGIN, authValidator.signInValidation, api.signIn);
     
     //TODO Refresh Token

@@ -4,6 +4,7 @@ const OfferTaskSchema = require('../../models/offer_task');
 const UserSchema = require('../../models/users');
 const OfferSchema = require('../../models/offers');
 const JobSchema = require('../../models/job');
+const HiredFreelancersSchema = require('../../models/hiredFreelancers');
 const ClientSchema = require('../../models/clientProfile');
 const { logger, mail } = require('../../utils');
 const mongoose = require("mongoose");
@@ -127,79 +128,57 @@ const getOffersList = async (userData, res) => {
     })
 }
 
-const updateOffer = async (req, res) => {
+const updateOfferStatus = async (req, userData, res) => {
     return new Promise(async () => {
-        const { offer_id, status, job_id } = req.body;
-
-        const existingOffer = await OfferSchema.findOne({
-            _id: new ObjectId(offer_id),
-            freelencer_id: new ObjectId(req.userId),
-            job_id: new ObjectId(job_id),
-        });
-
-        if (!existingOffer) {
-            // Offer not found
-            logger.error(`${messageConstants.NOT_FOUND}`);
-            return responseData.fail(res, "You're not able to accept of reject this offer", 404);
-        }
-
-        if (existingOffer.status == 'accepted') {
-            logger.error("You've already accept the offer");
-            return responseData.fail(
-                res, "You've already accept the offer", 400
-            );
-        }
-
-        if (existingOffer.status == 'rejected') {
-            logger.error("You've already reject the offer");
-            return responseData.fail(
-                res, "You've already reject the offer", 400
-            );
-        }
-
-        if (existingOffer.status !== 'pending') {
-            logger.error("You can't accept or reject this offer");
-            return responseData.fail(
-                res, "You can't accept or reject this offer", 400
-            );
-        }
-
         await OfferSchema.find(
             {
-                $and: [
-                    { freelencer_id: new ObjectId(req.userId) },
-                    { job_id: new ObjectId(job_id) },
-                    { _id: new ObjectId(offer_id) }
-                ]
+                _id: req?.body?.offer_id ? new ObjectId(req?.body?.offer_id) : new ObjectId(req?.query?.offer_id)
             }
         ).then(async (result) => {
             if (result.length !== 0) {
-                await OfferSchema.findOneAndUpdate(
+                let offerData = result[0];
+                await OfferSchema.updateOne(
                     {
-                        $and: [
-                            { _id: new ObjectId(offer_id) },
-                            { freelencer_id: new ObjectId(req.userId) },
-                            { job_id: new ObjectId(job_id) },
-                        ]
+                        _id: req?.body?.offer_id ? new ObjectId(req?.body?.offer_id) : new ObjectId(req?.query?.offer_id)
                     },
-                    { $set: { status: status } },
+                    { $set: { status: 'accepted' } },
                     { new: true }
-                ).then((result) => {
-                    if (result.length !== 0) {
+                ).then(async (result) => {
+                    if (result?.modifiedCount !== 0) {
+                        offerData = { ...offerData.toObject() };
+                        await HiredFreelancersSchema.find(
+                            {
+                                freelencer_id: new ObjectId(offerData.freelencer_id),
+                                client_id: new ObjectId(offerData.client_id),
+                                job_id: new ObjectId(offerData.job_id)
+                            }
+                        ).then(async (result) => {
+                            if (result?.length !== 0) {
+                                logger.info('Freelancer already hired for this job')
+                            } else {
+                                delete offerData._id;
+                                offerData.status = 'accepted';
+                                const hiredFreelancersSchema = new HiredFreelancersSchema(offerData);
+                                await hiredFreelancersSchema.save().then(async (result) => {
+                                    logger.info('Freelancer added in the hired list')
+                                });
+                            }
+                        })
+
                         logger.info(messageConstants.OFFER_UPDATED_SUCCESSFULLY);
                         return responseData.success(res, result, messageConstants.OFFER_UPDATED_SUCCESSFULLY);
+                    } else if (result?.matchedCount !== 0) {
+                        logger.info("Offer already Updated");
+                        return responseData.success(res, result, "Offer already Updated");
                     } else {
                         logger.error(`Offer ${messageConstants.NOT_FOUND}`);
-                        return responseData.success(res, [], messageConstants.NOT_FOUND);
+                        return responseData.success(res, result, `Offer ${messageConstants.NOT_FOUND}`);
                     }
+                }).catch((err) => {
+                    logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                    return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
                 })
-            } else {
-                logger.error("You are not allow to perform action");
-                return responseData.fail(res, "You are not allow to perform action", 400);
             }
-        }).catch((err) => {
-            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
         })
     })
 }
@@ -481,7 +460,7 @@ const endContract = async (req, userData, res) => {
 module.exports = {
     sendOffer,
     getOffersList,
-    updateOffer,
+    updateOfferStatus,
     getHiredList,
     getJobHiredList,
     getAcceptedOfferByFreelancerId,

@@ -29,7 +29,7 @@ const signIn = async (req, res) => {
 
 const verifyEmail = async (req, res) => {
     try {
-        const response = await authService.verifyEmail(req.body, res);
+        const response = await authService.verifyEmail(req, res);
         logger.info(`${messageConstants.RESPONSE_FROM} Email Verification API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
@@ -41,19 +41,12 @@ const verifyEmail = async (req, res) => {
 // ==== Resend Email Verification ==== controller
 const resendEmailVerification = async (req, res) => {
     try {
-        const email = req.body.email;
-        const response = await authService.resendEmailVerification(email);
-        res.status(200).json({
-            data: response,
-            success: true,
-            message: messageConstants.EMAIL_RESENT_FOR_VERIFICATION
-        });
-    } catch (error) {
-        res.status(500).json({
-            data: error,
-            success: false,
-            message: messageConstants.INTERNAL_SERVER_ERROR
-        })
+        const response = await authService.resendEmailVerification(req, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} resendEmailVerification API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`resendEmailVerification API ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
     }
 }
 
