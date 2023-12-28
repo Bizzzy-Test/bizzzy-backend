@@ -183,7 +183,7 @@ const resendEmailVerification = async (req, res) => {
             } else {
                 const temporaryEmailVerificationToken = uuid.v4().replace(/\-/g, "");
                 const userId = result._id
-                const name = `${result.firstname} ${result.lastname}`;
+                const name = `${result.firstName} ${result.lastName}`;
                 const link = `${process.env.BASE_URL}/verify-email?id=${userId}&token=${temporaryEmailVerificationToken}`;
                 const mailContent = {
                     name,
