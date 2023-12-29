@@ -131,36 +131,41 @@ const verifyEmail = async (req, res) => {
             _id: new ObjectId(req?.body?.user_id)
         }).then(async (result) => {
             let userData = result
-            if (result && result?.is_email_verified === true) {
-                logger.info(`${messageConstants.EMAIL_ALREADY_VERIFIED} for ${userData.email}`);
-                return responseData.success(res, {}, messageConstants.EMAIL_ALREADY_VERIFIED);
+            if (result) {
+                if (result?.is_email_verified === true) {
+                    logger.info(`${messageConstants.EMAIL_ALREADY_VERIFIED} for ${userData.email}`);
+                    return responseData.success(res, {}, messageConstants.EMAIL_ALREADY_VERIFIED);
+                } else {
+                    await UserSchema.updateOne(
+                        {
+                            _id: new ObjectId(result._id),
+                            email_verification_token: req?.body?.token
+                        },
+                        {
+                            is_email_verified: true
+                        },
+                        {
+                            new: true
+                        }
+                    ).then(async (result) => {
+                        if (result?.modifiedCount !== 0) {
+                            logger.info(`${messageConstants.EMAIL_VERIFIED} for ${userData.email}`);
+                            return responseData.success(res, {}, messageConstants.EMAIL_VERIFIED);
+                        } else if (result?.matchedCount !== 0) {
+                            logger.info("Email already verified");
+                            return responseData.success(res, result, "Email already verified");
+                        } else {
+                            logger.error('Token is invalid');
+                            return responseData.success(res, result, 'Token is invalid');
+                        }
+                    }).catch((err) => {
+                        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                        return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+                    })
+                }
             } else {
-                await UserSchema.updateOne(
-                    {
-                        _id: new ObjectId(result._id)
-                    },
-                    {
-                        is_email_verified: true
-                    },
-                    {
-                        new: true
-                    }
-                ).then(async (result) => {
-                    console.log('kk', result)
-                    if (result?.modifiedCount !== 0) {
-                        logger.info(`${messageConstants.EMAIL_VERIFIED} for ${userData.email}`);
-                        return responseData.success(res, {}, messageConstants.EMAIL_VERIFIED);
-                    } else if (result?.matchedCount !== 0) {
-                        logger.info("Email already verified");
-                        return responseData.success(res, result, "Email already verified");
-                    } else {
-                        logger.error('User Not Found');
-                        return responseData.success(res, result, 'User Not Found');
-                    }
-                }).catch((err) => {
-                    logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-                    return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
-                })
+                logger.error(messageConstants.USER_NOT_FOUND);
+                return responseData.fail(res, messageConstants.USER_NOT_FOUND, 404);
             }
         }).catch((err) => {
             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
@@ -182,6 +187,11 @@ const resendEmailVerification = async (req, res) => {
                 return responseData.success(res, {}, messageConstants.EMAIL_ALREADY_VERIFIED);
             } else {
                 const temporaryEmailVerificationToken = uuid.v4().replace(/\-/g, "");
+                await UserSchema.updateOne(
+                    { _id: result._id },
+                    { $set: { email_verification_token: temporaryEmailVerificationToken } },
+                    { new: true }
+                )
                 const userId = result._id
                 const name = `${result.firstName} ${result.lastName}`;
                 const link = `${process.env.BASE_URL}/verify-email?id=${userId}&token=${temporaryEmailVerificationToken}`;
@@ -369,7 +379,6 @@ const userProfile = async (body, res) => {
 
 
 const getUserProfileById = async (userId, res) => {
-    console.log(userId);
     try {
         const client_user = await client_profile.findOne({ user_id: userId });
         const freelancer_user = await freelencer_profile.findOne({ user_id: userId });
@@ -378,7 +387,7 @@ const getUserProfileById = async (userId, res) => {
         } else if (freelancer_user) {
             return responseData.success(res, freelancer_user, `User profile fetched successfully`);
         } else {
-            console.log(`User profile not found`);
+            logger.info(`User profile not found`);
             return responseData.fail(res, `User profile not found`, 404);
         }
     } catch (error) {
@@ -417,7 +426,6 @@ const uploadImage = async (req, res) => {
 }
 
 const getUserProfile = async (req, userData, res) => {
-    // console.log(req.query.user_id)
     return new Promise(async () => {
         const query = [
             {
