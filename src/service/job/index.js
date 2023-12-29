@@ -62,7 +62,7 @@ const closeJob = async (req, userData, res) => {
 // ==== get all job post ==== service
 const getAllJobPost = async () => {
     try {
-        const jobSchema = await JobSchema.find().populate({
+        const jobSchema = await JobSchema.find({ status: { $ne: 'closed' } }).populate({
             path: 'client_detail',
             select: 'country firstName lastName',
         });
