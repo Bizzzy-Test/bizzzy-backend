@@ -82,7 +82,7 @@ const urlConstants = {
     GET_JOB: '/job/get-all',
     GET_SINGEL_JOB: '/job/get-job/:id',
     GET_JOB_BY_USERID: '/job/client/jobs',
-    DELETE_JOB: '/job/delete/:id',
+    DELETE_JOB: '/job/delete',
     UPDATE_JOB: '/job/update',
     JOB_SEARCH: '/job/search',
     // = Job post url =

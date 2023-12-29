@@ -240,10 +240,10 @@ const getJobPostByUserId = async (req, userData, res) => {
 // ==== update job post ==== service
 const updateJobPost = async (req, userData, fileUrl, res) => {
     return new Promise(async () => {
-        const jobId = new ObjectId(req.query.job_id);
+        const job_id = new ObjectId(req.query.job_id);
         await JobSchema.findOne(
             {
-                _id: jobId,
+                _id: job_id,
                 client_detail: userData._id.toString()
             }
         ).then(async (result) => {
@@ -251,7 +251,7 @@ const updateJobPost = async (req, userData, fileUrl, res) => {
                 req.body['file'] = fileUrl || result.file;
                 await JobSchema.findOneAndUpdate(
                     {
-                        _id: jobId,
+                        _id: job_id,
                         client_detail: userData._id.toString()
                     },
                     req.body,
