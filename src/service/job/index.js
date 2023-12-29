@@ -240,32 +240,41 @@ const getJobPostByUserId = async (req, userData, res) => {
 // ==== update job post ==== service
 const updateJobPost = async (req, userData, fileUrl, res) => {
     return new Promise(async () => {
-        await JobSchema.find(
+        const jobId = new ObjectId(req.query.job_id);
+        await JobSchema.findOne(
             {
-                _id: new ObjectId(req.query.job_id),
+                _id: jobId,
                 client_detail: userData._id.toString()
             }
         ).then(async (result) => {
-            req.body['file'] = fileUrl ? fileUrl : result[0].file;
-            await JobSchema.findOneAndUpdate(
-                {
-                    _id: new ObjectId(req.query.job_id),
-                    client_detail: userData._id.toString()
-                },
-                req.body,
-                { new: true, upsert: true }
-            ).then(async (result) => {
-                if (result.length !== 0) {
-                    logger.info('Job Updated successfully');
-                    return responseData.success(res, result, 'Job Updated successfully');
-                } else {
-                    logger.error('Job Not Updated');
-                    return responseData.fail(res, 'Job Not Updated', 401);
-                }
-            }).catch((err) => {
-                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
-            })
+            if (result) {
+                req.body['file'] = fileUrl || result.file;
+                await JobSchema.findOneAndUpdate(
+                    {
+                        _id: jobId,
+                        client_detail: userData._id.toString()
+                    },
+                    req.body,
+                    { new: true, upsert: true }
+                ).then((result) => {
+                    if (result) {
+                        logger.info('Job updated successfully');
+                        return responseData.success(res, result, 'job updated successfully');
+                    } else {
+                        logger.error('Job not updated');
+                        return responseData.fail(res, 'Job not updated', 401);
+                    }
+                }).catch((err) => {
+                    logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}.${err}`);
+                    return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}.${err}`, 500);
+                })
+            } else {
+                logger.error('Job not found');
+                return responseData.fail(res, 'Job not found', 200);
+            }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}.${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}.${err}`, 500);
         })
     })
 };
