@@ -196,7 +196,6 @@ const profileImageUpload = async (req, userData, res) => {
             // Create a new profile if it doesn't exist
             profile = new profileSchema({ userId: req.userId });
         }
-        console.log('FILE HERE', req.file);
         if (req.file) {
             const fileBuffer = req.file.path;
             const folder_name = userData.role == 1 ? 'freelancers' : 'clients';

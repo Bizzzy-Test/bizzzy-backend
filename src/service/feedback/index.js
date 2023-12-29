@@ -8,10 +8,6 @@ const ObjectId = mongoose.Types.ObjectId;
 
 
 // const postFeedback = async (body, userData, res) => {
-//     console.log({
-//         "userdata": userData,
-//         "body": body
-//     });
 //     const { job_id, sender_id, reciever_id } = body;
 //     const feedbackSchema = new FeedbackSchema(body);
 
@@ -22,8 +18,6 @@ const ObjectId = mongoose.Types.ObjectId;
 //                 client_id: new ObjectId(reciever_id),
 //                 job_id: new ObjectId(job_id),
 //             });
-
-//             console.log(existingOffer);
 
 //             if (!existingOffer) {
 //                 // Offer not found
@@ -133,11 +127,6 @@ const ObjectId = mongoose.Types.ObjectId;
 // }
 
 const postFeedback = (body, userData, res) => {
-    console.log({
-        "userdata": userData,
-        "body": body
-    });
-
     const { job_id, sender_id, reciever_id } = body;
     const feedbackSchema = new FeedbackSchema(body);
 

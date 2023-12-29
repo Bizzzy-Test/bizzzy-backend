@@ -15,7 +15,7 @@ const signUpValidation = (req, res, next) => {
 }
 const emailVerifyValidation = (req, res, next) => {
     const schema = Joi.object({
-        id: Joi.string().required(),
+        user_id: Joi.string().required(),
         token: Joi.string().required()
     })
     validateRequest(req, res, schema, next);
