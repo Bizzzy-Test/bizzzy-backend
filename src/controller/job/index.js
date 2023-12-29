@@ -144,44 +144,14 @@ const getSingleJobPost = async (req, res) => {
 // ==== update job post ==== controller
 const updateJobPost = async (req, res) => {
     try {
-        const userToken = req.headers.token;
-        const jobId = req.params.id;
-        const jobData = req.body;
-        const folderName = "job-files";
-
-        // Check if a new file was uploaded in the request
-        if (req.file) {
-            const fileBuffer = req.file.buffer;
-            // Upload the new file buffer to S3 and get its access URL
-            const fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folderName);
-            // Add the new file URL to the jobData object
-            jobData.file = fileUrl;
-
-            // Delete the old file from S3
-            const existingJob = await JobService.getSingleJobPost(jobId);
-            const existingFileKey = existingJob.fileUrl.split('/').pop();
-            await deleteFile(existingFileKey);
-
-
-        } else {
-            // If no new file was uploaded, keep the existing file URL in jobData
-            const existingJob = await JobService.getSingleJobPost(jobId);
-            jobData.file = existingJob.file;
-        }
-
-        const response = await JobService.updateJobPost(jobData, jobId, userToken);
-        res.status(200).json({
-            data: response,
-            success: true,
-            message: messageConstants.JOB_UPDATED_SUCCESSFULLY,
-        });
+        const userData = await getUserData(req, res);
+        const fileUrl = await getFileUrl(req, res);
+        const response = await JobService.updateJobPost(req, userData, fileUrl, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} updateJobPost API`, JSON.stringify(response));
+        res.send(response);
     } catch (error) {
-        logger.error(`Job ${messageConstants.API_FAILED} ${error}`);
-        res.status(500).json({
-            data: error,
-            success: false,
-            message: messageConstants.INTERNAL_SERVER_ERROR,
-        });
+        logger.error(`updateJobPost ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
     }
 };
 
@@ -189,24 +159,13 @@ const updateJobPost = async (req, res) => {
 // ==== delete job post ==== controller
 const deleteJobPost = async (req, res) => {
     try {
-        const userToken = req.headers.token;
-        const jobId = req.params.id;
-        const response = await JobService.deleteJobPost(jobId, userToken);
-        logger.info(`${messageConstants.RESPONSE_FROM} Job API`, JSON.stringify(response));
-
-        res.status(200).json({
-            data: response,
-            success: true,
-            message: messageConstants.JOB_DELETED_SUCCESSFULLY
-        });
-
+        const userData = await getUserData(req, res);
+        const response = await JobService.deleteJobPost(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} deleteJobPost API`, JSON.stringify(response));
+        res.send(response);
     } catch (error) {
-        logger.error(`Job ${messageConstants.API_FAILED} ${error}`);
-        res.status(500).json({
-            data: error,
-            success: false,
-            message: messageConstants.INTERNAL_SERVER_ERROR
-        })
+        logger.error(`deleteJobPost ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
     }
 }
 

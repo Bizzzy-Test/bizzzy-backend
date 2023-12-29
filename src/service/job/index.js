@@ -238,41 +238,64 @@ const getJobPostByUserId = async (req, userData, res) => {
 }
 
 // ==== update job post ==== service
-const updateJobPost = async (body, jobId, userToken) => {
-    try {
-        const user = jwt.decode(userToken);
-
-        if (user.role !== "2" && user._id !== body.client_detail) {
-            throw new Error(messageConstants.USER_NOT_AUTHORIZED);
-        }
-
-        const updatedJob = await JobSchema.findByIdAndUpdate(jobId, body, { new: true })
-
-        if (!updatedJob) {
-            throw new Error(messageConstants.JOB_NOT_FOUND);
-        }
-
-        logger.info(messageConstants.JOB_UPDATED_SUCCESSFULLY);
-        return updatedJob;
-    } catch (error) {
-        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
-        throw new Error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
-    }
+const updateJobPost = async (req, userData, fileUrl, res) => {
+    return new Promise(async () => {
+        await JobSchema.find(
+            {
+                _id: new ObjectId(req.query.job_id),
+                client_detail: userData._id.toString()
+            }
+        ).then(async (result) => {
+            req.body['file'] = fileUrl ? fileUrl : result[0].file;
+            await JobSchema.findOneAndUpdate(
+                {
+                    _id: new ObjectId(req.query.job_id),
+                    client_detail: userData._id.toString()
+                },
+                req.body,
+                { new: true, upsert: true }
+            ).then(async (result) => {
+                if (result.length !== 0) {
+                    logger.info('Job Updated successfully');
+                    return responseData.success(res, result, 'Job Updated successfully');
+                } else {
+                    logger.error('Job Not Updated');
+                    return responseData.fail(res, 'Job Not Updated', 401);
+                }
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            })
+        })
+    })
 };
-// 
 
 // ==== delete job post ==== service
-const deleteJobPost = async (jobId, userToken) => {
-    const ObjectId = mongoose.Types.ObjectId;
-    jobId = new ObjectId(jobId)
-    const user = jwt.decode(userToken);
-    if (user.role !== 2) {
-        logger.error(`${messageConstants.USER_NOT_AUTHORIZED}`);
-        throw new Error(`${messageConstants.USER_NOT_AUTHORIZED}`);
-    } else {
-        const data = await JobSchema.findByIdAndDelete(jobId);
-        return data;
-    }
+const deleteJobPost = async (req, userData, res) => {
+    return new Promise(async () => {
+        if (userData?.role == 2) {
+            await JobSchema.deleteOne(
+                {
+                    _id: new ObjectId(req.query.job_id),
+                    client_detail: userData._id.toString()
+                }
+            ).then(async (result) => {
+                if (result?.deletedCount !== 0) {
+                    logger.info('Job Deleted successfully');
+                    return responseData.success(res, result, 'Job Deleted successfully');
+                } else {
+                    logger.error('Job Not Found');
+                    return responseData.fail(res, 'Job Not Found', 200);
+                }
+            }).catch((err) => {
+                console.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            })
+        } else {
+            logger.error('Only Client can delete the job');
+            return responseData.fail(res, 'Only Client can delete the job', 500);
+        }
+    })
 }
 
 
