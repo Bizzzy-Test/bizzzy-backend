@@ -14,12 +14,12 @@ const getJobForDashboard = async (req, res) => {
             {
                 $lookup: {
                     from: 'client_profiles',
-                    let: { clientId: { $toObjectId: '$client_details' } }, // Convert client_details to ObjectId
+                    let: { clientId: { $toObjectId: '$client_id' } }, 
                     pipeline: [
                         {
                             $match: {
                                 $expr: {
-                                    $eq: ['$user_id', '$$clientId'] // Match with the userId field of client_profiles
+                                    $eq: ['$user_id', '$$clientId'] 
                                 }
                             }
                         },

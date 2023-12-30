@@ -153,13 +153,13 @@ const clientProfile = async (req, userData, res) => {
 
 const getUserProfile = async (userData, res) => {
     return new Promise(async () => {
-        const userId = userData._id.toString();
+        const userId = userData._id;
         let profile;
         if (userData.role == 2) {
             profile = await ClientProfileSchema.findOne({ user_id: userId });
             profile = profile.toObject();
-            job_posted = await JobSchema.find({ client_details: userId })
-            job_open = await JobSchema.find({ client_details: userId, status: 'open' })
+            job_posted = await JobSchema.find({ client_id: userId })
+            job_open = await JobSchema.find({ client_id: userId, status: 'open' })
             hired_freelancers = await HiredFreelancersSchema.distinct('freelencer_id', { client_id: userData._id });
             active_freelancers = await OfferSchema.distinct('freelencer_id', { client_id: userData._id, status: 'accepted' });
             profile.job_posted = job_posted?.length || 0;

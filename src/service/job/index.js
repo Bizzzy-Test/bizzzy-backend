@@ -9,7 +9,7 @@ const ObjectId = mongoose.Types.ObjectId;
 // ==== create job post ==== service
 const createJobPost = async (req, userData, taskFile, res) => {
     return new Promise(async () => {
-        req.body['client_details'] = userData._id
+        req.body['client_id'] = userData._id
         req.body['file'] = taskFile
         if (userData.role == 2) {
             const jobSchema = new JobSchema(req.body);
@@ -35,7 +35,7 @@ const closeJob = async (req, userData, res) => {
         } else {
             await JobSchema.updateOne(
                 {
-                    client_details: userData._id.toString(),
+                    client_id: userData._id,
                     _id: new ObjectId(req.body.job_id)
                 },
                 { $set: { status: 'closed' } },
@@ -63,7 +63,7 @@ const closeJob = async (req, userData, res) => {
 const getAllJobPost = async () => {
     try {
         const jobSchema = await JobSchema.find({ status: { $ne: 'closed' } }).populate({
-            path: 'client_details',
+            path: 'client_id',
             select: 'country firstName lastName',
         });
 
@@ -195,7 +195,7 @@ const searchJobPost = async (req, userData, res) => {
 const getSingleJobPost = async (jobId) => {
     try {
         const jobSchema = await JobSchema.findById({ _id: jobId }).populate({
-            path: 'client_details',
+            path: 'client_id',
             select: 'country firstName lastName',
         });
         return jobSchema;
@@ -211,7 +211,7 @@ const getJobPostByUserId = async (req, userData, res) => {
     return new Promise(async () => {
         const query = [
             {
-                $match: { client_details: userData._id.toString() }
+                $match: { client_id: userData._id }
             },
             {
                 $lookup: {
@@ -244,7 +244,7 @@ const updateJobPost = async (req, userData, fileUrl, res) => {
         await JobSchema.findOne(
             {
                 _id: job_id,
-                client_detail: userData._id.toString()
+                client_id: userData._id
             }
         ).then(async (result) => {
             if (result) {
@@ -252,7 +252,7 @@ const updateJobPost = async (req, userData, fileUrl, res) => {
                 await JobSchema.findOneAndUpdate(
                     {
                         _id: job_id,
-                        client_detail: userData._id.toString()
+                        client_id: userData._id
                     },
                     req.body,
                     { new: true, upsert: true }
@@ -286,7 +286,7 @@ const deleteJobPost = async (req, userData, res) => {
             await JobSchema.deleteOne(
                 {
                     _id: new ObjectId(req.query.job_id),
-                    client_detail: userData._id.toString()
+                    client_id: userData._id
                 }
             ).then(async (result) => {
                 if (result?.deletedCount !== 0) {
