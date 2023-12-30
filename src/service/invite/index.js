@@ -180,7 +180,7 @@ const getInvitedFreelancers = async (userData, res) => {
                                 _id: 1,
                                 title: 1,
                                 description: 1,
-                                client_detail: 1,
+                                client_details: 1,
                                 budget: 1,
                                 amount: 1,
                                 file: 1,
@@ -246,7 +246,7 @@ const getInvitationDetailForFreelancer = async (req, res,) => {
                     localField: 'job_id',
                     foreignField: '_id',
                     pipeline: [
-                        { $project: { file: 0, client_detail: 0, } }
+                        { $project: { file: 0, client_details: 0, } }
                     ],
                     as: 'job_details'
                 }

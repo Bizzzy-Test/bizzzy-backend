@@ -10,7 +10,7 @@ const JobSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    client_detail: {
+    client_details: {
         type: String,
         ref: 'users'
     },

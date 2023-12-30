@@ -35,7 +35,7 @@ const sendOffer = async (body, userData, res) => {
                     if (find_freelencer) {
                         const client_details = await ClientSchema.findOne({ user_id: userData._id });
                         if (client_details) {
-                            const job_details = await JobSchema.findOne({ client_detail: userData._id.toString() });
+                            const job_details = await JobSchema.findOne({ client_details: userData._id.toString() });
                             if (job_details) {
                                 const mailContent = {
                                     name: find_freelencer.firstName + ' ' + find_freelencer.lastName,
@@ -388,7 +388,7 @@ const getOfferDetails = async (req, res,) => {
                     localField: 'job_id',
                     foreignField: '_id',
                     pipeline: [
-                        { $project: { file: 0, client_detail: 0, } }
+                        { $project: { file: 0, client_details: 0, } }
                     ],
                     as: 'job_details'
                 }

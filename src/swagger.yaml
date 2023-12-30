@@ -2053,7 +2053,7 @@ components:
                       format: uuid
                     title:
                       type: string
-                    client_detail:
+                    client_details:
                       type: string
                     budget:
                       type: number
@@ -2125,7 +2125,7 @@ components:
                       format: uuid
                     title:
                       type: string
-                    client_detail:
+                    client_details:
                       type: string
                     budget:
                       type: number
@@ -2198,7 +2198,7 @@ components:
           type: string
         description:
           type: string
-        client_detail:
+        client_details:
           type: string
         tags:
           type: array
@@ -2326,7 +2326,7 @@ components:
                 type: string
               description: 
                 type: string
-              client_detail: 
+              client_details: 
                 type: string
               budget: 
                 type: string
@@ -2375,7 +2375,7 @@ components:
                 type: string
               description: 
                 type: string
-              client_detail: 
+              client_details: 
                 type: object
                 properties:
                   _id: 
@@ -2470,7 +2470,7 @@ components:
                 type: string
               description: 
                 type: string
-              client_detail: 
+              client_details: 
                 type: object
                 properties:
                   _id: 

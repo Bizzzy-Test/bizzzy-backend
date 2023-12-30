@@ -9,7 +9,7 @@ const ObjectId = mongoose.Types.ObjectId;
 // ==== create job post ==== service
 const createJobPost = async (req, userData, taskFile, res) => {
     return new Promise(async () => {
-        req.body['client_detail'] = userData._id
+        req.body['client_details'] = userData._id
         req.body['file'] = taskFile
         if (userData.role == 2) {
             const jobSchema = new JobSchema(req.body);
@@ -35,7 +35,7 @@ const closeJob = async (req, userData, res) => {
         } else {
             await JobSchema.updateOne(
                 {
-                    client_detail: userData._id.toString(),
+                    client_details: userData._id.toString(),
                     _id: new ObjectId(req.body.job_id)
                 },
                 { $set: { status: 'closed' } },
@@ -63,7 +63,7 @@ const closeJob = async (req, userData, res) => {
 const getAllJobPost = async () => {
     try {
         const jobSchema = await JobSchema.find().populate({
-            path: 'client_detail',
+            path: 'client_details',
             select: 'country firstName lastName',
         });
 
@@ -195,7 +195,7 @@ const searchJobPost = async (req, userData, res) => {
 const getSingleJobPost = async (jobId) => {
     try {
         const jobSchema = await JobSchema.findById({ _id: jobId }).populate({
-            path: 'client_detail',
+            path: 'client_details',
             select: 'country firstName lastName',
         });
         return jobSchema;
@@ -211,7 +211,7 @@ const getJobPostByUserId = async (req, userData, res) => {
     return new Promise(async () => {
         const query = [
             {
-                $match: { client_detail: userData._id.toString() }
+                $match: { client_details: userData._id.toString() }
             },
             {
                 $lookup: {
@@ -242,7 +242,7 @@ const updateJobPost = async (body, jobId, userToken) => {
     try {
         const user = jwt.decode(userToken);
 
-        if (user.role !== "2" && user._id !== body.client_detail) {
+        if (user.role !== "2" && user._id !== body.client_details) {
             throw new Error(messageConstants.USER_NOT_AUTHORIZED);
         }
 

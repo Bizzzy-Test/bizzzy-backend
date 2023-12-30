@@ -14,7 +14,7 @@ const getJobForDashboard = async (req, res) => {
             {
                 $lookup: {
                     from: 'client_profiles',
-                    let: { clientId: { $toObjectId: '$client_detail' } }, // Convert client_detail to ObjectId
+                    let: { clientId: { $toObjectId: '$client_details' } }, // Convert client_details to ObjectId
                     pipeline: [
                         {
                             $match: {

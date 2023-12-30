@@ -83,7 +83,7 @@ const getMessageList = (req, user, res) => {
                     pipeline: [{
                         $project: {
                             title: 1,
-                            client_detail: 1,
+                            client_details: 1,
                             amount: 1,
                             budget: 1
                         }
@@ -178,7 +178,7 @@ const getChatUserList = (req, user, res) => {
                     from: 'jobs',
                     localField: 'job_ids',
                     foreignField: '_id',
-                    pipeline: [{ $project: { title: 1, client_detail: 1, budget: 1, amount: 1 } }],
+                    pipeline: [{ $project: { title: 1, client_details: 1, budget: 1, amount: 1 } }],
                     as: 'job_details'
                 }
             },
