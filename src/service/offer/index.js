@@ -9,6 +9,7 @@ const ClientSchema = require('../../models/clientProfile');
 const { logger, mail } = require('../../utils');
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
+const JobProposalSchema = require('../../models/jobProposal');
 
 // Send user invite
 const sendOffer = async (body, userData, res) => {
@@ -353,99 +354,209 @@ const getJobHiredList = async (userData, req, res) => {
 //     })
 // }
 
+// const getUsersJobs = async (req, userData, res) => {
+//     return new Promise(async () => {
+//         const query = [
+//             {
+//                 $match: {
+//                     freelencer_id: userData._id,
+//                 },
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'client_profiles',
+//                     localField: 'client_id',
+//                     foreignField: 'user_id',
+//                     pipeline: [
+//                         {
+//                             $project: {
+//                                 _id: 0,
+//                                 user_id: 1,
+//                                 firstName: 1,
+//                                 lastName: 1,
+//                                 location: 1,
+//                                 profile_image: 1,
+//                                 businessName: 1,
+//                             },
+//                         },
+//                     ],
+//                     as: 'client_profile',
+//                 },
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'jobs',
+//                     localField: 'job_id',
+//                     foreignField: '_id',
+//                     pipeline: [
+//                         {
+//                             $project: {
+//                                 _id: 0,
+//                                 title: 1,
+//                                 description: 1,
+//                                 amount: 1,
+//                                 budget: 1,
+//                                 experience: 1,
+//                                 status: 1, // Include the 'status' field in the project stage
+//                             },
+//                         },
+//                     ],
+//                     as: 'job_details',
+//                 },
+//             },
+//         ];
+
+//         await OfferSchema.aggregate(query)
+//             .then(async (result) => {
+//                 const activeJobs = [];
+//                 const completedJobs = [];
+//                 console.log(result);
+//                 result.forEach((offer) => {
+//                     if (offer.job_details.length > 0) {
+//                         const job = offer.job_details[0];
+//                         console.log({ "job---": job });
+//                         const jobWithClientProfile = {
+//                             ...job,
+//                             client_profile: offer.client_profile[0],
+//                         };
+
+//                         if (offer.status == 'accepted') {
+//                             activeJobs.push(jobWithClientProfile);
+//                         } else if (offer.status == 'completed') {
+//                             completedJobs.push(jobWithClientProfile);
+//                         }
+//                     }
+//                 });
+
+//                 const response = {
+//                     active_jobs: activeJobs,
+//                     completed_jobs: completedJobs,
+//                 };
+
+//                 if (activeJobs.length > 0 || completedJobs.length > 0) {
+//                     logger.info(`Jobs fetched successfully`);
+//                     return responseData.success(res, response, `Jobs fetched successfully`);
+//                 } else {
+//                     logger.info(`No jobs found`);
+//                     return responseData.success(res, response, `No jobs found`);
+//                 }
+//             })
+//             .catch((err) => {
+//                 logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+//                 return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+//             });
+//     });
+// };
+
+
 const getUsersJobs = async (req, userData, res) => {
     return new Promise(async () => {
-        const query = [
-            {
-                $match: {
-                    freelencer_id: userData._id,
+        try {
+            // Query to fetch offers with client profiles and job details
+            const offerQuery = [
+                {
+                    $match: {
+                        freelencer_id: userData._id,
+                    },
                 },
-            },
-            {
-                $lookup: {
-                    from: 'client_profiles',
-                    localField: 'client_id',
-                    foreignField: 'user_id',
-                    pipeline: [
-                        {
-                            $project: {
-                                _id: 0,
-                                user_id: 1,
-                                firstName: 1,
-                                lastName: 1,
-                                location: 1,
-                                profile_image: 1,
-                                businessName: 1,
+                {
+                    $lookup: {
+                        from: 'client_profiles',
+                        localField: 'client_id',
+                        foreignField: 'user_id',
+                        pipeline: [
+                            {
+                                $project: {
+                                    _id: 0,
+                                    user_id: 1,
+                                    firstName: 1,
+                                    lastName: 1,
+                                    location: 1,
+                                    profile_image: 1,
+                                    businessName: 1,
+                                },
                             },
-                        },
-                    ],
-                    as: 'client_profile',
+                        ],
+                        as: 'client_profile',
+                    },
                 },
-            },
-            {
-                $lookup: {
-                    from: 'jobs',
-                    localField: 'job_id',
-                    foreignField: '_id',
-                    pipeline: [
-                        {
-                            $project: {
-                                _id: 0,
-                                title: 1,
-                                description: 1,
-                                amount: 1,
-                                budget: 1,
-                                experience: 1,
-                                status: 1, // Include the 'status' field in the project stage
+                {
+                    $lookup: {
+                        from: 'jobs',
+                        localField: 'job_id',
+                        foreignField: '_id',
+                        pipeline: [
+                            {
+                                $project: {
+                                    _id: 0,
+                                    title: 1,
+                                    description: 1,
+                                    amount: 1,
+                                    budget: 1,
+                                    experience: 1,
+                                    status: 1, // Include the 'status' field in the project stage
+                                },
                             },
-                        },
-                    ],
-                    as: 'job_details',
+                        ],
+                        as: 'job_details',
+                    },
                 },
-            },
-        ];
+            ];
 
-        await OfferSchema.aggregate(query)
-            .then(async (result) => {
-                const activeJobs = [];
-                const completedJobs = [];
-                console.log(result);
-                result.forEach((offer) => {
-                    if (offer.job_details.length > 0) {
-                        const job = offer.job_details[0];
-                        console.log({ "job---": job });
-                        const jobWithClientProfile = {
-                            ...job,
-                            client_profile: offer.client_profile[0],
-                        };
+            // Aggregate offers using the offerQuery
+            const offers = await OfferSchema.aggregate(offerQuery);
 
-                        if (offer.status == 'accepted') {
-                            activeJobs.push(jobWithClientProfile);
-                        } else if (offer.status == 'completed') {
-                            completedJobs.push(jobWithClientProfile);
-                        }
+            const jobProposals = await JobProposalSchema.find({ userId: userData._id }).populate('jobId');
+
+            // Extract job details from the populated job proposals
+            const jobDetails = jobProposals.map((proposal) => proposal.jobId);
+      
+            // Fetch applied job proposals using the getAppliedJobProposals function
+
+            // Separate jobs into active and completed based on status
+            const activeJobs = [];
+            const completedJobs = [];
+
+            offers.forEach((offer) => {
+                if (offer.job_details.length > 0) {
+                    const job = offer.job_details[0];
+                    const jobWithClientProfile = {
+                        ...job,
+                        client_profile: offer.client_profile[0],
+                    };
+
+                    if (offer.status === 'accepted') {
+                        activeJobs.push(jobWithClientProfile);
+                    } else if (offer.status === 'completed') {
+                        completedJobs.push(jobWithClientProfile);
                     }
-                });
-
-                const response = {
-                    active_jobs: activeJobs,
-                    completed_jobs: completedJobs,
-                };
-
-                if (activeJobs.length > 0 || completedJobs.length > 0) {
-                    logger.info(`Jobs fetched successfully`);
-                    return responseData.success(res, response, `Jobs fetched successfully`);
-                } else {
-                    logger.info(`No jobs found`);
-                    return responseData.success(res, response, `No jobs found`);
                 }
-            })
-            .catch((err) => {
-                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
             });
+
+            // Combine the results into a response object
+            const response = {
+                active_jobs: activeJobs,
+                completed_jobs: completedJobs,
+                applied_jobs: jobDetails,
+            };
+
+            // Send the response
+            if (activeJobs.length > 0 || completedJobs.length > 0 || jobProposals.length > 0) {
+                logger.info(`Jobs fetched successfully`);
+                return responseData.success(res, response, `Jobs fetched successfully`);
+            } else {
+                logger.info(`No jobs found`);
+                return responseData.success(res, response, `No jobs found`);
+            }
+        } catch (error) {
+            // Handle errors and log them
+            const errorMessage = `${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`;
+            logger.error(errorMessage);
+            return responseData.fail(res, errorMessage, 500);
+        }
     });
 };
+
 
 
 const getOfferDetails = async (req, res,) => {
