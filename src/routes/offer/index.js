@@ -10,7 +10,7 @@ module.exports = (app) => {
     app.get(urlConstants.FREELANCER_OFFER_DETAILS, jsonWebToken.validateToken, api.getOfferDetails);
     app.get(urlConstants.HIRED_LIST_GET, jsonWebToken.validateToken, api.getHiredList);
     app.get(urlConstants.JOB_HIRED_LIST_GET, jsonWebToken.validateToken, api.getJobHiredList);
-    app.get(urlConstants.GET_ACTIVE_JOB_BY_FREELANCER_ID, jsonWebToken.validateToken, api.getAcceptedOfferByFreelancerId);
+    app.get(urlConstants.GET_USER_JOB, jsonWebToken.validateToken, api.getUserJobs);
     app.post(urlConstants.SUBMIT_OFFER_TASK, jsonWebToken.validateToken, upload.single('file'), api.submitOfferTask);
     app.post(urlConstants.END_CONTRACT, jsonWebToken.validateToken, offerValidator.endContractValidation, api.endContract);
 }

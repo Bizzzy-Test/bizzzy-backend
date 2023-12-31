@@ -16,10 +16,10 @@ const createJobProposal = async (req, res) => {
 	}
 };
 // will be used by user to see his/her job proposals
-const getJobProposalByUsersId = async (req, res) => {
+const getAppliedJobPropasals = async (req, res) => {
 	try {
-		const userToken = req.headers.token;
-		const response = await jobProposalService.getJobProposalByUsersId(userToken, res);
+		const userData = await getUserData(req, res);
+		const response = await jobProposalService.getAppliedJobPropasals(userData, res);
 		logger.info(`${messageConstants.RESPONSE_FROM} getJobProposalByUserId API`, JSON.stringify(response));
 		res.send(response);
 	} catch (err) {
@@ -57,5 +57,5 @@ module.exports = {
 	createJobProposal,
 	getJobProposalByUserId,
 	getJobProposalByJobId,
-	getJobProposalByUsersId
+	getAppliedJobPropasals
 };

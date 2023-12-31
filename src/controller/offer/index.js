@@ -75,17 +75,18 @@ const getJobHiredList = async (req, res) => {
     }
 }
 
-const getAcceptedOfferByFreelancerId = async (req, res) => {
+const getUserJobs = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
-        const response = await offerService.getAcceptedOfferByFreelancerId(req, userData, res);
-        logger.info(`${messageConstants.RESPONSE_FROM} getAcceptedOfferByFreelancerId API`, JSON.stringify(response));
+        const response = await offerService.getUsersJobs(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} User Jobs API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
-        logger.error(`getAcceptedOfferByFreelancerId ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`User Jobs API ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 };
+
 const submitOfferTask = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
@@ -117,7 +118,7 @@ module.exports = {
     updateOfferStatus,
     getHiredList,
     getJobHiredList,
-    getAcceptedOfferByFreelancerId,
+    getUserJobs,
     submitOfferTask,
     getOfferDetails,
     endContract

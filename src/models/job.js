@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const { budgetType, experienceType } = require('../constants/enum');
 
 const JobSchema = mongoose.Schema({
+    client_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users'
+    },
     title: {
         type: String,
         required: true
@@ -9,10 +13,6 @@ const JobSchema = mongoose.Schema({
     description: {
         type: String,
         required: true
-    },
-    client_detail: {
-        type: String,
-        ref: 'users'
     },
     tags: {
         type: [String]
@@ -29,7 +29,6 @@ const JobSchema = mongoose.Schema({
         type: Number,
         required: true
     },
-    // status can be open or close
     status: {
         type: String,
         default: 'open'
