@@ -285,16 +285,81 @@ const getJobHiredList = async (userData, req, res) => {
     })
 }
 
-const getAcceptedOfferByFreelancerId = async (req, userData, res) => {
+// const getUsersJobs = async (req, userData, res) => {
+//     return new Promise(async () => {
+//         const query = [
+//             {
+//                 $match: {
+//                     $and: [
+//                         { freelencer_id: userData._id, },
+//                         { status: 'accepted' }
+//                     ]
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'client_profiles',
+//                     localField: 'client_id',
+//                     foreignField: 'user_id',
+//                     pipeline: [
+//                         {
+//                             $project: {
+//                                 _id: 0,
+//                                 user_id: 1,
+//                                 firstName: 1,
+//                                 lastName: 1,
+//                                 location: 1,
+//                                 profile_image: 1,
+//                                 businessName: 1
+//                             }
+//                         }
+//                     ],
+//                     as: 'client_profile'
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'jobs',
+//                     localField: 'job_id',
+//                     foreignField: '_id',
+//                     pipeline: [
+//                         {
+//                             $project: {
+//                                 _id: 0,
+//                                 title: 1,
+//                                 description: 1,
+//                                 amount: 1,
+//                                 budget: 1,
+//                                 experience: 1,
+//                             }
+//                         }
+//                     ],
+//                     as: 'job_details'
+//                 }
+//             }
+//         ];
+//         await OfferSchema.aggregate(query).then(async (result) => {
+//             if (result.length !== 0) {
+//                 logger.info(`Accepted Offer ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+//                 return responseData.success(res, result, `Accepted Offer ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+//             } else {
+//                 logger.info(`Accepted Offer${messageConstants.LIST_NOT_FOUND}`);
+//                 return responseData.success(res, [], `Accepted Offer ${messageConstants.LIST_NOT_FOUND}`);
+//             }
+//         }).catch((err) => {
+//             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+//             return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+//         })
+//     })
+// }
+
+const getUsersJobs = async (req, userData, res) => {
     return new Promise(async () => {
         const query = [
             {
                 $match: {
-                    $and: [
-                        { freelencer_id: userData._id, },
-                        { status: 'accepted' }
-                    ]
-                }
+                    freelencer_id: userData._id,
+                },
             },
             {
                 $lookup: {
@@ -310,12 +375,12 @@ const getAcceptedOfferByFreelancerId = async (req, userData, res) => {
                                 lastName: 1,
                                 location: 1,
                                 profile_image: 1,
-                                businessName: 1
-                            }
-                        }
+                                businessName: 1,
+                            },
+                        },
                     ],
-                    as: 'client_profile'
-                }
+                    as: 'client_profile',
+                },
             },
             {
                 $lookup: {
@@ -331,27 +396,57 @@ const getAcceptedOfferByFreelancerId = async (req, userData, res) => {
                                 amount: 1,
                                 budget: 1,
                                 experience: 1,
-                            }
-                        }
+                                status: 1, // Include the 'status' field in the project stage
+                            },
+                        },
                     ],
-                    as: 'job_details'
-                }
-            }
+                    as: 'job_details',
+                },
+            },
         ];
-        await OfferSchema.aggregate(query).then(async (result) => {
-            if (result.length !== 0) {
-                logger.info(`Accepted Offer ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
-                return responseData.success(res, result, `Accepted Offer ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
-            } else {
-                logger.info(`Accepted Offer${messageConstants.LIST_NOT_FOUND}`);
-                return responseData.success(res, [], `Accepted Offer ${messageConstants.LIST_NOT_FOUND}`);
-            }
-        }).catch((err) => {
-            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
-        })
-    })
-}
+
+        await OfferSchema.aggregate(query)
+            .then(async (result) => {
+                const activeJobs = [];
+                const completedJobs = [];
+                console.log(result);
+                result.forEach((offer) => {
+                    if (offer.job_details.length > 0) {
+                        const job = offer.job_details[0];
+                        console.log({ "job---": job });
+                        const jobWithClientProfile = {
+                            ...job,
+                            client_profile: offer.client_profile[0],
+                        };
+
+                        if (offer.status == 'accepted') {
+                            activeJobs.push(jobWithClientProfile);
+                        } else if (offer.status == 'completed') {
+                            completedJobs.push(jobWithClientProfile);
+                        }
+                    }
+                });
+
+                const response = {
+                    active_jobs: activeJobs,
+                    completed_jobs: completedJobs,
+                };
+
+                if (activeJobs.length > 0 || completedJobs.length > 0) {
+                    logger.info(`Jobs fetched successfully`);
+                    return responseData.success(res, response, `Jobs fetched successfully`);
+                } else {
+                    logger.info(`No jobs found`);
+                    return responseData.success(res, response, `No jobs found`);
+                }
+            })
+            .catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            });
+    });
+};
+
 
 const getOfferDetails = async (req, res,) => {
     return new Promise(async () => {
@@ -463,7 +558,7 @@ module.exports = {
     updateOfferStatus,
     getHiredList,
     getJobHiredList,
-    getAcceptedOfferByFreelancerId,
+    getUsersJobs,
     submitOfferTask,
     getOfferDetails,
     endContract

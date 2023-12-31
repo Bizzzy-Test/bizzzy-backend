@@ -107,7 +107,8 @@ const signIn = async (body, res) => {
                     name: `${user.firstName} ${user.lastName}`,
                     professional_role: userProfile ? userProfile.professional_role : null,
                     business_name: userProfile ? userProfile.businessName : null,
-                    profile_image: userProfile ? userProfile.profile_image : null
+                    profile_image: userProfile ? userProfile.profile_image : null,
+                    hourly_rate: userProfile ? userProfile.hourly_rate : null
                 };
 
                 return responseData.success(res, responsePayload, `User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);

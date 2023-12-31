@@ -21,7 +21,8 @@ const urlConstants = {
     MESSAGE_LIST: '/message-list',
     GET_USER_LIST: '/users/list',
     GET_OPTIONS_LIST: "/getOptionsList",
-    GET_ACTIVE_JOB_BY_FREELANCER_ID: '/freelancer/job/active',
+    GET_USER_JOB: '/users/jobs',
+    // GET_ACTIVE_JOB_BY_FREELANCER_ID: '/freelancer/job/active',
     SUBMIT_OFFER_TASK: '/offer/task/submit',
     // GET_USER_PROFILE: '/users/profile',
 
@@ -68,7 +69,7 @@ const urlConstants = {
     CREATE_JOB_PROPOSAL: '/job-proposal',
     GET_JOB_PROPOSALS_BY_USER_ID: '/job-proposal-by-user-id/:id',
     GET_JOB_PROPOSALS_BY_JOB_ID: '/job/:jobId/proposal',
-    GET_PROPOSAL_BY_USER: '/jobs/applied',
+    GET_JOB_PROPOSALS: '/jobs/proposals',
 
     POST_FEEDBACK: '/feedback/add',
     GET_FEEDBACK: '/feedback',
@@ -82,8 +83,8 @@ const urlConstants = {
     GET_JOB: '/job/get-all',
     GET_SINGEL_JOB: '/job/get-job/:id',
     GET_JOB_BY_USERID: '/job/client/jobs',
-    DELETE_JOB: '/job/delete',
-    UPDATE_JOB: '/job/update',
+    DELETE_JOB: '/job/delete/:id',
+    UPDATE_JOB: '/job/update/:id',
     JOB_SEARCH: '/job/search',
     // = Job post url =
 

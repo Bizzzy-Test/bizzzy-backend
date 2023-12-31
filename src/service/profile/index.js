@@ -59,6 +59,7 @@ const freelencerProfile = async (req, userData, res) => {
                 end_date,
             });
         }
+        
         // For Portfolio section
         if (req.body.portfolio || req.files) {
             let fileUrls = [];

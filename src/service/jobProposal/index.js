@@ -31,12 +31,9 @@ const createJobProposal = async (req, userData, taskFile, res) => {
 	})
 }
 
-const getJobProposalByUsersId = async (userToken, res) => {
+const getAppliedJobPropasals = async (userData, res) => {
 	return new Promise(async () => {
-		const user = jwt.decode(userToken);
-		const userId = user?.id;
-
-		await JobProposalSchema.find({ userId: userId }).populate('jobId')
+		await JobProposalSchema.find({ userId: userData._id }).populate('jobId')
 			.then(async (result) => {
 				return responseData.success(res, result, `job proposal fetched succesfully`);
 			})
@@ -47,7 +44,25 @@ const getJobProposalByUsersId = async (userToken, res) => {
 	});
 };
 
-// const getJobProposalByUsersId = async (userToken, res) => {
+// const getAppliedJobPropasals = async (userData, res) => {
+// 	return new Promise(async () => {
+// 	  try {
+// 		const jobProposals = await JobProposalSchema.find({ userId: userData._id }).populate('jobId');
+  
+// 		// Modify the response to send job details instead of just the jobId
+// 		const jobDetails = jobProposals.map((proposal) => proposal.jobId);
+  
+// 		return responseData.success(res, jobDetails, 'Job proposals fetched successfully');
+// 	  } catch (error) {
+// 		const errorMessage = `${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`;
+// 		logger.error(errorMessage);
+// 		return responseData.fail(res, errorMessage, 500);
+// 	  }
+// 	});
+//   };
+  
+
+// const getAppliedJobPropasals = async (userToken, res) => {
 //     return new Promise(async () => {
 //         const user = jwt.decode(userToken);
 //         const userId = user?.id;
@@ -121,5 +136,5 @@ module.exports = {
 	createJobProposal,
 	getJobProposalByUserId,
 	getJobProposalByJobId,
-	getJobProposalByUsersId
+	getAppliedJobPropasals
 };
