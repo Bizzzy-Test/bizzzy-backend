@@ -28,7 +28,8 @@ const updateInvitation = async (req, res) => {
 
 const getInvitationDetails = async (req, res) => {
     try {
-        const response = await invitationService.getInvitationDetails(req, res);
+        const userData = await getUserData(req, res);
+        const response = await invitationService.getInvitationDetails(req, userData, res);
         logger.info(`${messageConstants.RESPONSE_FROM} Get Invitation List API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {

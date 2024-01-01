@@ -7,6 +7,7 @@ const JobSchema = require('../../models/job');
 const MessageSchema = require('../../models/message');
 const { logger, mail } = require('../../utils');
 const mongoose = require("mongoose");
+const { getClientDetails } = require('../profile');
 const ObjectId = mongoose.Types.ObjectId;
 // Send user invite
 const sendInvitation = async (body, userData, res) => {
@@ -82,7 +83,7 @@ const updateInvitationStatus = async (req, res) => {
 }
 
 // Invitation details
-const getInvitationDetails = async (req, res,) => {
+const getInvitationDetails = async (req, userData, res,) => {
     return new Promise(async () => {
         const { job_id } = req.query;
         const query = [
@@ -90,7 +91,7 @@ const getInvitationDetails = async (req, res,) => {
                 $match: {
                     $and: [
                         {
-                            receiver_id: req.userId
+                            receiver_id: userData._id
                         },
                         {
                             job_id: new ObjectId(job_id)
@@ -121,10 +122,13 @@ const getInvitationDetails = async (req, res,) => {
                 }
             }
         ]
-        await InviteSchema.aggregate(query).then(async (result) => {
-            if (result.length !== 0) {
+        await InviteSchema.aggregate(query).then(async (results) => {
+            if (results.length !== 0) {
+                for (let result of results) {
+                    result.client_details[0] = await getClientDetails(result?.client_details[0], result?.client_details[0]?.user_id);
+                }
                 logger.info(`Invitation ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
-                return responseData.success(res, result, `Invitation ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                return responseData.success(res, results, `Invitation ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
             } else {
                 logger.info(`Invitation ${messageConstants.LIST_NOT_FOUND}`);
                 return responseData.success(res, [], `Invitation ${messageConstants.LIST_NOT_FOUND}`);
@@ -251,10 +255,13 @@ const getInvitationDetailForFreelancer = async (req, res,) => {
                 }
             }
         ]
-        await InviteSchema.aggregate(query).then(async (result) => {
-            if (result.length !== 0) {
+        await InviteSchema.aggregate(query).then(async (results) => {
+            if (results.length !== 0) {
+                for (let result of results) {
+                    result.client_details[0] = await getClientDetails(result?.client_details[0], result?.client_details[0]?.user_id)
+                }
                 logger.info(`Invitation ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
-                return responseData.success(res, result, `Invitation ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                return responseData.success(res, results, `Invitation ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
             } else {
                 logger.info(`Invitation ${messageConstants.LIST_NOT_FOUND}`);
                 return responseData.success(res, [], `Invitation ${messageConstants.LIST_NOT_FOUND}`);

@@ -12,6 +12,7 @@ const ReasonsSchema = require('../../models/reason_for_ending_contract');
 const FeedbackOptionsSchema = require('../../models/feedback_options');
 const client_profile = require('../../models/clientProfile');
 const freelencer_profile = require('../../models/profile');
+const { getClientDetails } = require('../profile');
 
 const signUp = async (body, res) => {
     return new Promise(async () => {
@@ -110,6 +111,10 @@ const signIn = async (body, res) => {
                     profile_image: userProfile ? userProfile.profile_image : null,
                     hourly_rate: userProfile ? userProfile.hourly_rate : null
                 };
+
+                if (user?.role === 2) {
+                    await getClientDetails(responsePayload, user._id)
+                }
 
                 return responseData.success(res, responsePayload, `User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
             } else {
@@ -381,9 +386,11 @@ const userProfile = async (body, res) => {
 
 const getUserProfileById = async (userId, res) => {
     try {
-        const client_user = await client_profile.findOne({ user_id: userId });
+        let client_user = await client_profile.findOne({ user_id: userId });
         const freelancer_user = await freelencer_profile.findOne({ user_id: userId });
         if (client_user) {
+            client_user = client_user.toObject()
+            await getClientDetails(client_user, client_user?.user_id);
             return responseData.success(res, client_user, `User profile fetched successfully`);
         } else if (freelancer_user) {
             return responseData.success(res, freelancer_user, `User profile fetched successfully`);

@@ -1,6 +1,7 @@
 const { messageConstants, responseData } = require("../../constants");
 const { logger } = require("../../utils");
 const MessageSchema = require('../../models/message');
+const { getClientDetails } = require("../profile");
 
 const getMessageList = (req, user, res) => {
     return new Promise(async () => {
@@ -92,37 +93,28 @@ const getMessageList = (req, user, res) => {
                 }
             },
             {
-                $addFields: {
-                    sender_details: {
-                        $ifNull: [
-                            { $arrayElemAt: ['$sender_freelancer', 0] },
-                            { $arrayElemAt: ['$sender_client', 0] }
-                        ]
-                    },
-                    // receiver_details: {
-                    //     $ifNull: [
-                    //         { $arrayElemAt: ['$receiver_client', 0] },
-                    //         { $arrayElemAt: ['$receiver_freelancer', 0] }
-                    //     ]
-                    // }
-                }
-            },
-            {
                 $project: {
                     sender_id_ObjectId: 0,
                     receiver_id_ObjectId: 0,
                     job_id_ObjectId: 0,
-                    sender_freelancer: 0,
-                    sender_client: 0,
                     receiver_client: 0,
                     receiver_freelancer: 0
                 }
             }
         ]
-        await MessageSchema.aggregate(query).then(async (result) => {
-            if (result.length !== 0) {
+        await MessageSchema.aggregate(query).then(async (results) => {
+            if (results.length !== 0) {
+                for (let result of results) {
+                    if (result?.sender_freelancer?.length) {
+                        result['sender_details'] = result?.sender_freelancer[0]
+                    } else {
+                        result['sender_details'] = await getClientDetails(result?.sender_client[0], result?.sender_client[0]?.user_id);
+                    }
+                    delete result?.sender_freelancer;
+                    delete result?.sender_client;
+                }
                 logger.info(`Message ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
-                return responseData.success(res, result, `Message ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                return responseData.success(res, results, `Message ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
             } else {
                 logger.info(`Message ${messageConstants.LIST_NOT_FOUND}`);
                 return responseData.success(res, [], `Message ${messageConstants.LIST_NOT_FOUND}`);
@@ -237,21 +229,25 @@ const getChatUserList = (req, user, res) => {
                     otherParty: 1,
                     lastMessage: 1,
                     timestamp: 1,
-                    user_details: {
-                        $cond: {
-                            if: { $gt: [{ $size: '$clientProfile' }, 0] },
-                            then: { $arrayElemAt: ['$clientProfile', 0] },
-                            else: { $arrayElemAt: ['$freelancerProfile', 0] }
-                        }
-                    },
+                    clientProfile: 1,
+                    freelancerProfile: 1,
                     job_details: 1
                 }
             }
         ]
-        await MessageSchema.aggregate(query).then(async (result) => {
-            if (result.length !== 0) {
+        await MessageSchema.aggregate(query).then(async (results) => {
+            if (results.length !== 0) {
+                for (let result of results) {
+                    if (result?.clientProfile?.length) {
+                        result['user_details'] = await getClientDetails(result?.clientProfile[0], result?.clientProfile[0]?.user_id);
+                    } else {
+                        result['user_details'] = result?.freelancerProfile[0];
+                    }
+                    delete result?.clientProfile;
+                    delete result?.freelancerProfile;
+                }
                 logger.info(`Chat User ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
-                return responseData.success(res, result, `Chat User ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                return responseData.success(res, results, `Chat User ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
             } else {
                 logger.info(`Chat user ${messageConstants.LIST_NOT_FOUND}`);
                 return responseData.success(res, [], `Chat User ${messageConstants.LIST_NOT_FOUND}`);
