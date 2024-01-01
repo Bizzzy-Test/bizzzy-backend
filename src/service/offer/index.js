@@ -8,6 +8,7 @@ const HiredFreelancersSchema = require('../../models/hiredFreelancers');
 const ClientSchema = require('../../models/clientProfile');
 const { logger, mail } = require('../../utils');
 const mongoose = require("mongoose");
+const { getClientDetails } = require('../profile');
 const ObjectId = mongoose.Types.ObjectId;
 const JobProposalSchema = require('../../models/jobProposal');
 
@@ -601,6 +602,7 @@ const getOfferDetails = async (req, res,) => {
             }
         ]
         await OfferSchema.aggregate(query).then(async (result) => {
+            result[0].client_details[0] = await getClientDetails(result[0].client_details[0], result[0].client_details[0].user_id)
             if (result.length !== 0) {
                 logger.info(`Offer ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
                 return responseData.success(res, result, `Offer ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);

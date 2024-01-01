@@ -154,22 +154,11 @@ const clientProfile = async (req, userData, res) => {
 
 const getUserProfile = async (userData, res) => {
     return new Promise(async () => {
-        const userId = userData._id;
         let profile;
         if (userData.role == 2) {
-            profile = await ClientProfileSchema.findOne({ user_id: userId });
+            profile = await ClientProfileSchema.findOne({ user_id: userData._id });
             profile = profile.toObject();
-            job_posted = await JobSchema.find({ client_id: userId })
-            job_open = await JobSchema.find({ client_id: userId, status: 'open' })
-            hired_freelancers = await HiredFreelancersSchema.distinct('freelencer_id', { client_id: userData._id });
-            active_freelancers = await OfferSchema.distinct('freelencer_id', { client_id: userData._id, status: 'accepted' });
-            profile.job_posted = job_posted?.length || 0;
-            profile.job_open = job_open?.length || 0;
-            profile.hired_freelancers = hired_freelancers?.length || 0;
-            profile.active_freelancers = active_freelancers?.length || 0;
-            profile.total_amount_spend = 0;
-            profile.avg_review = 4.2;
-            profile.total_hours = 5;
+            await getClientDetails(profile, userData);
         } else {
             profile = await ProfileSchema.findOne({ user_id: userId });
             profile = profile.toObject();
@@ -388,6 +377,22 @@ const searchFreelencers = async (req, userData, res) => {
     })
 }
 
+const getClientDetails = async (profile, userData) => {
+    job_posted = await JobSchema.find({ client_id: userData._id })
+    job_open = await JobSchema.find({ client_id: userData._id, status: 'open' })
+    hired_freelancers = await HiredFreelancersSchema.distinct('freelencer_id', { client_id: userData._id });
+    active_freelancers = await OfferSchema.distinct('freelencer_id', { client_id: userData._id, status: 'accepted' });
+    profile.job_posted = job_posted?.length || 0;
+    profile.job_open = job_open?.length || 0;
+    profile.hired_freelancers = hired_freelancers?.length || 0;
+    profile.active_freelancers = active_freelancers?.length || 0;
+    profile.total_amount_spend = 0;
+    profile.avg_review = 4.2;
+    profile.total_hours = 5;
+    logger.info('Client Details Fetched Successfully');
+    return profile;
+}
+
 module.exports = {
     freelencerProfile,
     clientProfile,
@@ -398,4 +403,5 @@ module.exports = {
     searchFreelencers,
     editFreelencerProfile,
     editClientProfile,
+    getClientDetails
 }
