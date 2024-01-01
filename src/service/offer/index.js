@@ -511,28 +511,27 @@ const getUsersJobs = async (req, userData, res) => {
 
             // Extract job details from the populated job proposals
             const jobDetails = jobProposals.map((proposal) => proposal.jobId);
-      
+
             // Fetch applied job proposals using the getAppliedJobProposals function
 
             // Separate jobs into active and completed based on status
             const activeJobs = [];
             const completedJobs = [];
 
-            offers.forEach((offer) => {
+            for (let offer of offers) {
                 if (offer.job_details.length > 0) {
                     const job = offer.job_details[0];
+                    const client_profile = await getClientDetails(offer?.client_profile[0], offer?.client_profile[0]?.user_id);
                     const jobWithClientProfile = {
-                        ...job,
-                        client_profile: offer.client_profile[0],
+                        ...job, client_profile
                     };
-
                     if (offer.status === 'accepted') {
                         activeJobs.push(jobWithClientProfile);
                     } else if (offer.status === 'completed') {
                         completedJobs.push(jobWithClientProfile);
                     }
                 }
-            });
+            }
 
             // Combine the results into a response object
             const response = {

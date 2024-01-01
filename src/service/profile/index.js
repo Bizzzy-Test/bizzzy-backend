@@ -59,7 +59,7 @@ const freelencerProfile = async (req, userData, res) => {
                 end_date,
             });
         }
-        
+
         // For Portfolio section
         if (req.body.portfolio || req.files) {
             let fileUrls = [];
@@ -158,7 +158,7 @@ const getUserProfile = async (userData, res) => {
         if (userData.role == 2) {
             profile = await ClientProfileSchema.findOne({ user_id: userData._id });
             profile = profile.toObject();
-            await getClientDetails(profile, userData);
+            await getClientDetails(profile, userData._id);
         } else {
             profile = await ProfileSchema.findOne({ user_id: userId });
             profile = profile.toObject();
@@ -377,11 +377,12 @@ const searchFreelencers = async (req, userData, res) => {
     })
 }
 
-const getClientDetails = async (profile, userData) => {
-    job_posted = await JobSchema.find({ client_id: userData._id })
-    job_open = await JobSchema.find({ client_id: userData._id, status: 'open' })
-    hired_freelancers = await HiredFreelancersSchema.distinct('freelencer_id', { client_id: userData._id });
-    active_freelancers = await OfferSchema.distinct('freelencer_id', { client_id: userData._id, status: 'accepted' });
+const getClientDetails = async (profile, user_id) => {
+    user_id = new ObjectId(user_id);
+    job_posted = await JobSchema.find({ client_id: user_id })
+    job_open = await JobSchema.find({ client_id: user_id, status: 'open' })
+    hired_freelancers = await HiredFreelancersSchema.distinct('freelencer_id', { client_id: user_id });
+    active_freelancers = await OfferSchema.distinct('freelencer_id', { client_id: user_id, status: 'accepted' });
     profile.job_posted = job_posted?.length || 0;
     profile.job_open = job_open?.length || 0;
     profile.hired_freelancers = hired_freelancers?.length || 0;

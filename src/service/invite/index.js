@@ -122,11 +122,13 @@ const getInvitationDetails = async (req, userData, res,) => {
                 }
             }
         ]
-        await InviteSchema.aggregate(query).then(async (result) => {
-            result[0].client_details[0] = await getClientDetails(result[0].client_details[0], result[0].client_details[0].user_id)
-            if (result.length !== 0) {
+        await InviteSchema.aggregate(query).then(async (results) => {
+            if (results.length !== 0) {
+                for (let result of results) {
+                    result.client_details[0] = await getClientDetails(result?.client_details[0], result?.client_details[0]?.user_id);
+                }
                 logger.info(`Invitation ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
-                return responseData.success(res, result, `Invitation ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                return responseData.success(res, results, `Invitation ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
             } else {
                 logger.info(`Invitation ${messageConstants.LIST_NOT_FOUND}`);
                 return responseData.success(res, [], `Invitation ${messageConstants.LIST_NOT_FOUND}`);
@@ -253,11 +255,13 @@ const getInvitationDetailForFreelancer = async (req, res,) => {
                 }
             }
         ]
-        await InviteSchema.aggregate(query).then(async (result) => {
-            if (result.length !== 0) {
-                result[0].client_details[0] = await getClientDetails(result[0].client_details[0], result[0].client_details[0].user_id)
+        await InviteSchema.aggregate(query).then(async (results) => {
+            if (results.length !== 0) {
+                for (let result of results) {
+                    result.client_details[0] = await getClientDetails(result?.client_details[0], result?.client_details[0]?.user_id)
+                }
                 logger.info(`Invitation ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
-                return responseData.success(res, result, `Invitation ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                return responseData.success(res, results, `Invitation ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
             } else {
                 logger.info(`Invitation ${messageConstants.LIST_NOT_FOUND}`);
                 return responseData.success(res, [], `Invitation ${messageConstants.LIST_NOT_FOUND}`);

@@ -3,6 +3,7 @@ const { responseData, messageConstants } = require("../../constants");
 const { logger } = require("../../utils");
 const FeedbackSchema = require('../../models/feedback');
 const OfferSchema = require('../../models/offers');
+const { getClientDetails } = require('../profile');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -216,26 +217,25 @@ const getFeedback = async (req, userData, res) => {
                     as: 'client_details'
                 }
             },
-            {
-                $addFields: {
-                    user_details: {
-                        $ifNull: [
-                            { $arrayElemAt: ['$freelencer_profiles', 0] },
-                            { $arrayElemAt: ['$client_details', 0] }
-                        ]
-                    },
-                }
-            },
-            {
-                $project: {
-                    freelencer_profiles: 0,
-                    client_details: 0,
-                }
-            }
         ];
-        await FeedbackSchema.aggregate(query).then(async (result) => {
-            logger.info('Feedback list fetched succesfully');
-            return responseData.success(res, result, `Feedback list fetched succesfully`);
+        await FeedbackSchema.aggregate(query).then(async (results) => {
+            if (results?.length !== 0) {
+                for (let result of results) {
+                    if (result?.freelencer_profiles?.length) {
+                        result['user_details'] = result?.freelencer_profiles[0];
+                    } else {
+                        await getClientDetails(result?.client_details[0], result?.client_details[0]?.user_id)
+                        result['user_details'] = result?.client_details[0];
+                    }
+                    delete result?.freelencer_profiles;
+                    delete result?.client_details;
+                }
+                logger.info(`Feedback ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                return responseData.success(res, results, `Feedback ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+            } else {
+                logger.info(`Feedback ${messageConstants.LIST_NOT_FOUND}`);
+                return responseData.success(res, [], `Feedback ${messageConstants.LIST_NOT_FOUND}`);
+            }
         }).catch((err) => {
             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
             return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
