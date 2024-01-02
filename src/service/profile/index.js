@@ -154,23 +154,119 @@ const clientProfile = async (req, userData, res) => {
 
 const getUserProfile = async (userData, res) => {
     return new Promise(async () => {
-        let profile;
-        if (userData.role == 2) {
-            profile = await ClientProfileSchema.findOne({ user_id: userData._id });
-            profile = profile.toObject();
-            await getClientDetails(profile, userData._id);
-        } else {
-            profile = await ProfileSchema.findOne({ user_id: userId });
-            profile = profile.toObject();
-        }
-        if (profile) {
-            profile.role = userData.role;
-            logger.info(`User details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
-            return responseData.success(res, profile, `User details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
-        } else {
-            logger.info(`User ${messageConstants.PROFILE_DETAILS_NOT_FOUND}`);
-            return responseData.fail(res, `User ${messageConstants.PROFILE_DETAILS_NOT_FOUND}`, 200);
-        }
+        const query = [
+            {
+                $match: {
+                    user_id: userData._id
+                }
+            },
+            {
+                $lookup: {
+                    from: 'feedbacks',
+                    localField: 'user_id',
+                    foreignField: 'reciever_id',
+                    pipeline: [
+                        {
+                            $lookup: {
+                                from: 'freelencer_profiles',
+                                localField: 'sender_id',
+                                foreignField: 'user_id',
+                                pipeline: [
+                                    {
+                                        $project: {
+                                            _id: 0,
+                                            firstName: 1,
+                                            lastName: 1,
+                                            location: 1,
+                                            professional_role: 1,
+                                            profile_image: 1
+                                        }
+                                    }
+                                ],
+                                as: 'freelancer_details'
+                            },
+                        },
+                        {
+                            $lookup: {
+                                from: 'client_profiles',
+                                localField: 'sender_id',
+                                foreignField: 'user_id',
+                                pipeline: [
+                                    {
+                                        $project: {
+                                            _id: 0,
+                                            firstName: 1,
+                                            lastName: 1,
+                                            businessName: 1,
+                                            profile_image: 1,
+                                            location: 1
+                                        }
+                                    }
+                                ],
+                                as: 'client_details'
+                            },
+                        },
+                        {
+                            $lookup: {
+                                from: 'jobs',
+                                localField: 'job_id',
+                                foreignField: '_id',
+                                pipeline: [
+                                    {
+                                        $project: {
+                                            _id: 0,
+                                            title: 1,
+                                            description: 1,
+                                            budget: 1,
+                                            status: 1,
+                                        }
+                                    }
+                                ],
+                                as: 'job_details'
+                            }
+                        },
+                        {
+                            $addFields: {
+                                sender_details: {
+                                    $ifNull: [
+                                        { $arrayElemAt: ['$freelancer_details', 0] },
+                                        { $arrayElemAt: ['$client_details', 0] }
+                                    ]
+                                },
+                                job_details: { $ifNull: [{ $arrayElemAt: ['$job_details', 0] }, null] },
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                feedback_details: '$public_feedback',
+                                sender_details: 1,
+                                job_details: 1,
+                            }
+                        },
+                    ],
+                    as: 'work_history',
+                }
+            }
+        ];
+
+        let userSchema = userData.role === 1 ? ProfileSchema : ClientProfileSchema;
+        await userSchema.aggregate(query).then(async (result) => {
+            if (result?.length) {
+                result = result[0]
+                if (userData?.role === 2) {
+                    await getClientDetails(result, result?.user_id);
+                }
+                logger.info(`User details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                return responseData.success(res, result, `User details ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+            } else {
+                logger.info(`User ${messageConstants.PROFILE_DETAILS_NOT_FOUND}`);
+                return responseData.fail(res, `User ${messageConstants.PROFILE_DETAILS_NOT_FOUND}`, 200);
+            }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        });
     })
 }
 
