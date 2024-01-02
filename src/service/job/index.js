@@ -60,18 +60,19 @@ const closeJob = async (req, userData, res) => {
 };
 
 // ==== get all job post ==== service
-const getAllJobPost = async () => {
-    try {
-        const jobSchema = await JobSchema.find({ status: { $ne: 'closed' } }).populate({
+const getAllJobPost = async (req, res) => {
+    return new Promise(async () => {
+        await JobSchema.find({ status: { $ne: 'closed' } }).populate({
             path: 'client_id',
             select: 'country firstName lastName',
+        }).then((result) => {
+            logger.info(messageConstants.JOB_FETCHED_SUCCESSFULLY);
+            return responseData.success(res, result, messageConstants.JOB_FETCHED_SUCCESSFULLY);
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
         });
-
-        return jobSchema;
-    } catch (error) {
-        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
-        return error;
-    }
+    })
 };
 
 
@@ -229,7 +230,8 @@ const getJobPostByUserId = async (req, userData, res) => {
             },
         ];
         await JobSchema.aggregate(query).then(async (result) => {
-            return responseData.success(res, result, `job fetched succesfully with proposals`);
+            logger.info('Job fetched succesfully with proposals');
+            return responseData.success(res, result, `Job fetched succesfully with proposals`);
         }).catch((err) => {
             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
             return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);

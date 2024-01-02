@@ -78,53 +78,56 @@ const signUp = async (body, res) => {
 const signIn = async (body, res) => {
     return new Promise(async () => {
         body['password'] = cryptoGraphy.encrypt(body.password);
-        const user = await UserSchema.findOne({
+        await UserSchema.findOne({
             email: body.email
-        });
-
-        if (user) {
-            if (!user.is_email_verified) {
-                logger.error(messageConstants.USER_NOT_VERIFIED);
-                return responseData.fail(res, messageConstants.USER_NOT_VERIFIED, 405);
-            }
-
-            let userProfile = await freelencer_profile.findOne({ user_id: user._id });
-
-            // If the user ID is not found in freelancer_profile, try client_profile
-            if (!userProfile) {
-                userProfile = await client_profile.findOne({ user_id: user._id });
-            }
-
-            if (user.password === body.password) {
-                const token = await jsonWebToken.createToken(user);
-                logger.info(`User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
-
-                // Include 'profile_image' in the response
-                const responsePayload = {
-                    id: user._id,
-                    token,
-                    email: user.email,
-                    role: user.role,
-                    name: `${user.firstName} ${user.lastName}`,
-                    professional_role: userProfile ? userProfile.professional_role : null,
-                    business_name: userProfile ? userProfile.businessName : null,
-                    profile_image: userProfile ? userProfile.profile_image : null,
-                    hourly_rate: userProfile ? userProfile.hourly_rate : null
-                };
-
-                if (user?.role === 2) {
-                    await getClientDetails(responsePayload, user._id)
+        }).then(async (user) => {
+            if (user) {
+                if (!user.is_email_verified) {
+                    logger.error(messageConstants.USER_NOT_VERIFIED);
+                    return responseData.fail(res, messageConstants.USER_NOT_VERIFIED, 405);
                 }
 
-                return responseData.success(res, responsePayload, `User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
+                let userProfile = await freelencer_profile.findOne({ user_id: user._id });
+
+                // If the user ID is not found in freelancer_profile, try client_profile
+                if (!userProfile) {
+                    userProfile = await client_profile.findOne({ user_id: user._id });
+                }
+
+                if (user.password === body.password) {
+                    const token = await jsonWebToken.createToken(user);
+                    logger.info(`User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
+
+                    // Include 'profile_image' in the response
+                    const responsePayload = {
+                        id: user._id,
+                        token,
+                        email: user.email,
+                        role: user.role,
+                        name: `${user.firstName} ${user.lastName}`,
+                        professional_role: userProfile ? userProfile.professional_role : null,
+                        business_name: userProfile ? userProfile.businessName : null,
+                        profile_image: userProfile ? userProfile.profile_image : null,
+                        hourly_rate: userProfile ? userProfile.hourly_rate : null
+                    };
+
+                    if (user?.role === 2) {
+                        await getClientDetails(responsePayload, user._id)
+                    }
+
+                    return responseData.success(res, responsePayload, `User ${messageConstants.LOGGEDIN_SUCCESSFULLY}`);
+                } else {
+                    logger.error(messageConstants.EMAIL_PASS_INCORRECT);
+                    return responseData.fail(res, messageConstants.EMAIL_PASS_INCORRECT, 403);
+                }
             } else {
-                logger.error(messageConstants.EMAIL_PASS_INCORRECT);
-                return responseData.fail(res, messageConstants.EMAIL_PASS_INCORRECT, 403);
+                logger.error(messageConstants.EMAIL_NOT_FOUND);
+                return responseData.fail(res, messageConstants.EMAIL_NOT_FOUND, 403);
             }
-        } else {
-            logger.error(messageConstants.EMAIL_NOT_FOUND);
-            return responseData.fail(res, messageConstants.EMAIL_NOT_FOUND, 403);
-        }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        });
     }).catch((err) => {
         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
         return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
@@ -210,13 +213,17 @@ const resendEmailVerification = async (req, res) => {
                 logger.info(`${messageConstants.EMAIL_RESENT_FOR_VERIFICATION} for ${result.email}`);
                 return responseData.success(res, [], `${messageConstants.EMAIL_RESENT_FOR_VERIFICATION} for ${result.email}`);
             }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
         })
     })
 }
 
 // ==== Reset Password ====
-const resetPassword = async (body, userData, res) => {
+const resetPassword = async (req, userData, res) => {
     return new Promise(async () => {
+        const body = req.body;
         body['old_password'] = cryptoGraphy.encrypt(body.old_password);
         const user = await UserSchema.findOne({ _id: userData._id })
         if (body.old_password !== user.password) {
@@ -230,20 +237,24 @@ const resetPassword = async (body, userData, res) => {
                 },
                 {
                     password: body['new_password']
-                }).then(async (result) => {
-                    if (result.length !== 0) {
-                        const mailContent = {
-                            name: user.name,
-                            email: user.email
-                        }
-                        await mail.sendMailtoUser(mailTemplateConstants.RESET_PASS_TEMPLATE, user.email, mailSubjectConstants.RESET_PASS_SUBJECT, res, mailContent);
-                        logger.info(`${messageConstants.PASSWORD_RESET} for ${user.email}`);
-                        return responseData.success(res, {}, messageConstants.PASSWORD_RESET);
-                    } else {
-                        logger.error(`${messageConstants.PASSWORD_NOT_RESET} for ${user.email}`);
-                        return responseData.fail(res, messageConstants.PASSWORD_NOT_RESET, 403)
+                }
+            ).then(async (result) => {
+                if (result.length !== 0) {
+                    const mailContent = {
+                        name: user.name,
+                        email: user.email
                     }
-                })
+                    await mail.sendMailtoUser(mailTemplateConstants.RESET_PASS_TEMPLATE, user.email, mailSubjectConstants.RESET_PASS_SUBJECT, res, mailContent);
+                    logger.info(`${messageConstants.PASSWORD_RESET} for ${user.email}`);
+                    return responseData.success(res, {}, messageConstants.PASSWORD_RESET);
+                } else {
+                    logger.error(`${messageConstants.PASSWORD_NOT_RESET} for ${user.email}`);
+                    return responseData.fail(res, messageConstants.PASSWORD_NOT_RESET, 403)
+                }
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            })
         }
 
     })
@@ -252,23 +263,28 @@ const resetPassword = async (body, userData, res) => {
 
 const forgotPassword = async (req, res, next) => {
     return new Promise(async () => {
-        const user = await UserSchema.findOne({ email: req.body.email });
-        if (user) {
-            if (user.token) {
-                await jsonWebToken.validateToken(req, res, next, user.token);
+        await UserSchema.findOne({ email: req.body.email }).then(async (user) => {
+            if (user) {
+                if (user.token) {
+                    await jsonWebToken.validateToken(req, res, next, user.token);
+                } else {
+                    await createJsonWebTokenForUser(user);
+                }
+                await forgotPasswordLink(res, user);
             } else {
-                await createJsonWebTokenForUser(user);
+                logger.error(messageConstants.USER_NOT_FOUND);
+                return responseData.success(res, [], messageConstants.USER_NOT_FOUND)
             }
-            await forgotPasswordLink(res, user);
-        } else {
-            logger.error(messageConstants.USER_NOT_FOUND);
-            return responseData.success(res, [], messageConstants.USER_NOT_FOUND)
-        }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        });
     })
 }
 
-const changePassword = async (body, user, res) => {
+const changePassword = async (req, user, res) => {
     return new Promise(async () => {
+        const body = req.body;
         body['new_password'] = cryptoGraphy.encrypt(body.new_password);
         await UserSchema.findOneAndUpdate(
             {
@@ -276,29 +292,36 @@ const changePassword = async (body, user, res) => {
             },
             {
                 password: body['new_password']
-            }).then(async (result) => {
-                if (result.length !== 0) {
-                    const mailContent = {
-                        name: user.name,
-                        email: user.email
-                    }
-                    await mail.sendMailtoUser(mailTemplateConstants.FORGOTTED_PASS_TEMPLATE, user.email, mailSubjectConstants.FORGOTTED_PASS_SUBJECT, res, mailContent);
-                    logger.info(`${messageConstants.PASSWORD_FORGOT} for ${user.email}`);
-                    return responseData.success(res, {}, messageConstants.PASSWORD_FORGOT);
-                } else {
-                    logger.error(`${messageConstants.PASSWORD_NOT_FORGOT} for ${user.email}`);
-                    return responseData.fail(res, messageConstants.PASSWORD_NOT_FORGOT, 403)
+            }
+        ).then(async (result) => {
+            if (result.length !== 0) {
+                const mailContent = {
+                    name: user.name,
+                    email: user.email
                 }
-            })
+                await mail.sendMailtoUser(mailTemplateConstants.FORGOTTED_PASS_TEMPLATE, user.email, mailSubjectConstants.FORGOTTED_PASS_SUBJECT, res, mailContent);
+                logger.info(`${messageConstants.PASSWORD_FORGOT} for ${user.email}`);
+                return responseData.success(res, {}, messageConstants.PASSWORD_FORGOT);
+            } else {
+                logger.error(`${messageConstants.PASSWORD_NOT_FORGOT} for ${user.email}`);
+                return responseData.fail(res, messageConstants.PASSWORD_NOT_FORGOT, 403)
+            }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        })
     })
 
 }
 
-const getUserList = async (res, userData) => {
+const getUserList = async (req, userData, res) => {
     return new Promise(async () => {
-        await UserSchema.find({
-            _id: { $ne: userData._id },
-        }, { _id: 1, name: 1, email: 1 }).then(async (result) => {
+        await UserSchema.find(
+            {
+                _id: { $ne: userData._id },
+            },
+            { _id: 1, name: 1, email: 1 }
+        ).then(async (result) => {
             if (result.length !== 0) {
                 logger.info(`User ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
                 return responseData.success(res, result, `User ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
@@ -384,10 +407,11 @@ const userProfile = async (body, res) => {
 }
 
 
-const getUserProfileById = async (userId, res) => {
+const getUserProfileById = async (req, res) => {
     try {
-        let client_user = await client_profile.findOne({ user_id: userId });
-        const freelancer_user = await freelencer_profile.findOne({ user_id: userId });
+        const user_id = req.query.user_id;
+        let client_user = await client_profile.findOne({ user_id: user_id });
+        const freelancer_user = await freelencer_profile.findOne({ user_id: user_id });
         if (client_user) {
             client_user = client_user.toObject()
             await getClientDetails(client_user, client_user?.user_id);

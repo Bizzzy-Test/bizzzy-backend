@@ -8,7 +8,7 @@ const urlConstants = {
     USER_PROFILE: '/profile',
     USER_LOGIN: '/login',
     GET_USER_PROFILE: '/get-user-profile',
-    GET_USER_BY_ID: '/user/:id',
+    GET_USER_BY_ID: '/get-user',
     USER_PROFILE_IMAGE: '/user-profile-image',
     SEARCH_FREELENCERS: '/search-freelencers',
     PROFILE_DETAILS: '/profile-details',
@@ -84,7 +84,7 @@ const urlConstants = {
     GET_SINGEL_JOB: '/job/get-job/:id',
     GET_JOB_BY_USERID: '/job/client/jobs',
     DELETE_JOB: '/job/delete/:id',
-    UPDATE_JOB: '/job/update/:id',
+    UPDATE_JOB: '/job/update',
     JOB_SEARCH: '/job/search',
     // = Job post url =
 

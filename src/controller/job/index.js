@@ -35,21 +35,12 @@ const closeJob = async (req, res) => {
 // ==== get all job post ==== controller
 const getAllJobPost = async (req, res) => {
     try {
-        const response = await JobService.getAllJobPost();
-        logger.info(`${messageConstants.RESPONSE_FROM} Job API`, JSON.stringify(response));
-        res.status(200).json({
-            data: response,
-            success: true,
-            message: messageConstants.JOB_FETCHED_SUCCESSFULLY
-        }); // Send the response here    
-
+        const response = await JobService.getAllJobPost(req, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} getAllJobPost`, JSON.stringify(response));
+        res.send(response)
     } catch (error) {
         logger.error(`Job ${messageConstants.API_FAILED} ${error}`);
-        res.status(500).json({
-            data: error,
-            success: false,
-            message: messageConstants.INTERNAL_SERVER_ERROR
-        })
+        res.send(error)
     }
 }
 
@@ -101,22 +92,12 @@ const getJobPostByUserId = async (req, res) => {
         // const client_details = req.params.id;
         const userData = await getUserData(req, res)
         const response = await JobService.getJobPostByUserId(req, userData, res);
-
-        res.status(200).json({
-            data: response,
-            success: true,
-            message: messageConstants.JOB_FETCHED_SUCCESSFULLY
-        });
-
+        logger.info(`${messageConstants.RESPONSE_FROM} getJobPostByUserId`, JSON.stringify(response));
+        res.send(response);
     } catch (error) {
         logger.error(`Job ${messageConstants.API_FAILED} ${error}`);
-        res.status(500).json({
-            data: error,
-            success: false,
-            message: messageConstants.INTERNAL_SERVER_ERROR
-        })
+        res.send(error);
     }
-
 }
 
 // ==== get single job post ==== controller

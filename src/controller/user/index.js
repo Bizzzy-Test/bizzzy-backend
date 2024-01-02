@@ -17,7 +17,7 @@ const uploadImage = async (req, res) => {
 const getUserList = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
-        const response = await authService.getUserList(res, userData);
+        const response = await authService.getUserList(req, userData, res);
         logger.info(`${messageConstants.RESPONSE_FROM} getUserList API`, JSON.stringify(jsonData));
         res.send(response);
     } catch (err) {
@@ -28,8 +28,7 @@ const getUserList = async (req, res) => {
 
 const getUserById = async (req, res) => {
     try {
-        const userId = req.params.id;
-        const response = await authService.getUserProfileById(userId, res);
+        const response = await authService.getUserProfileById(req, res);
         logger.info(`${messageConstants.RESPONSE_FROM} Get User By Id API`, JSON.stringify(response));
         res.send(response);
     } catch (error) {
@@ -52,7 +51,7 @@ const getOptionsList = async (req, res) => {
 const resetPassword = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
-        const response = await authService.resetPassword(req.body, userData, res);
+        const response = await authService.resetPassword(req, userData, res);
         logger.info(`${messageConstants.RESPONSE_FROM} resetPassword API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
@@ -76,7 +75,7 @@ const forgotPassword = async (req, res, next) => {
 const changePassword = async (req, res, next) => {
     try {
         const userData = await getUserData(req, res);
-        const response = await authService.changePassword(req.body, userData, res, next);
+        const response = await authService.changePassword(req, userData, res);
         logger.info(`${messageConstants.RESPONSE_FROM} changePassword API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
