@@ -35,6 +35,7 @@ const getAppliedJobPropasals = async (userData, res) => {
 	return new Promise(async () => {
 		await JobProposalSchema.find({ userId: userData._id }).populate('jobId')
 			.then(async (result) => {
+				logger.info('job proposal fetched succesfully');
 				return responseData.success(res, result, `job proposal fetched succesfully`);
 			})
 			.catch((err) => {
@@ -48,10 +49,10 @@ const getAppliedJobPropasals = async (userData, res) => {
 // 	return new Promise(async () => {
 // 	  try {
 // 		const jobProposals = await JobProposalSchema.find({ userId: userData._id }).populate('jobId');
-  
+
 // 		// Modify the response to send job details instead of just the jobId
 // 		const jobDetails = jobProposals.map((proposal) => proposal.jobId);
-  
+
 // 		return responseData.success(res, jobDetails, 'Job proposals fetched successfully');
 // 	  } catch (error) {
 // 		const errorMessage = `${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`;
@@ -60,7 +61,7 @@ const getAppliedJobPropasals = async (userData, res) => {
 // 	  }
 // 	});
 //   };
-  
+
 
 // const getAppliedJobPropasals = async (userToken, res) => {
 //     return new Promise(async () => {
@@ -81,9 +82,10 @@ const getAppliedJobPropasals = async (userData, res) => {
 
 
 
-const getJobProposalByUserId = async (req, res) => {
+const getJobProposalByUserId = async (req, userData, res) => {
 	return new Promise(async () => {
-		await JobProposalSchema.find({ userId: req.userId }).then(async (result) => {
+		await JobProposalSchema.find({ userId: userData._id }).then(async (result) => {
+			logger.info('job proposal fetched succesfully');
 			return responseData.success(res, result, `job proposal fetched succesfully`);
 		}).catch((err) => {
 			logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
@@ -123,6 +125,7 @@ const getJobProposalByJobId = async (req, res) => {
 		];
 		await JobProposalSchema.aggregate(query)
 			.then(async (result) => {
+				logger.info('job proposal fetched succesfully');
 				return responseData.success(res, result, `job proposal fetched succesfully`);
 			})
 			.catch((err) => {

@@ -193,17 +193,25 @@ const searchJobPost = async (req, userData, res) => {
     })
 }
 // ==== get single job post ==== service
-const getSingleJobPost = async (jobId) => {
-    try {
-        const jobSchema = await JobSchema.findById({ _id: jobId }).populate({
+const getSingleJobPost = async (req, res) => {
+    return new Promise(async () => {
+        const job_id = new ObjectId(req.query.job_id);
+        await JobSchema.findById({ _id: job_id }).populate({
             path: 'client_id',
             select: 'country firstName lastName',
-        });
-        return jobSchema;
-    } catch (error) {
-        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
-        return error
-    }
+        }).then((result) => {
+            if (result) {
+                logger.info(messageConstants.JOB_FETCHED_SUCCESSFULLY);
+                return responseData.success(res, result, messageConstants.JOB_FETCHED_SUCCESSFULLY);
+            } else {
+                logger.error(`Job not found`);
+                return responseData.fail(res, `Job not found`, 200);
+            }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        })
+    })
 }
 
 
@@ -261,7 +269,7 @@ const updateJobPost = async (req, userData, fileUrl, res) => {
                 ).then((result) => {
                     if (result) {
                         logger.info('Job updated successfully');
-                        return responseData.success(res, result, 'job updated successfully');
+                        return responseData.success(res, result, 'Job updated successfully');
                     } else {
                         logger.error('Job not updated');
                         return responseData.fail(res, 'Job not updated', 401);
@@ -304,7 +312,7 @@ const deleteJobPost = async (req, userData, res) => {
             })
         } else {
             logger.error('Only Client can delete the job');
-            return responseData.fail(res, 'Only Client can delete the job', 500);
+            return responseData.fail(res, 'Only Client can delete the job', 401);
         }
     })
 }

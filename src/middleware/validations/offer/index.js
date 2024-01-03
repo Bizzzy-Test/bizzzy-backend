@@ -18,6 +18,7 @@ const offerUpdateValidation = (req, res, next) => {
     })
     validateRequest(req, res, schema, next);
 }
+
 const endContractValidation = (req, res, next) => {
     const schema = Joi.object({
         user_id: Joi.string().required(),
@@ -27,8 +28,18 @@ const endContractValidation = (req, res, next) => {
     validateRequest(req, res, schema, next);
 }
 
+const offerTaskSubmitValidation = (req, res, next) => {
+    const schema = Joi.object({
+        message: Joi.string().required(),
+        job_id: Joi.string().required(),
+        client_id: Joi.string().required(),
+    })
+    validateRequest(req, res, schema, next);
+}
+
 module.exports = {
     offerValidation,
     offerUpdateValidation,
-    endContractValidation
+    endContractValidation,
+    offerTaskSubmitValidation
 }

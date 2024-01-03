@@ -17,7 +17,7 @@ const signUp = async (req, res) => {
 
 const signIn = async (req, res) => {
     try {
-        const response = await authService.signIn(req.body, res);
+        const response = await authService.signIn(req, res);
         logger.info(`${messageConstants.RESPONSE_FROM} signin API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {

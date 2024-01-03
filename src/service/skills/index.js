@@ -10,6 +10,9 @@ const getAllCategories = async (req, res) => {
         await CategorySchema.find().then(async (result) => {
             logger.info('Categories list fetched succesfully');
             return responseData.success(res, result, 'Categories list fetched succesfully');
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
         })
     })
 }
@@ -32,6 +35,9 @@ const getSkillsOfCategory = async (req, res) => {
         }).then(async (result) => {
             logger.info('Skills list fetched successfully');
             return responseData.success(res, result, 'Skills list fetched successfully');
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
         })
     })
 }

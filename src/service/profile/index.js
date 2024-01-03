@@ -133,22 +133,41 @@ const uploadMultipleFiles = async (fileArray) => {
 
 const clientProfile = async (req, userData, res) => {
     return new Promise(async () => {
-        let profile = await ClientProfileSchema.findOne({ user_id: new ObjectId(req.userId) });
-        if (!profile) {
-            profile = new ClientProfileSchema({ user_id: req.userId });
-        }
-        profile.firstName = userData.firstName || "null";
-        profile.lastName = userData.lastName || "null";
-        profile.location = userData.country || "null"
-        profile.businessName = req.body?.business_name || 'null';
-        profile.briefDescription = req.body?.brief_description || 'null';
-        await profile.save().then((result) => {
-            logger.info(`Client Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
-            return responseData.success(res, result, `Client Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
-        }).catch((err) => {
-            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        let profile = await ClientProfileSchema.findOne({ user_id: new ObjectId(req.userId) }).then(async (result) => {
+            if (!result) {
+                result = new ClientProfileSchema({ user_id: req.userId })
+            }
+
+            result.firstName = userData.firstName || "null";
+            result.lastName = userData.lastName || "null";
+            result.location = userData.country || "null"
+            result.businessName = req.body?.business_name || 'null';
+            result.briefDescription = req.body?.brief_description || 'null';
+
+            await profile.save().then((result) => {
+                logger.info(`Client Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
+                return responseData.success(res, result, `Client Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            });
+
         });
+        // if (!profile) {
+        //     profile = new ClientProfileSchema({ user_id: req.userId });
+        // }
+        // profile.firstName = userData.firstName || "null";
+        // profile.lastName = userData.lastName || "null";
+        // profile.location = userData.country || "null"
+        // profile.businessName = req.body?.business_name || 'null';
+        // profile.briefDescription = req.body?.brief_description || 'null';
+        // await profile.save().then((result) => {
+        //     logger.info(`Client Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
+        //     return responseData.success(res, result, `Client Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
+        // }).catch((err) => {
+        //     logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+        //     return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        // });
     })
 }
 

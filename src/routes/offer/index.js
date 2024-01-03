@@ -11,6 +11,6 @@ module.exports = (app) => {
     app.get(urlConstants.HIRED_LIST_GET, jsonWebToken.validateToken, api.getHiredList);
     app.get(urlConstants.JOB_HIRED_LIST_GET, jsonWebToken.validateToken, api.getJobHiredList);
     app.get(urlConstants.GET_USER_JOB, jsonWebToken.validateToken, api.getUserJobs);
-    app.post(urlConstants.SUBMIT_OFFER_TASK, jsonWebToken.validateToken, upload.single('file'), api.submitOfferTask);
+    app.post(urlConstants.SUBMIT_OFFER_TASK, jsonWebToken.validateToken, upload.single('file'), offerValidator.offerTaskSubmitValidation, api.submitOfferTask);
     app.post(urlConstants.END_CONTRACT, jsonWebToken.validateToken, offerValidator.endContractValidation, api.endContract);
 }

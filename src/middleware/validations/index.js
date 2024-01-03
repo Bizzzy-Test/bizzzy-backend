@@ -8,6 +8,7 @@ const boardValidator = require('./board');
 const offerValidator = require('./offer');
 const jobValidation = require('./job');
 const feedbackValidator = require('./feedback');
+const jobProposalValidator = require('./jobProposal');
 
 module.exports = {
     authValidator,
@@ -19,5 +20,6 @@ module.exports = {
     boardValidator,
     offerValidator,
     jobValidation,
-    feedbackValidator
+    feedbackValidator,
+    jobProposalValidator
 }

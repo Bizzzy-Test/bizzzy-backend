@@ -18,8 +18,7 @@ const sendOffer = async (req, res) => {
 
 const updateOfferStatus = async (req, res) => {
     try {
-        const userData = await getUserData(req, res);
-        const response = await offerService.updateOfferStatus(req, userData, res);
+        const response = await offerService.updateOfferStatus(req, res);
         logger.info(`${messageConstants.RESPONSE_FROM} updateOfferStatus API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
@@ -66,7 +65,7 @@ const getHiredList = async (req, res) => {
 const getJobHiredList = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
-        const response = await offerService.getJobHiredList(userData, req, res);
+        const response = await offerService.getJobHiredList(req, userData, res);
         logger.info(`${messageConstants.RESPONSE_FROM} Get hired List API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
@@ -107,7 +106,7 @@ const endContract = async (req, res) => {
         logger.info(`${messageConstants.RESPONSE_FROM} endContract API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
-        logger.error(`End Contract ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`endContract ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 };

@@ -9,7 +9,7 @@ const getAllCategories = async (req, res) => {
         logger.info(`${messageConstants.RESPONSE_FROM} getAllCategories API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
-        logger.error(`getAllCategories API ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`getAllCategories ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 }
@@ -29,7 +29,7 @@ const getSkillsOfCategory = async (req, res) => {
         logger.info(`${messageConstants.RESPONSE_FROM} getSkillsOfCategory API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
-        logger.error(`getSkillsOfCategory API ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`getSkillsOfCategory ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 }

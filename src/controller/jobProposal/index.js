@@ -20,18 +20,18 @@ const getAppliedJobPropasals = async (req, res) => {
 	try {
 		const userData = await getUserData(req, res);
 		const response = await jobProposalService.getAppliedJobPropasals(userData, res);
-		logger.info(`${messageConstants.RESPONSE_FROM} getJobProposalByUserId API`, JSON.stringify(response));
+		logger.info(`${messageConstants.RESPONSE_FROM} getAppliedJobPropasals API`, JSON.stringify(response));
 		res.send(response);
 	} catch (err) {
-		logger.error(`getJobProposalByUserId ${messageConstants.API_FAILED} ${err}`);
+		logger.error(`getAppliedJobPropasals ${messageConstants.API_FAILED} ${err}`);
 		res.send(err);
 	}
 };
 
 const getJobProposalByUserId = async (req, res) => {
 	try {
-		const userToken = req.headers.token;
-		const response = await jobProposalService.getJobProposalByUserId(userToken, res);
+		const userData = await getUserData(req, res);
+		const response = await jobProposalService.getJobProposalByUserId(req, userData, res);
 		logger.info(`${messageConstants.RESPONSE_FROM} getJobProposalByUserId API`, JSON.stringify(response));
 		res.send(response);
 	} catch (err) {
@@ -47,7 +47,6 @@ const getJobProposalByJobId = async (req, res) => {
 		logger.info(`${messageConstants.RESPONSE_FROM} getJobProposalByJobId API`, JSON.stringify(response));
 		res.send(response);
 	} catch (err) {
-		logger.error(`herrrrrrrrreeeeeee`);
 		logger.error(`getJobProposalByJobId ${messageConstants.API_FAILED} ${err}`);
 		res.send(err);
 	}

@@ -17,6 +17,7 @@ const getReportData = async (req, userData, res) => {
         let gross_earnings = 0;
         let application_sent = 0;
         let invitation_receive = 0;
+
         let query = {}
         if (userData?.role == 1) {
             query = {
@@ -27,20 +28,29 @@ const getReportData = async (req, userData, res) => {
                 client_id: userData._id
             }
         }
+
         await JobProposalSchema.find(
             {
                 userId: userData._id,
                 created_at: { $gte: thirtyDaysAgo }
             }).then(async (result) => {
                 application_sent = result?.length
-            })
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            });
+
         await InvitationSchema.find(
             {
                 receiver_id: userData._id,
                 created_at: { $gte: thirtyDaysAgo }
             }).then(async (result) => {
                 invitation_receive = result?.length
-            })
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            });
+
         await OfferSchema.find(
             {
                 ...query,
@@ -52,7 +62,11 @@ const getReportData = async (req, userData, res) => {
                         job_completed++
                     }
                 });
-            })
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            });
+
         const result = {
             user_details: {
                 _id: userData._id,
@@ -91,6 +105,7 @@ const getReportData = async (req, userData, res) => {
                 },
             ]
         };
+        
         logger.info("Report Fetched succesfully");
         return responseData.success(res, result, "Report Fetched succesfully");
     })

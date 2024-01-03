@@ -16,61 +16,79 @@ const JobProposalSchema = require('../../models/jobProposal');
 const sendOffer = async (body, userData, res) => {
     return new Promise(async () => {
         if (userData.role == 2) {
-            const find_offer = await OfferSchema.findOne(
+            await OfferSchema.findOne(
                 {
                     $and: [
                         { freelencer_id: new ObjectId(body.freelencer_id) },
                         { client_id: userData._id },
                         { job_id: new ObjectId(body.job_id) }
                     ]
-                })
-            if (find_offer) {
-                logger.info(`Offer ${messageConstants.ALREADY_EXIST}`);
-                return responseData.fail(res, `Offer ${messageConstants.ALREADY_EXIST}`, 403);
-            } else {
-                body.freelencer_id = new ObjectId(body.freelencer_id);
-                body.job_id = new ObjectId(body.job_id);
-                body.client_id = userData._id;
-                const offerSchema = new OfferSchema({ ...body });
-                await offerSchema.save().then(async (result) => {
-                    const find_freelencer = await UserSchema.findOne({ _id: new ObjectId(body.freelencer_id) });
-                    if (find_freelencer) {
-                        const client_details = await ClientSchema.findOne({ user_id: userData._id });
-                        if (client_details) {
-                            const job_details = await JobSchema.findOne({ client_id: userData._id });
-                            if (job_details) {
-                                const mailContent = {
-                                    name: find_freelencer.firstName + ' ' + find_freelencer.lastName,
-                                    client_name: client_details.firstName + client_details.lastName,
-                                    job_title: job_details.title,
-                                    job_description: job_details.description,
-                                    business_name: client_details.businessName,
-                                    budget: job_details.budget,
-                                    email: find_freelencer.email,
-                                    message: body.client_message,
-                                    link: `${process.env.BASE_URL}/message/offer?job_id=${body.job_id}&offer_id=${result._id}`,
-
-                                };
-                                await mail.sendMailtoUser(mailTemplateConstants.SEND_OFFER, find_freelencer.email, "Job Offer", res, mailContent);
-                                logger.info(messageConstants.JOB_OFFER_SEND_SUCCESSFULLY);
-                                return responseData.success(res, result, messageConstants.JOB_OFFER_SEND_SUCCESSFULLY);
-                            } else {
-                                logger.info(`Job ${messageConstants.NOT_FOUND}`);
-                                return responseData.fail(res, `${messageConstants.NOT_FOUND}`, 400);
-                            }
-                        } else {
-                            logger.info(`Client ${messageConstants.NOT_FOUND}`);
-                            return responseData.fail(res, `${messageConstants.NOT_FOUND}`, 400);
-                        }
+                }).then(async (offer) => {
+                    if (offer) {
+                        logger.info(`Offer ${messageConstants.ALREADY_EXIST}`);
+                        return responseData.fail(res, `Offer ${messageConstants.ALREADY_EXIST}`, 403);
                     } else {
-                        logger.error(`Freelancer ${messageConstants.NOT_FOUND}`);
-                        return responseData.fail(res, `Freelancer ${messageConstants.NOT_FOUND}`, 403);
+                        body.freelencer_id = new ObjectId(body.freelencer_id);
+                        body.job_id = new ObjectId(body.job_id);
+                        body.client_id = userData._id;
+                        const offerSchema = new OfferSchema({ ...body });
+                        await offerSchema.save().then(async (result) => {
+                            await UserSchema.findOne({ _id: new ObjectId(body.freelencer_id) }).then(async (freelancer) => {
+                                if (freelancer) {
+                                    await ClientSchema.findOne({ user_id: userData._id }).then(async (client) => {
+                                        if (client) {
+                                            await JobSchema.findOne({ client_id: userData._id }).then(async (job) => {
+                                                if (job) {
+                                                    const mailContent = {
+                                                        name: freelancer.firstName + ' ' + freelancer.lastName,
+                                                        client_name: client.firstName + client.lastName,
+                                                        job_title: job.title,
+                                                        job_description: job.description,
+                                                        business_name: client.businessName,
+                                                        budget: job.budget,
+                                                        email: freelancer.email,
+                                                        message: body.client_message,
+                                                        link: `${process.env.BASE_URL}/message/offer?job_id=${body.job_id}&offer_id=${result._id}`,
+
+                                                    };
+                                                    await mail.sendMailtoUser(mailTemplateConstants.SEND_OFFER, freelancer.email, "Job Offer", res, mailContent);
+                                                    logger.info(messageConstants.JOB_OFFER_SEND_SUCCESSFULLY);
+                                                    return responseData.success(res, result, messageConstants.JOB_OFFER_SEND_SUCCESSFULLY);
+                                                } else {
+                                                    logger.info(`Job ${messageConstants.NOT_FOUND}`);
+                                                    return responseData.fail(res, `Job ${messageConstants.NOT_FOUND}`, 400);
+                                                }
+                                            }).catch((err) => {
+                                                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                                                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+                                            });
+
+                                        } else {
+                                            logger.info(`Client ${messageConstants.NOT_FOUND}`);
+                                            return responseData.fail(res, `Client ${messageConstants.NOT_FOUND}`, 400);
+                                        }
+                                    }).catch((err) => {
+                                        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                                        return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+                                    });
+                                } else {
+                                    logger.error(`Freelancer ${messageConstants.NOT_FOUND}`);
+                                    return responseData.fail(res, `Freelancer ${messageConstants.NOT_FOUND}`, 403);
+                                }
+                            }).catch((err) => {
+                                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+                            });
+                        }).catch((err) => {
+                            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+                        })
                     }
                 }).catch((err) => {
                     logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
                     return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
                 })
-            }
+
         } else {
             logger.info(messageConstants.NOT_SENT_OFFER);
             return responseData.fail(res, `${messageConstants.NOT_SENT_OFFER}`, 401);
@@ -130,18 +148,19 @@ const getOffersList = async (userData, res) => {
     })
 }
 
-const updateOfferStatus = async (req, userData, res) => {
+const updateOfferStatus = async (req, res) => {
     return new Promise(async () => {
+        const offer_id = req?.body?.offer_id ? new ObjectId(req?.body?.offer_id) : new ObjectId(req?.query?.offer_id);
         await OfferSchema.find(
             {
-                _id: req?.body?.offer_id ? new ObjectId(req?.body?.offer_id) : new ObjectId(req?.query?.offer_id)
+                _id: offer_id
             }
         ).then(async (result) => {
             if (result.length !== 0) {
                 let offerData = result[0];
                 await OfferSchema.updateOne(
                     {
-                        _id: req?.body?.offer_id ? new ObjectId(req?.body?.offer_id) : new ObjectId(req?.query?.offer_id)
+                        _id: offer_id
                     },
                     { $set: { status: 'accepted' } },
                     { new: true }
@@ -163,8 +182,14 @@ const updateOfferStatus = async (req, userData, res) => {
                                 const hiredFreelancersSchema = new HiredFreelancersSchema(offerData);
                                 await hiredFreelancersSchema.save().then(async (result) => {
                                     logger.info('Freelancer added in the hired list')
+                                }).catch((err) => {
+                                    logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                                    return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
                                 });
                             }
+                        }).catch((err) => {
+                            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
                         })
 
                         logger.info(messageConstants.OFFER_UPDATED_SUCCESSFULLY);
@@ -180,7 +205,13 @@ const updateOfferStatus = async (req, userData, res) => {
                     logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
                     return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
                 })
+            } else {
+                logger.info(`Offer ${messageConstants.NOT_FOUND}`);
+                return responseData.fail(res, `Offer ${messageConstants.NOT_FOUND}`, 400);
             }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
         })
     })
 }
@@ -235,7 +266,7 @@ const getHiredList = async (userData, res) => {
     })
 }
 
-const getJobHiredList = async (userData, req, res) => {
+const getJobHiredList = async (req, userData, res) => {
     return new Promise(async () => {
         const { job_id } = req.query;
 
@@ -452,69 +483,59 @@ const getJobHiredList = async (userData, req, res) => {
 
 const getUsersJobs = async (req, userData, res) => {
     return new Promise(async () => {
-        try {
-            // Query to fetch offers with client profiles and job details
-            const offerQuery = [
-                {
-                    $match: {
-                        freelencer_id: userData._id,
-                    },
+        const offerQuery = [
+            {
+                $match: {
+                    freelencer_id: userData._id,
                 },
-                {
-                    $lookup: {
-                        from: 'client_profiles',
-                        localField: 'client_id',
-                        foreignField: 'user_id',
-                        pipeline: [
-                            {
-                                $project: {
-                                    _id: 0,
-                                    user_id: 1,
-                                    firstName: 1,
-                                    lastName: 1,
-                                    location: 1,
-                                    profile_image: 1,
-                                    businessName: 1,
-                                },
+            },
+            {
+                $lookup: {
+                    from: 'client_profiles',
+                    localField: 'client_id',
+                    foreignField: 'user_id',
+                    pipeline: [
+                        {
+                            $project: {
+                                _id: 0,
+                                user_id: 1,
+                                firstName: 1,
+                                lastName: 1,
+                                location: 1,
+                                profile_image: 1,
+                                businessName: 1,
                             },
-                        ],
-                        as: 'client_profile',
-                    },
+                        },
+                    ],
+                    as: 'client_profile',
                 },
-                {
-                    $lookup: {
-                        from: 'jobs',
-                        localField: 'job_id',
-                        foreignField: '_id',
-                        pipeline: [
-                            {
-                                $project: {
-                                    _id: 0,
-                                    title: 1,
-                                    description: 1,
-                                    amount: 1,
-                                    budget: 1,
-                                    experience: 1,
-                                    status: 1, // Include the 'status' field in the project stage
-                                },
+            },
+            {
+                $lookup: {
+                    from: 'jobs',
+                    localField: 'job_id',
+                    foreignField: '_id',
+                    pipeline: [
+                        {
+                            $project: {
+                                _id: 0,
+                                title: 1,
+                                description: 1,
+                                amount: 1,
+                                budget: 1,
+                                experience: 1,
+                                status: 1, // Include the 'status' field in the project stage
                             },
-                        ],
-                        as: 'job_details',
-                    },
+                        },
+                    ],
+                    as: 'job_details',
                 },
-            ];
+            },
+        ];
 
-            // Aggregate offers using the offerQuery
-            const offers = await OfferSchema.aggregate(offerQuery);
-
+        await OfferSchema.aggregate(offerQuery).then(async (offers) => {
             const jobProposals = await JobProposalSchema.find({ userId: userData._id }).populate('jobId');
-
-            // Extract job details from the populated job proposals
             const jobDetails = jobProposals.map((proposal) => proposal.jobId);
-
-            // Fetch applied job proposals using the getAppliedJobProposals function
-
-            // Separate jobs into active and completed based on status
             const activeJobs = [];
             const completedJobs = [];
 
@@ -533,14 +554,12 @@ const getUsersJobs = async (req, userData, res) => {
                 }
             }
 
-            // Combine the results into a response object
             const response = {
                 active_jobs: activeJobs,
                 completed_jobs: completedJobs,
                 applied_jobs: jobDetails,
             };
 
-            // Send the response
             if (activeJobs.length > 0 || completedJobs.length > 0 || jobProposals.length > 0) {
                 logger.info(`Jobs fetched successfully`);
                 return responseData.success(res, response, `Jobs fetched successfully`);
@@ -548,12 +567,11 @@ const getUsersJobs = async (req, userData, res) => {
                 logger.info(`No jobs found`);
                 return responseData.success(res, response, `No jobs found`);
             }
-        } catch (error) {
-            // Handle errors and log them
-            const errorMessage = `${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`;
-            logger.error(errorMessage);
-            return responseData.fail(res, errorMessage, 500);
-        }
+
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        });
     });
 };
 
@@ -633,22 +651,13 @@ const submitOfferTask = async (req, userData, taskFile, res) => {
 
 const endContract = async (req, userData, res) => {
     return new Promise(async () => {
-        let query = {};
-        if (userData?.role == 2) {
-            query = {
-                client_id: new ObjectId(userData?._id),
-                freelencer_id: new ObjectId(req?.body?.user_id)
-            }
-        } else {
-            query = {
-                client_id: new ObjectId(req?.body?.user_id),
-                freelencer_id: new ObjectId(userData?._id)
-            }
-        }
+        const client_id = userData.role === 2 ? userData?._id : req?.body?.user_id;
+        const freelencer_id = userData.role === 2 ? req?.body?.user_id : userData?._id;
         await OfferSchema.updateOne(
             {
                 job_id: new ObjectId(req?.body?.job_id),
-                ...query
+                client_id,
+                freelencer_id
             },
             { $set: { status: req?.body?.status } },
             { new: true }
@@ -660,6 +669,9 @@ const endContract = async (req, userData, res) => {
                 logger.error('Contract Not Found');
                 return responseData.success(res, result, 'Contract Not Found');
             }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
         })
     })
 }

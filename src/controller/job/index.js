@@ -36,51 +36,52 @@ const closeJob = async (req, res) => {
 const getAllJobPost = async (req, res) => {
     try {
         const response = await JobService.getAllJobPost(req, res);
-        logger.info(`${messageConstants.RESPONSE_FROM} getAllJobPost`, JSON.stringify(response));
+        logger.info(`${messageConstants.RESPONSE_FROM} getAllJobPost API`, JSON.stringify(response));
         res.send(response)
     } catch (error) {
-        logger.error(`Job ${messageConstants.API_FAILED} ${error}`);
+        logger.error(`getAllJobPost ${messageConstants.API_FAILED} ${error}`);
         res.send(error)
     }
 }
 
 // ===== search job post ==== controller
 
-const searchJobPosts = async (req, res) => {
-    try {
-        const userToken = req.headers.token;
-        const searchQuery = req.query.query;
-        const response = await JobService.searchJobPost({
-            searchQuery,
-            budget: req.query.budget,
-            experience: req.query.experience,
-            sort: req.query.sort,
-        }, userToken);
-        logger.info(`${messageConstants.RESPONSE_FROM} Job API`, JSON.stringify(response));
-        res.status(200).json({
-            data: response,
-            success: true,
-            message: messageConstants.JOB_FETCHED_SUCCESSFULLY
-        });
-    } catch (error) {
-        logger.error(`Job ${messageConstants.API_FAILED} ${error}`);
-        res.status(500).json({
-            data: error,
-            success: false,
-            message: messageConstants.INTERNAL_SERVER_ERROR
-        });
-    }
-};
+// const searchJobPosts = async (req, res) => {
+//     try {
+//         const userToken = req.headers.token;
+//         const searchQuery = req.query.query;
+//         const response = await JobService.searchJobPost({
+//             searchQuery,
+//             budget: req.query.budget,
+//             experience: req.query.experience,
+//             sort: req.query.sort,
+//         }, userToken);
+//         logger.info(`${messageConstants.RESPONSE_FROM} Job API`, JSON.stringify(response));
+//         res.status(200).json({
+//             data: response,
+//             success: true,
+//             message: messageConstants.JOB_FETCHED_SUCCESSFULLY
+//         });
+//     } catch (error) {
+//         logger.error(`Job ${messageConstants.API_FAILED} ${error}`);
+//         res.status(500).json({
+//             data: error,
+//             success: false,
+//             message: messageConstants.INTERNAL_SERVER_ERROR
+//         });
+//     }
+// };
 
 const searchJobPost = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
         const response = await JobService.searchJobPost(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} searchJobPost API`, JSON.stringify(response));
         if (response != null) {
             res.sendFile(response);
         }
     } catch (err) {
-        logger.error(`Update experience ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`searchJobPost ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 }
@@ -92,10 +93,10 @@ const getJobPostByUserId = async (req, res) => {
         // const client_details = req.params.id;
         const userData = await getUserData(req, res)
         const response = await JobService.getJobPostByUserId(req, userData, res);
-        logger.info(`${messageConstants.RESPONSE_FROM} getJobPostByUserId`, JSON.stringify(response));
+        logger.info(`${messageConstants.RESPONSE_FROM} getJobPostByUserId API`, JSON.stringify(response));
         res.send(response);
     } catch (error) {
-        logger.error(`Job ${messageConstants.API_FAILED} ${error}`);
+        logger.error(`getJobPostByUserId ${messageConstants.API_FAILED} ${error}`);
         res.send(error);
     }
 }
@@ -103,20 +104,12 @@ const getJobPostByUserId = async (req, res) => {
 // ==== get single job post ==== controller
 const getSingleJobPost = async (req, res) => {
     try {
-        const jobId = req.params.id;
-        const response = await JobService.getSingleJobPost(jobId);
-        res.status(200).json({
-            data: response,
-            success: true,
-            message: messageConstants.JOB_FETCHED_SUCCESSFULLY
-        });
+        const response = await JobService.getSingleJobPost(req, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} getSingleJobPost API`, JSON.stringify(response));
+        res.send(response);
     } catch (error) {
-        logger.error(`Job ${messageConstants.API_FAILED} ${error}`);
-        res.status(500).json({
-            data: error,
-            success: false,
-            message: messageConstants.INTERNAL_SERVER_ERROR
-        })
+        logger.error(`getSingleJobPost ${messageConstants.API_FAILED} ${error}`);
+        res.send(error);
     }
 
 }
