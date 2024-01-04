@@ -384,24 +384,38 @@ const userProfile = async (body, res) => {
 }
 
 
-const getUserProfileById = async (userId, res) => {
-    try {
-        let client_user = await client_profile.findOne({ user_id: userId });
-        const freelancer_user = await freelancer_profile.findOne({ user_id: userId });
-        if (client_user) {
-            client_user = client_user.toObject()
-            await getClientDetails(client_user, client_user?.user_id);
-            return responseData.success(res, client_user, `User profile fetched successfully`);
-        } else if (freelancer_user) {
-            return responseData.success(res, freelancer_user, `User profile fetched successfully`);
-        } else {
-            logger.info(`User profile not found`);
-            return responseData.fail(res, `User profile not found`, 404);
-        }
-    } catch (error) {
-        console.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
-        return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`, 500);
-    }
+const getUserProfileById = async (req, res) => {
+    return new Promise(async () => {
+        const user_id = new ObjectId(req?.query?.user_id);
+        await UserSchema.findOne({ _id: user_id }).then(async (result) => {
+            if (result) {
+                const profileSchema = result.role === 1 ? freelancer_profile : client_profile;
+                await profileSchema.findOne({ user_id }).then(async (response) => {
+                    if (response) {
+                        response = response.toObject();
+                        if (result.role === 2) {
+                            await getClientDetails(response, response?.user_id);
+                        }
+                        logger.info(`User profile fetched successfully`);
+                        return responseData.success(res, response, `User profile fetched successfully`);
+                    } else {
+                        logger.error(`Profile ${messageConstants.NOT_FOUND}`);
+                        return responseData.fail(res, `Profile ${messageConstants.NOT_FOUND}`, 401);
+                    }
+                }).catch((err) => {
+                    console.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                    return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+                })
+            } else {
+                logger.error(`User ${messageConstants.NOT_FOUND}`);
+                return responseData.fail(res, `User ${messageConstants.NOT_FOUND}`, 401);
+            }
+
+        }).catch((err) => {
+            console.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        })
+    })
 };
 
 
