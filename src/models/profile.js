@@ -140,4 +140,4 @@ const profileSchema = mongoose.Schema({
 })
 
 
-module.exports = mongoose.model('freelencer_profile', profileSchema)
+module.exports = mongoose.model('freelancer_profile', profileSchema)

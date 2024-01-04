@@ -20,7 +20,7 @@ const getReportData = async (req, userData, res) => {
         let query = {}
         if (userData?.role == 1) {
             query = {
-                freelencer_id: userData._id
+                freelancer_id: userData._id
             }
         } else {
             query = {

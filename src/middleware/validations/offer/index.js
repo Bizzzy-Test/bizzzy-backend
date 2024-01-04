@@ -3,7 +3,7 @@ const Joi = require('joi');
 
 const offerValidation = (req, res, next) => {
     const schema = Joi.object({
-        freelencer_id: Joi.string().required(),
+        freelancer_id: Joi.string().required(),
         job_id: Joi.string().required(),
         budget: Joi.number().required(),
         job_type: Joi.string().valid('hourly', 'fixed').required(),

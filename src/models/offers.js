@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-const { budgetType, experienceType } = require('../constants/enum');
+const { budgetType, experienceType, jobTypes } = require('../constants/enum');
 
 const OfferSchema = mongoose.Schema({
-    freelencer_id: {
+    freelancer_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'freelencer_profiles',
+        ref: 'freelancer_profiles',
         required: true,
     },
     client_id: {
@@ -39,7 +39,7 @@ const OfferSchema = mongoose.Schema({
     },
     job_type: {
         type: String,
-        enum: ['hourly', 'fixed'],
+        enum: [jobTypes.HOURLY, jobTypes.FIXED],
         required: true
     },
     hourly_rate: {
