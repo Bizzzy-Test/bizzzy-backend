@@ -11,7 +11,7 @@ const StrengthsSchema = require('../../models/strengths');
 const ReasonsSchema = require('../../models/reason_for_ending_contract');
 const FeedbackOptionsSchema = require('../../models/feedback_options');
 const client_profile = require('../../models/clientProfile');
-const freelencer_profile = require('../../models/profile');
+const freelancer_profile = require('../../models/profile');
 const { getClientDetails } = require('../profile');
 
 const signUp = async (body, res) => {
@@ -88,7 +88,7 @@ const signIn = async (body, res) => {
                 return responseData.fail(res, messageConstants.USER_NOT_VERIFIED, 405);
             }
 
-            let userProfile = await freelencer_profile.findOne({ user_id: user._id });
+            let userProfile = await freelancer_profile.findOne({ user_id: user._id });
 
             // If the user ID is not found in freelancer_profile, try client_profile
             if (!userProfile) {
@@ -387,7 +387,7 @@ const userProfile = async (body, res) => {
 const getUserProfileById = async (userId, res) => {
     try {
         let client_user = await client_profile.findOne({ user_id: userId });
-        const freelancer_user = await freelencer_profile.findOne({ user_id: userId });
+        const freelancer_user = await freelancer_profile.findOne({ user_id: userId });
         if (client_user) {
             client_user = client_user.toObject()
             await getClientDetails(client_user, client_user?.user_id);

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const OfferTaskSchema = mongoose.Schema({
-    freelencer_id: {
+    freelancer_id: {
         type: mongoose.Schema.Types.ObjectId,
     },
     client_id: {

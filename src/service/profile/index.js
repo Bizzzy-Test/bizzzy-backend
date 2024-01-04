@@ -13,7 +13,7 @@ const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 const { uploadFile } = require("../../middleware/aws/aws.js");
 
-const freelencerProfile = async (req, userData, res) => {
+const freelancerProfile = async (req, userData, res) => {
     return new Promise(async () => {
         let profile = await ProfileSchema.findOne({ user_id: req.userId });
 
@@ -104,12 +104,12 @@ const freelencerProfile = async (req, userData, res) => {
         profile.hourly_rate = req.body?.hourly_rate ? req.body?.hourly_rate : (profile.hourly_rate !== 'null' ? profile.hourly_rate : 'null');
         profile.description = req.body?.description ? req.body?.description : (profile.description !== 'null' ? profile.description : 'null');
         await profile.save().then((result) => {
-            logger.info(`Freelencer Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
+            logger.info(`Freelancer Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
             if (req.files) {
                 const portfolio_length = result.portfolio.length - 1;
-                return responseData.success(res, profile.portfolio[portfolio_length], `Freelencer Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
+                return responseData.success(res, profile.portfolio[portfolio_length], `Freelancer Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
             } else {
-                return responseData.success(res, req.body, `Freelencer Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
+                return responseData.success(res, req.body, `Freelancer Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
             }
         }).catch((err) => {
             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
@@ -168,7 +168,7 @@ const getUserProfile = async (userData, res) => {
                     pipeline: [
                         {
                             $lookup: {
-                                from: 'freelencer_profiles',
+                                from: 'freelancer_profiles',
                                 localField: 'sender_id',
                                 foreignField: 'user_id',
                                 pipeline: [
@@ -315,7 +315,7 @@ const getProfileImage = async (req, res) => {
     }
 }
 
-const editFreelencerProfile = async (req, userData, res) => {
+const editFreelancerProfile = async (req, userData, res) => {
     return new Promise(async () => {
         const find_profile = await ProfileSchema.findOne({ user_id: new ObjectId(userData._id) });
         if (find_profile) {
@@ -384,17 +384,17 @@ const editFreelencerProfile = async (req, userData, res) => {
                     _id: new ObjectId(find_profile._id)
                 }
             }
-            // Update data in freelencer profile
+            // Update data in freelancer profile
             await ProfileSchema.updateOne(update_condition,
                 {
                     $set: updateObject
                 }
             ).then(async (updateResult) => {
                 if (updateResult?.modifiedCount == 1) {
-                    logger.info(`Edit Freelencer profile ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
-                    return responseData.success(res, req.body, `Edit Freelencer profile ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                    logger.info(`Edit Freelancer profile ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                    return responseData.success(res, req.body, `Edit Freelancer profile ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
                 } else {
-                    logger.info(`Edit Freelencer profile ${messageConstants.PROFILE_NOT_UPDATED}`);
+                    logger.info(`Edit Freelancer profile ${messageConstants.PROFILE_NOT_UPDATED}`);
                     return responseData.fail(res, `${messageConstants.PROFILE_NOT_UPDATED}`, 200);
                 }
             })
@@ -438,10 +438,10 @@ const deleteExperience = async (req, userData, res) => {
     })
 }
 
-const searchFreelencers = async (req, userData, res) => {
+const searchFreelancers = async (req, userData, res) => {
     return new Promise(async () => {
         if (userData.role == 1) {
-            logger.info(`Search freelencers ${messageConstants.NOT_ALLOWED}`);
+            logger.info(`Search freelancers ${messageConstants.NOT_ALLOWED}`);
             return responseData.fail(res, `${messageConstants.NOT_ALLOWED}`, 404);
         } else {
             let { skills, experience, hourlyRateMin, hourlyRateMax, searchText } = req?.query;
@@ -477,8 +477,8 @@ const getClientDetails = async (profile, user_id) => {
     user_id = new ObjectId(user_id);
     job_posted = await JobSchema.find({ client_id: user_id })
     job_open = await JobSchema.find({ client_id: user_id, status: 'open' })
-    hired_freelancers = await HiredFreelancersSchema.distinct('freelencer_id', { client_id: user_id });
-    active_freelancers = await OfferSchema.distinct('freelencer_id', { client_id: user_id, status: 'accepted' });
+    hired_freelancers = await HiredFreelancersSchema.distinct('freelancer_id', { client_id: user_id });
+    active_freelancers = await OfferSchema.distinct('freelancer_id', { client_id: user_id, status: 'accepted' });
     profile.job_posted = job_posted?.length || 0;
     profile.job_open = job_open?.length || 0;
     profile.hired_freelancers = hired_freelancers?.length || 0;
@@ -491,14 +491,14 @@ const getClientDetails = async (profile, user_id) => {
 }
 
 module.exports = {
-    freelencerProfile,
+    freelancerProfile,
     clientProfile,
     getUserProfile,
     profileImageUpload,
     getProfileImage,
     deleteExperience,
-    searchFreelencers,
-    editFreelencerProfile,
+    searchFreelancers,
+    editFreelancerProfile,
     editClientProfile,
     getClientDetails
 }

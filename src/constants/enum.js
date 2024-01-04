@@ -44,8 +44,11 @@ const jobTypes = Object.freeze({
     PROJECT: "project",
     MILESTONE: "milestone",
     HOURLY: "hourly",
+    FIXED: "fixed"
 });
 // ==
+
+
 
 module.exports = {
     userType,

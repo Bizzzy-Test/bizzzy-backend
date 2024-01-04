@@ -152,7 +152,7 @@ const getInvitedFreelancers = async (userData, res) => {
                 },
                 {
                     $lookup: {
-                        from: 'freelencer_profiles',
+                        from: 'freelancer_profiles',
                         localField: 'receiver_id',
                         foreignField: 'user_id',
                         pipeline: [
@@ -178,7 +178,7 @@ const getInvitedFreelancers = async (userData, res) => {
                         from: 'jobs',
                         localField: 'job_id',
                         foreignField: '_id',
-                        pipeine: [{
+                        pipeline: [{
                             $project: {
                                 _id: 1,
                                 title: 1,
@@ -213,7 +213,7 @@ const getInvitedFreelancers = async (userData, res) => {
     })
 }
 
-// Invitation details get for freelencer
+// Invitation details get for freelancer
 const getInvitationDetailForFreelancer = async (req, res,) => {
     return new Promise(async () => {
         const { invitation_id } = req.query;

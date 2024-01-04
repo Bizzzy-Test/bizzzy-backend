@@ -100,7 +100,7 @@ const getJobProposalByJobId = async (req, res) => {
 			},
 			{
 				$lookup: {
-					from: 'freelencer_profiles',
+					from: 'freelancer_profiles',
 					localField: 'userId',
 					foreignField: 'user_id',
 					pipeline: [

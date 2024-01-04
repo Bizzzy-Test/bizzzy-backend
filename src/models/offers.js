@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-const { budgetType, experienceType } = require('../constants/enum');
+const { budgetType, experienceType, jobTypes } = require('../constants/enum');
 
 const OfferSchema = mongoose.Schema({
-    freelencer_id: {
+    freelancer_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'freelencer_profiles',
+        ref: 'freelancer_profiles',
         required: true,
     },
     client_id: {
@@ -17,16 +17,58 @@ const OfferSchema = mongoose.Schema({
         ref: 'jobs',
         required: true,
     },
-    job_type: {
-        type: String
-    },
     status: {
         type: String,
-        default:'pending'
+        default: 'pending'
     },
     budget: {
         type: Number,
         required: true
+    },
+    hiring_team: {
+        type: String,
+        required: true
+    },
+    job_title: {
+        type: String,
+        required: true
+    },
+    contract_title: {
+        type: String,
+        required: true
+    },
+    job_type: {
+        type: String,
+        enum: [jobTypes.HOURLY, jobTypes.FIXED],
+        required: true
+    },
+    hourly_rate: {
+        type: Number,
+        required: function () {
+            return this.job_type === 'hourly'
+        },
+    },
+    project_budget: {
+        type: Number,
+        required: function () {
+            return this.job_type === 'fixed'
+        },
+    },
+    weekly_limit: {
+        type: Number,
+        required: function () {
+            return this.job_type === 'hourly'
+        },
+    },
+    allow_freelancer_manually_timelog: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
+    accept_terms_condition: {
+        type: Boolean,
+        required: true,
+        default: false
     },
     created_at: {
         type: Date,
@@ -36,7 +78,6 @@ const OfferSchema = mongoose.Schema({
         type: Date,
         default: Date.now
     }
-
 });
 
 module.exports = mongoose.model('offers', OfferSchema);
