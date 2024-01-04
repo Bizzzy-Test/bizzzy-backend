@@ -45,19 +45,19 @@ const OfferSchema = mongoose.Schema({
     hourly_rate: {
         type: Number,
         required: function () {
-            return this.job_type === 'hourly'
+            return this.job_type === jobTypes.HOURLY
         },
     },
     project_budget: {
         type: Number,
         required: function () {
-            return this.job_type === 'fixed'
+            return this.job_type === jobTypes.FIXED
         },
     },
     weekly_limit: {
         type: Number,
         required: function () {
-            return this.job_type === 'hourly'
+            return this.job_type === jobTypes.HOURLY
         },
     },
     allow_freelancer_manually_timelog: {

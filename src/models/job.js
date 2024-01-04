@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { budgetType, experienceType } = require('../constants/enum');
+const { experienceType, jobTypes } = require('../constants/enum');
 
 const JobSchema = mongoose.Schema({
     client_id: {
@@ -17,12 +17,9 @@ const JobSchema = mongoose.Schema({
     tags: {
         type: [String]
     },
-    budget: {
+    job_type: {
         type: String,
-        enum: [
-            budgetType.FIXED_BUDGET,
-            budgetType.HOURLY
-        ],
+        enum: [jobTypes.HOURLY, jobTypes.FIXED],
         required: true
     },
     amount: {
