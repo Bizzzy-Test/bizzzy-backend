@@ -45,7 +45,7 @@ const sendOffer = async (body, userData, res) => {
                                     job_title: job_details.title,
                                     job_description: job_details.description,
                                     business_name: client_details.businessName,
-                                    budget: job_details.budget,
+                                    budget: job_details.job_type,
                                     email: find_freelancer.email,
                                     message: body.client_message,
                                     link: `${process.env.BASE_URL}/message/offer?job_id=${body.job_id}&offer_id=${result._id}`,
@@ -331,7 +331,7 @@ const getJobHiredList = async (userData, req, res) => {
 //                                 title: 1,
 //                                 description: 1,
 //                                 amount: 1,
-//                                 budget: 1,
+//                                 job_type: 1,
 //                                 experience: 1,
 //                             }
 //                         }
@@ -396,7 +396,7 @@ const getJobHiredList = async (userData, req, res) => {
 //                                 title: 1,
 //                                 description: 1,
 //                                 amount: 1,
-//                                 budget: 1,
+//                                 job_type: 1,
 //                                 experience: 1,
 //                                 status: 1, // Include the 'status' field in the project stage
 //                             },
@@ -493,7 +493,7 @@ const getUsersJobs = async (req, userData, res) => {
                                     title: 1,
                                     description: 1,
                                     amount: 1,
-                                    budget: 1,
+                                    job_type: 1,
                                     experience: 1,
                                     status: 1, // Include the 'status' field in the project stage
                                 },

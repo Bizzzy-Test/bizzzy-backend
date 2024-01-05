@@ -184,7 +184,7 @@ const getInvitedFreelancers = async (userData, res) => {
                                 title: 1,
                                 description: 1,
                                 client_id: 1,
-                                budget: 1,
+                                job_type: 1,
                                 amount: 1,
                                 file: 1,
                                 experience: 1,

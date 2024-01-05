@@ -217,7 +217,7 @@ const getUserProfile = async (userData, res) => {
                                             _id: 0,
                                             title: 1,
                                             description: 1,
-                                            budget: 1,
+                                            job_type: 1,
                                             status: 1,
                                         }
                                     }
