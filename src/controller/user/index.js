@@ -28,12 +28,12 @@ const getUserList = async (req, res) => {
 
 const getUserById = async (req, res) => {
     try {
-        const userId = req.params.id;
-        const response = await authService.getUserProfileById(userId, res);
-        logger.info(`${messageConstants.RESPONSE_FROM} Get User By Id API`, JSON.stringify(response));
+        const response = await authService.getUserProfileById(req, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} getUserById API`, JSON.stringify(response));
         res.send(response);
     } catch (error) {
-        return error
+        logger.error(`getUserById ${messageConstants.API_FAILED} ${error}`);
+        res.send(error)
     }
 }
 

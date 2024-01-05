@@ -8,7 +8,7 @@ const urlConstants = {
     USER_PROFILE: '/profile',
     USER_LOGIN: '/login',
     GET_USER_PROFILE: '/get-user-profile',
-    GET_USER_BY_ID: '/user/:id',
+    GET_USER_BY_ID: '/user',
     USER_PROFILE_IMAGE: '/user-profile-image',
     SEARCH_FREELANCERS: '/search-freelancers',
     PROFILE_DETAILS: '/profile-details',
