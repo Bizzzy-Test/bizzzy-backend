@@ -21,21 +21,21 @@ const freelancerProfile = async (req, userData, res) => {
             profile = new ProfileSchema({ user_id: req.userId });
         }
         if (userData?.firstName && userData?.lastName && userData?.country) {
-            profile.firstName = userData.firstName || "null";
-            profile.lastName = userData.lastName || "null";
-            profile.location = userData.country || "null"
+            profile.firstName = userData.firstName;
+            profile.lastName = userData.lastName;
+            profile.location = userData.country
         } else {
             // Handle the case where 'firstName' or 'lastName' is missing
             return responseData.fail(res, 'User is missing required information', 400);
         }
         if (req.body.experience) {
             const experienceData = req.body.experience;
-            const company_name = experienceData?.company_name || "null";
-            const position = experienceData?.position || "null";
-            const job_description = experienceData?.job_description || "null";
-            const job_location = experienceData?.job_location || "null";
-            const start_date = experienceData?.start_date || "null";
-            const end_date = experienceData?.end_date || "null";
+            const company_name = experienceData?.company_name;
+            const position = experienceData?.position;
+            const job_description = experienceData?.job_description;
+            const job_location = experienceData?.job_location;
+            const start_date = experienceData?.start_date;
+            const end_date = experienceData?.end_date;
             profile.experience.push({
                 company_name,
                 position,
@@ -48,10 +48,10 @@ const freelancerProfile = async (req, userData, res) => {
 
         if (req.body.education) {
             const educationData = req.body?.education;
-            const degree_name = educationData?.degree_name || "null";
-            const institution = educationData?.institution || "null";
-            const start_date = educationData?.start_date || "null";
-            const end_date = educationData?.end_date || "null";
+            const degree_name = educationData?.degree_name || null;
+            const institution = educationData?.institution || null;
+            const start_date = educationData?.start_date || null;
+            const end_date = educationData?.end_date || null;
             profile.education.push({
                 degree_name,
                 institution,
@@ -71,11 +71,11 @@ const freelancerProfile = async (req, userData, res) => {
                     // Upload multiple files to S3 and get their access URLs
                     fileUrls = await uploadMultipleFiles(req.files);
                 }
-                let attachements = fileUrls == '' ? 'null' : fileUrls;
+                let attachements = fileUrls == '' ? null : fileUrls;
                 if (req.body.portfolio) {
                     const portfolioData = req.body?.portfolio;
-                    const project_name = portfolioData.project_name || "null";
-                    const project_description = portfolioData.project_description || "null";
+                    const project_name = portfolioData.project_name || null;
+                    const project_description = portfolioData.project_description || null;
                     const technologies = portfolioData.technologies || [];
                     // If the portfolio array is empty, push a new entry
                     profile.portfolio.push({
@@ -85,8 +85,8 @@ const freelancerProfile = async (req, userData, res) => {
                         attachements  // Store the array of file URLs in the 'attachments' field
                     });
                 } else {
-                    project_name = "null";
-                    project_description = "null";
+                    project_name = null;
+                    project_description = null;
                     technologies = [];
                     profile.portfolio.push({
                         project_name,
@@ -99,10 +99,10 @@ const freelancerProfile = async (req, userData, res) => {
         }
         profile.skills = req.body && req.body.skills !== undefined ? req.body.skills : profile.skills;
         profile.categories = req.body && req.body.categories !== undefined ? req.body.categories : profile.categories;
-        profile.professional_role = req.body?.professional_role ? req.body?.professional_role : (profile.professional_role !== 'null' ? profile.professional_role : 'null');
-        profile.title = req.body?.title ? req.body?.title : (profile.title !== 'null' ? profile.title : 'null');
-        profile.hourly_rate = req.body?.hourly_rate ? req.body?.hourly_rate : (profile.hourly_rate !== 'null' ? profile.hourly_rate : 'null');
-        profile.description = req.body?.description ? req.body?.description : (profile.description !== 'null' ? profile.description : 'null');
+        profile.professional_role = req.body?.professional_role !== undefined ? req.body?.professional_role : (profile.professional_role || null);
+        profile.title = req.body?.title !== undefined ? req.body?.title : (profile.title || null);
+        profile.hourly_rate = req.body?.hourly_rate !== undefined ? req.body?.hourly_rate : (profile.hourly_rate || null);
+        profile.description = req.body?.description !== undefined ? req.body?.description : (profile.description || null);
         await profile.save().then((result) => {
             logger.info(`Freelancer Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
             if (req.files) {
@@ -137,11 +137,11 @@ const clientProfile = async (req, userData, res) => {
         if (!profile) {
             profile = new ClientProfileSchema({ user_id: req.userId });
         }
-        profile.firstName = userData.firstName || "null";
-        profile.lastName = userData.lastName || "null";
-        profile.location = userData.country || "null"
-        profile.businessName = req.body?.business_name || 'null';
-        profile.briefDescription = req.body?.brief_description || 'null';
+        profile.firstName = userData.firstName || null;
+        profile.lastName = userData.lastName || null;
+        profile.location = userData.country || null
+        profile.businessName = req.body?.business_name || null;
+        profile.briefDescription = req.body?.brief_description || null;
         await profile.save().then((result) => {
             logger.info(`Client Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
             return responseData.success(res, result, `Client Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
@@ -250,7 +250,7 @@ const getUserProfile = async (userData, res) => {
             }
         ];
 
-        let userSchema = userData.role === 1 ? ProfileSchema : ClientProfileSchema;
+        const userSchema = userData.role === 1 ? ProfileSchema : ClientProfileSchema;
         await userSchema.aggregate(query).then(async (result) => {
             if (result?.length) {
                 result = result[0]
@@ -265,7 +265,7 @@ const getUserProfile = async (userData, res) => {
             }
         }).catch((err) => {
             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-            responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
         });
     })
 }
@@ -287,7 +287,7 @@ const profileImageUpload = async (req, userData, res) => {
             const folder_name = userData.role == 1 ? 'freelancers' : 'clients';
             // Assuming uploadFile is a function you've defined to handle file uploads
             const fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folder_name);
-            profile.profile_image = fileUrl || 'null';  // Use the URL or 'null' if the upload failed
+            profile.profile_image = fileUrl || null;  // Use the URL or null if the upload failed
         }
         const result = await profile.save();
         logger.info(`Profile Image ${messageConstants.PROFILE_IMAGE_UPLOADED}`);
