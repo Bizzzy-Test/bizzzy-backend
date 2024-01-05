@@ -24,12 +24,10 @@ const getUserProfile = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
         const response = await profileService.getUserProfile(userData, res);
-        logger.info(`${messageConstants.RESPONSE_FROM} Get User Profile API`, JSON.stringify(jsonData));
-
-
+        logger.info(`${messageConstants.RESPONSE_FROM} getUserProfile API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
-        logger.error(`GetUserProfile ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`getUserProfile ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 }
@@ -38,11 +36,12 @@ const profileImageUpload = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
         const response = await profileService.profileImageUpload(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} profileImageUpload API`, JSON.stringify(response));
         if (response != null) {
             res.sendFile(response);
         }
     } catch (err) {
-        logger.error(`Delete experience ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`profileImageUpload ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 }
@@ -50,6 +49,7 @@ const profileImageUpload = async (req, res) => {
 const getProfileImage = async (req, res) => {
     try {
         const response = await profileService.getProfileImage(req, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} getProfileImage API`, JSON.stringify(response));
         if (response != null) {
             res.sendFile(response);
         }
@@ -63,17 +63,20 @@ const getProfileImage = async (req, res) => {
 const editProfile = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
+        // const editProfileService = userData?.role === 1 ? 'editFreelencerProfile' : 'editClientProfile';
+        // const response = await profileService[editProfileService](req, userData, res);
         let response;
         if (userData.role == 1) {
             response = await profileService.editFreelencerProfile(req, userData, res);
         } else {
             response = await profileService.editClientProfile(req, userData, res);
         }
+        logger.info(`${messageConstants.RESPONSE_FROM} editProfile API`, JSON.stringify(response));
         if (response != null) {
             res.sendFile(response);
         }
     } catch (err) {
-        logger.error(`Update experience ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`editProfile ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 }
@@ -82,11 +85,12 @@ const searchFreelencers = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
         const response = await profileService.searchFreelencers(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} searchFreelencers API`, JSON.stringify(response));
         if (response != null) {
             res.sendFile(response);
         }
     } catch (err) {
-        logger.error(`Update experience ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`searchFreelencers ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 }
@@ -95,11 +99,12 @@ const deleteExperience = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
         const response = await profileService.deleteExperience(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} deleteExperience API`, JSON.stringify(response));
         if (response != null) {
             res.sendFile(response);
         }
     } catch (err) {
-        logger.error(`Delete experience ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`deleteExperience ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 }

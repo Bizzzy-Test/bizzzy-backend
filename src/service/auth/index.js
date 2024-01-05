@@ -446,15 +446,14 @@ const uploadImage = async (req, res) => {
 
         const { filename, originalname, mimetype, size } = req.file;
         const body = { profile_image: filename };
+        const user_id = new ObjectId(req.params['user_id'])
 
         await ProfileSchema.findOneAndUpdate(
-            {
-                user_id: req.params['user_id']
-            },
+            { user_id },
             body, { new: true, upsert: true }
         ).then(async (results) => {
+            logger.info(`Profile image updated successfully.`);
             return responseData.success(res, results, 'Profile image updated successfully.');
-
         }).catch((err) => {
             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
             return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);

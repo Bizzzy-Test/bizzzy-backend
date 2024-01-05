@@ -290,31 +290,30 @@ const getUserProfile = async (userData, res) => {
 }
 
 const profileImageUpload = async (req, userData, res) => {
-    try {
-        let profile;
-        if (userData.role == 2) {
-            profile = await ClientProfileSchema.findOne({ user_id: new ObjectId(req.userId) });
-        } else {
-            profile = await ProfileSchema.findOne({ user_id: new ObjectId(req.userId) });
-        }
-        if (!profile) {
-            // Create a new profile if it doesn't exist
-            profile = new profileSchema({ userId: req.userId });
-        }
-        if (req.file) {
-            const fileBuffer = req.file.path;
-            const folder_name = userData.role == 1 ? 'freelancers' : 'clients';
-            // Assuming uploadFile is a function you've defined to handle file uploads
-            const fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folder_name);
-            profile.profile_image = fileUrl || 'null';  // Use the URL or 'null' if the upload failed
-        }
-        const result = await profile.save();
-        logger.info(`Profile Image ${messageConstants.PROFILE_IMAGE_UPLOADED}`);
-        responseData.success(res, result, `Profile Image ${messageConstants.PROFILE_IMAGE_UPLOADED}`);
-    } catch (err) {
-        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-        responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
-    }
+    return new Promise(async () => {
+        const profileSchema = userData?.role == 2 ? ClientProfileSchema : ProfileSchema;
+        await profileSchema.findOne({ user_id: new ObjectId(req.userId) }).then(async (profile) => {
+            if (!profile) {
+                profile = new profileSchema({ userId: req.userId });
+            }
+            if (req.file) {
+                const fileBuffer = req.file.path;
+                const folder_name = userData.role == 1 ? 'freelancers' : 'clients';
+                const fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folder_name);
+                profile.profile_image = fileUrl || 'null';  // Use the URL or 'null' if the upload failed
+            }
+            await profile.save().then((result) => {
+                logger.info(`${messageConstants.PROFILE_IMAGE_UPLOADED}`);
+                responseData.success(res, result, `${messageConstants.PROFILE_IMAGE_UPLOADED}`);
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            });
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        })
+    })
 };
 
 
@@ -437,23 +436,30 @@ const editClientProfile = async (req, userData, res) => {
 }
 const deleteExperience = async (req, userData, res) => {
     return new Promise(async () => {
-        const find_profile = await ProfileSchema.findOne({ user_id: new ObjectId(userData._id) });
-        if (find_profile) {
-            await ProfileSchema.updateOne({ _id: new ObjectId(find_profile._id) },
-                { $pull: { experience: { _id: new ObjectId(req.body.experienceId) } } }
-            ).then(async (deleteResult) => {
-                if (deleteResult?.modifiedCount == 1) {
-                    logger.info(`Delete experience ${messageConstants.DELETED_SUCCESSFULLY}`);
-                    return responseData.success(res, req.body, `Delete experience ${messageConstants.DELETED_SUCCESSFULLY}`);
-                } else {
-                    logger.info(`Experience delete ${messageConstants.NOT_UPDATED}`);
-                    return responseData.fail(res, `${messageConstants.NOT_UPDATED}`, 400);
-                }
-            })
-        } else {
-            logger.error(messageConstants.USER_NOT_FOUND);
-            return responseData.fail(res, messageConstants.USER_NOT_FOUND, 403);
-        }
+        await ProfileSchema.findOne({ user_id: new ObjectId(userData._id) }).then(async (result) => {
+            if (result) {
+                await ProfileSchema.updateOne({ _id: new ObjectId(result._id) },
+                    { $pull: { experience: { _id: new ObjectId(req.body.experienceId) } } }
+                ).then(async (deleteResult) => {
+                    if (deleteResult?.modifiedCount == 1) {
+                        logger.info(`Experience ${messageConstants.DELETED_SUCCESSFULLY}`);
+                        return responseData.success(res, req.body, `Experience ${messageConstants.DELETED_SUCCESSFULLY}`);
+                    } else {
+                        logger.info(`Experience delete ${messageConstants.NOT_UPDATED}`);
+                        return responseData.fail(res, `${messageConstants.NOT_UPDATED}`, 400);
+                    }
+                }).catch((err) => {
+                    logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                    return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+                })
+            } else {
+                logger.error(messageConstants.USER_NOT_FOUND);
+                return responseData.fail(res, messageConstants.USER_NOT_FOUND, 403);
+            }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        });
     })
 }
 

@@ -6,7 +6,7 @@ const { getUserData } = require('../../middleware');
 const uploadImage = async (req, res) => {
     try {
         const response = await authService.uploadImage(req, res);
-        logger.info(`${messageConstants.RESPONSE_FROM} uploadImage API`);
+        logger.info(`${messageConstants.RESPONSE_FROM} uploadImage API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
         logger.error(`UploadImage ${messageConstants.API_FAILED} ${err}`);
@@ -18,10 +18,10 @@ const getUserList = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
         const response = await authService.getUserList(req, userData, res);
-        logger.info(`${messageConstants.RESPONSE_FROM} getUserList API`, JSON.stringify(jsonData));
+        logger.info(`${messageConstants.RESPONSE_FROM} getUserList API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
-        logger.error(`GetUserList ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`getUserList ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 }
