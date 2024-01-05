@@ -32,7 +32,7 @@ const verifyEmail = async (req, res) => {
         logger.info(`${messageConstants.RESPONSE_FROM} Email Verification API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
-        logger.error(`Signin ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`Email Verification ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 }

@@ -26,8 +26,10 @@ const createJobProposal = async (req, userData, taskFile, res) => {
 					return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
 				})
 			}
+		}).catch((err) => {
+			logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+			return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
 		})
-
 	})
 }
 

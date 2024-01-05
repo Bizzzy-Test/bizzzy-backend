@@ -48,8 +48,14 @@ const sendInvitation = async (body, userData, res) => {
                                 return responseData.success(res, {}, messageConstants.INVITATION_SEND_SUCCESSFULLY);
                             });
                         }
+                    }).catch((err) => {
+                        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                        return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
                     })
                 }
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
             })
         } else {
             logger.info(messageConstants.NOT_SENT_INVITE);
@@ -75,10 +81,10 @@ const updateInvitationStatus = async (req, res) => {
                 logger.error(messageConstants.INVITATION_NOT_FOUND);
                 return responseData.success(res, result, messageConstants.INVITATION_NOT_FOUND);
             }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
         })
-    }).catch((err) => {
-        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-        return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
     })
 }
 

@@ -187,28 +187,38 @@ const resendEmailVerification = async (req, res) => {
                 email: req?.body?.email
             }
         ).then(async (result) => {
-            result = result[0]
-            if (result && result?.is_email_verified === true) {
-                logger.info(`${messageConstants.EMAIL_ALREADY_VERIFIED} for ${result.email}`);
-                return responseData.success(res, {}, messageConstants.EMAIL_ALREADY_VERIFIED);
+            if (result?.length) {
+                result = result[0]
+                if (result && result?.is_email_verified === true) {
+                    logger.info(`${messageConstants.EMAIL_ALREADY_VERIFIED} for ${result.email}`);
+                    return responseData.success(res, {}, messageConstants.EMAIL_ALREADY_VERIFIED);
+                } else {
+                    const temporaryEmailVerificationToken = uuid.v4().replace(/\-/g, "");
+                    await UserSchema.updateOne(
+                        { _id: result._id },
+                        { $set: { email_verification_token: temporaryEmailVerificationToken } },
+                        { new: true }
+                    ).then(async () => {
+                        const userId = result._id
+                        const name = `${result.firstName} ${result.lastName}`;
+                        const link = `${process.env.BASE_URL}/verify-email?id=${userId}&token=${temporaryEmailVerificationToken}`;
+                        const mailContent = {
+                            name,
+                            email: result.email,
+                            link: link
+                        };
+                        await mail.sendMailtoUser(mailTemplateConstants.VERIFY_EMAIL_TEMPLATE, result.email, mailSubjectConstants.VERIFY_EMAIL_SUBJECT, res, mailContent);
+                        logger.info(`${messageConstants.EMAIL_RESENT_FOR_VERIFICATION} for ${result.email}`);
+                        return responseData.success(res, [], `${messageConstants.EMAIL_RESENT_FOR_VERIFICATION} for ${result.email}`);
+                    }).catch((err) => {
+                        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                        return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+                    })
+
+                }
             } else {
-                const temporaryEmailVerificationToken = uuid.v4().replace(/\-/g, "");
-                await UserSchema.updateOne(
-                    { _id: result._id },
-                    { $set: { email_verification_token: temporaryEmailVerificationToken } },
-                    { new: true }
-                )
-                const userId = result._id
-                const name = `${result.firstName} ${result.lastName}`;
-                const link = `${process.env.BASE_URL}/verify-email?id=${userId}&token=${temporaryEmailVerificationToken}`;
-                const mailContent = {
-                    name,
-                    email: result.email,
-                    link: link
-                };
-                await mail.sendMailtoUser(mailTemplateConstants.VERIFY_EMAIL_TEMPLATE, result.email, mailSubjectConstants.VERIFY_EMAIL_SUBJECT, res, mailContent);
-                logger.info(`${messageConstants.EMAIL_RESENT_FOR_VERIFICATION} for ${result.email}`);
-                return responseData.success(res, [], `${messageConstants.EMAIL_RESENT_FOR_VERIFICATION} for ${result.email}`);
+                logger.error(`Email not found`);
+                return responseData.fail(res, `Email not found`, 401);
             }
         }).catch((err) => {
             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
@@ -443,7 +453,6 @@ const uploadImage = async (req, res) => {
         // const jsonData = {
         //     imageUrl: encodedURL
         // }
-
         const { filename, originalname, mimetype, size } = req.file;
         const body = { profile_image: filename };
         const user_id = new ObjectId(req.params['user_id'])

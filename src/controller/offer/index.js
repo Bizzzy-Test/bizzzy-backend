@@ -11,7 +11,7 @@ const sendOffer = async (req, res) => {
         logger.info(`${messageConstants.RESPONSE_FROM} Send offer API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
-        logger.error(`Send offer API ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`Send offer ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 }
@@ -34,7 +34,7 @@ const getOffersList = async (req, res) => {
         logger.info(`${messageConstants.RESPONSE_FROM} Get offers List API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
-        logger.error(`Get offers List API ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`Get offers List ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 }
@@ -57,7 +57,7 @@ const getHiredList = async (req, res) => {
         logger.info(`${messageConstants.RESPONSE_FROM} Get all hired List API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
-        logger.error(`Get all hired List API ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`Get all hired List ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 }
@@ -69,7 +69,7 @@ const getJobHiredList = async (req, res) => {
         logger.info(`${messageConstants.RESPONSE_FROM} Get hired List API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
-        logger.error(`Get hired List API ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`Get hired List ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 }
@@ -81,7 +81,7 @@ const getUserJobs = async (req, res) => {
         logger.info(`${messageConstants.RESPONSE_FROM} User Jobs API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
-        logger.error(`User Jobs API ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`User Jobs ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 };
