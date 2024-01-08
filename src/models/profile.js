@@ -83,7 +83,7 @@ const profileSchema = mongoose.Schema({
     },
     professional_role: {
         type: String,
-        default: 'null'
+        default: null
     },
     profile_image: {
         type: String,
@@ -91,7 +91,7 @@ const profileSchema = mongoose.Schema({
     },
     title: {
         type: String,
-        default: 'null'
+        default: null
     },
     hourly_rate: {
         type: Number,
@@ -99,7 +99,7 @@ const profileSchema = mongoose.Schema({
     },
     description: {
         type: String,
-        default: 'null'
+        default: null
     },
     experience: {
         type: [experienceSchema],
@@ -140,4 +140,4 @@ const profileSchema = mongoose.Schema({
 })
 
 
-module.exports = mongoose.model('freelencer_profile', profileSchema)
+module.exports = mongoose.model('freelancer_profile', profileSchema)

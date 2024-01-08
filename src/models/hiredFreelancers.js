@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const HiredFreelancersSchema = mongoose.Schema({
-    freelencer_id: {
+    freelancer_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'freelencer_profiles',
+        ref: 'freelancer_profiles',
         required: true,
     },
     client_id: {

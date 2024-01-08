@@ -42,7 +42,7 @@ const getMessageList = (req, user, res) => {
             },
             {
                 $lookup: {
-                    from: 'freelencer_profiles',
+                    from: 'freelancer_profiles',
                     localField: 'sender_id_ObjectId',
                     foreignField: 'user_id',
                     pipeline: pipeline,
@@ -69,7 +69,7 @@ const getMessageList = (req, user, res) => {
             },
             {
                 $lookup: {
-                    from: 'freelencer_profiles',
+                    from: 'freelancer_profiles',
                     localField: 'receiver_id_ObjectId',
                     foreignField: 'user_id',
                     pipeline: pipeline,
@@ -86,7 +86,7 @@ const getMessageList = (req, user, res) => {
                             title: 1,
                             client_id: 1,
                             amount: 1,
-                            budget: 1
+                            job_type: 1
                         }
                     }],
                     as: 'job_details'
@@ -170,7 +170,7 @@ const getChatUserList = (req, user, res) => {
                     from: 'jobs',
                     localField: 'job_ids',
                     foreignField: '_id',
-                    pipeline: [{ $project: { title: 1, client_id: 1, budget: 1, amount: 1 } }],
+                    pipeline: [{ $project: { title: 1, client_id: 1, job_type: 1, amount: 1 } }],
                     as: 'job_details'
                 }
             },
@@ -201,7 +201,7 @@ const getChatUserList = (req, user, res) => {
             },
             {
                 $lookup: {
-                    from: 'freelencer_profiles',
+                    from: 'freelancer_profiles',
                     let: { userId: '$_id' },
                     pipeline: [
                         {

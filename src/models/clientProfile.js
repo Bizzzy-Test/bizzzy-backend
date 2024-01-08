@@ -10,7 +10,7 @@ const clientProfileSchema = mongoose.Schema({
     },
     firstName: {
         type: String,
-        required: true,
+        required: true
     },
     lastName: {
         type: String,
@@ -22,15 +22,15 @@ const clientProfileSchema = mongoose.Schema({
     },
     businessName: {
         type: String,
-        default: 'null'
+        default: null
     },
     briefDescription: {
         type: String,
-        default: 'null'
+        default: null
     },
     profile_image: {
         type: String,
-        default: 'null'
+        default: null
     },
     created_at: {
         type: Date,

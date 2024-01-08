@@ -78,15 +78,15 @@ const getAllJobPost = async (req, res) => {
 
 // ==== search job post ==== service
 const searchJobPosts = async (payload, userToken) => {
-    const { searchQuery, budget, experience, sort } = payload;
+    const { searchQuery, job_type, experience, sort } = payload;
     const user = jwt.decode(userToken);
 
     let baseQuery = {};
 
     // Regular filters based on user role (freelancer or client)
     if (user.role === 1) {
-        if (budget) {
-            baseQuery.budget = budget;
+        if (job_type) {
+            baseQuery.job_type = job_type;
         }
         if (experience) {
             baseQuery.experience = experience;
@@ -166,7 +166,7 @@ const searchJobPost = async (req, userData, res) => {
         } else {
             const body = req.body;
             let result;
-            if (body?.experience == '' && body?.budget == '' && body?.category?.length == 0 && body?.skills?.length == 0 && body?.title == '' && body?.description == '') {
+            if (body?.experience == '' && body?.job_type == '' && body?.category?.length == 0 && body?.skills?.length == 0 && body?.title == '' && body?.description == '') {
                 result = await JobSchema.find({});
             } else {
                 result = await JobSchema.find({
@@ -176,7 +176,7 @@ const searchJobPost = async (req, userData, res) => {
                         { tags: { $in: body?.category?.map(category => new RegExp(category, 'i')) } },
                         { skills: { $in: body?.skills?.map(skills => new RegExp(skills, 'i')) } },
                         { experience: body?.experience },
-                        { budget: body?.budget },
+                        { job_type: body?.job_type },
                         { title: { $regex: body?.title, $options: 'i' } },
                         { description: { $regex: body?.description, $options: 'i' } },
                     ]

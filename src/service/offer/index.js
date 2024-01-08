@@ -19,7 +19,7 @@ const sendOffer = async (body, userData, res) => {
             await OfferSchema.findOne(
                 {
                     $and: [
-                        { freelencer_id: new ObjectId(body.freelencer_id) },
+                        { freelancer_id: new ObjectId(body.freelancer_id) },
                         { client_id: userData._id },
                         { job_id: new ObjectId(body.job_id) }
                     ]
@@ -110,8 +110,8 @@ const getOffersList = async (userData, res) => {
                 },
                 {
                     $lookup: {
-                        from: 'freelencer_profiles',
-                        localField: 'freelencer_id',
+                        from: 'freelancer_profiles',
+                        localField: 'freelancer_id',
                         foreignField: 'user_id',
                         pipeline: [
                             {
@@ -169,7 +169,7 @@ const updateOfferStatus = async (req, res) => {
                         offerData = { ...offerData.toObject() };
                         await HiredFreelancersSchema.find(
                             {
-                                freelencer_id: new ObjectId(offerData.freelencer_id),
+                                freelancer_id: new ObjectId(offerData.freelancer_id),
                                 client_id: new ObjectId(offerData.client_id),
                                 job_id: new ObjectId(offerData.job_id)
                             }
@@ -230,8 +230,8 @@ const getHiredList = async (userData, res) => {
                 },
                 {
                     $lookup: {
-                        from: 'freelencer_profiles',
-                        localField: 'freelencer_id',
+                        from: 'freelancer_profiles',
+                        localField: 'freelancer_id',
                         foreignField: 'user_id',
                         pipeline: [
                             {
@@ -283,8 +283,8 @@ const getJobHiredList = async (req, userData, res) => {
                 },
                 {
                     $lookup: {
-                        from: 'freelencer_profiles',
-                        localField: 'freelencer_id',
+                        from: 'freelancer_profiles',
+                        localField: 'freelancer_id',
                         foreignField: 'user_id',
                         pipeline: [
                             {
@@ -324,7 +324,7 @@ const getJobHiredList = async (req, userData, res) => {
 //             {
 //                 $match: {
 //                     $and: [
-//                         { freelencer_id: userData._id, },
+//                         { freelancer_id: userData._id, },
 //                         { status: 'accepted' }
 //                     ]
 //                 }
@@ -362,7 +362,7 @@ const getJobHiredList = async (req, userData, res) => {
 //                                 title: 1,
 //                                 description: 1,
 //                                 amount: 1,
-//                                 budget: 1,
+//                                 job_type: 1,
 //                                 experience: 1,
 //                             }
 //                         }
@@ -391,7 +391,7 @@ const getJobHiredList = async (req, userData, res) => {
 //         const query = [
 //             {
 //                 $match: {
-//                     freelencer_id: userData._id,
+//                     freelancer_id: userData._id,
 //                 },
 //             },
 //             {
@@ -427,7 +427,7 @@ const getJobHiredList = async (req, userData, res) => {
 //                                 title: 1,
 //                                 description: 1,
 //                                 amount: 1,
-//                                 budget: 1,
+//                                 job_type: 1,
 //                                 experience: 1,
 //                                 status: 1, // Include the 'status' field in the project stage
 //                             },
@@ -636,7 +636,7 @@ const getOfferDetails = async (req, res,) => {
 
 const submitOfferTask = async (req, userData, taskFile, res) => {
     return new Promise(async () => {
-        req.body['freelencer_id'] = userData._id
+        req.body['freelancer_id'] = userData._id
         req.body['file'] = taskFile
         const offerTaskSchema = new OfferTaskSchema(req.body);
         await offerTaskSchema.save().then(async (result) => {

@@ -10,12 +10,12 @@ const userProfile = async (req, res) => {
         if (userData.role == 2) {
             response = await profileService.clientProfile(req, userData, res);
         } else {
-            response = await profileService.freelencerProfile(req, userData, res);
+            response = await profileService.freelancerProfile(req, userData, res);
         }
-        logger.info(`${messageConstants.RESPONSE_FROM} Freelencer Profile API`, JSON.stringify(response));
+        logger.info(`${messageConstants.RESPONSE_FROM} Freelancer Profile API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
-        logger.error(`Freelencer Profile ${messageConstants.API_FAILED} ${err}`);
+        logger.error(`Freelancer Profile ${messageConstants.API_FAILED} ${err}`);
         res.send(err);
     }
 }
@@ -67,7 +67,7 @@ const editProfile = async (req, res) => {
         // const response = await profileService[editProfileService](req, userData, res);
         let response;
         if (userData.role == 1) {
-            response = await profileService.editFreelencerProfile(req, userData, res);
+            response = await profileService.editFreelancerProfile(req, userData, res);
         } else {
             response = await profileService.editClientProfile(req, userData, res);
         }
@@ -81,7 +81,7 @@ const editProfile = async (req, res) => {
     }
 }
 
-const searchFreelencers = async (req, res) => {
+const searchFreelancers = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
         const response = await profileService.searchFreelencers(req, userData, res);
@@ -115,7 +115,7 @@ module.exports = {
     getProfileImage,
     profileImageUpload,
     deleteExperience,
-    searchFreelencers,
+    searchFreelancers,
     editProfile,
     deleteExperience
 }

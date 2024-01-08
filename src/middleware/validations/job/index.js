@@ -1,23 +1,24 @@
+const { jobTypes, experienceType } = require('../../../constants/enum');
 const { validateRequest } = require('../validate-request');
 const Joi = require('joi');
 
-const jobSerachValidation = (req, res, next) => {
+const jobCreateValidation = (req, res, next) => {
     const schema = Joi.object({
-        experience: Joi.string().valid('Entry', 'Intermediate', 'Expert'),
-        budget: Joi.string().required(),
-        skills: Joi.array().required(),
-        category: Joi.array().required(),
+        experience: Joi.string().valid(experienceType.ENTRY, experienceType.INTERMEDIATE, experienceType.EXPERT).required(),
+        amount: Joi.number().required(),
+        job_type: Joi.string().valid(jobTypes.HOURLY, jobTypes.FIXED).required(),
+        description: Joi.string().required(),
+        title: Joi.string().required(),
     })
     validateRequest(req, res, schema, next);
 }
 
-const jobCreateValidation = (req, res, next) => {
+const jobSerachValidation = (req, res, next) => {
     const schema = Joi.object({
-        experience: Joi.string().valid('Entry', 'Intermediate', 'Expert').required(),
-        amount: Joi.number().required(),
-        budget: Joi.number().required(),
-        description: Joi.string().required(),
-        title: Joi.string().required(),
+        experience: Joi.string().valid(experienceType.ENTRY, experienceType.INTERMEDIATE, experienceType.EXPERT),
+        job_type: Joi.string().valid(jobTypes.HOURLY, jobTypes.FIXED).required(),
+        skills: Joi.array().required(),
+        category: Joi.array().required(),
     })
     validateRequest(req, res, schema, next);
 }

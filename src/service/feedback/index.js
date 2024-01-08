@@ -78,7 +78,7 @@ const postFeedback = async (body, userData, res) => {
 //     return new Promise(async (resolve, reject) => {
 //         try {
 //             const existingOffer = await OfferSchema.findOne({
-//                 freelencer_id: new ObjectId(userData.role === 1 ? sender_id : reciever_id),
+//                 freelancer_id: new ObjectId(userData.role === 1 ? sender_id : reciever_id),
 //                 client_id: new ObjectId(userData.role === 1 ? reciever_id : sender_id),
 //                 job_id: new ObjectId(job_id),
 //                 status: 'accepted'
@@ -93,7 +93,7 @@ const postFeedback = async (body, userData, res) => {
 //             await OfferSchema.findOneAndUpdate(
 //                 {
 //                     $and: [
-//                         { freelencer_id: new ObjectId(sender_id) },
+//                         { freelancer_id: new ObjectId(sender_id) },
 //                         { job_id: new ObjectId(job_id) },
 //                         { client_id: new ObjectId(reciever_id) }
 //                     ]
@@ -137,7 +137,7 @@ const getFeedback = async (req, userData, res) => {
             },
             {
                 $lookup: {
-                    from: 'freelencer_profiles',
+                    from: 'freelancer_profiles',
                     localField: 'sender_id',
                     foreignField: 'user_id',
                     pipeline: [
@@ -145,7 +145,7 @@ const getFeedback = async (req, userData, res) => {
                             $project: project
                         }
                     ],
-                    as: 'freelencer_profiles'
+                    as: 'freelancer_profiles'
                 }
             },
             {
@@ -165,13 +165,13 @@ const getFeedback = async (req, userData, res) => {
         await FeedbackSchema.aggregate(query).then(async (results) => {
             if (results?.length !== 0) {
                 for (let result of results) {
-                    if (result?.freelencer_profiles?.length) {
-                        result['user_details'] = result?.freelencer_profiles[0];
+                    if (result?.freelancer_profiles?.length) {
+                        result['user_details'] = result?.freelancer_profiles[0];
                     } else {
                         await getClientDetails(result?.client_details[0], result?.client_details[0]?.user_id)
                         result['user_details'] = result?.client_details[0];
                     }
-                    delete result?.freelencer_profiles;
+                    delete result?.freelancer_profiles;
                     delete result?.client_details;
                 }
                 logger.info(`Feedback ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);

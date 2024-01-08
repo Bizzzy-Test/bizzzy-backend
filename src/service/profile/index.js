@@ -13,7 +13,7 @@ const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 const { uploadFile } = require("../../middleware/aws/aws.js");
 
-const freelencerProfile = async (req, userData, res) => {
+const freelancerProfile = async (req, userData, res) => {
     return new Promise(async () => {
         let profile = await ProfileSchema.findOne({ user_id: req.userId });
 
@@ -21,21 +21,21 @@ const freelencerProfile = async (req, userData, res) => {
             profile = new ProfileSchema({ user_id: req.userId });
         }
         if (userData?.firstName && userData?.lastName && userData?.country) {
-            profile.firstName = userData.firstName || "null";
-            profile.lastName = userData.lastName || "null";
-            profile.location = userData.country || "null"
+            profile.firstName = userData.firstName;
+            profile.lastName = userData.lastName;
+            profile.location = userData.country
         } else {
             // Handle the case where 'firstName' or 'lastName' is missing
             return responseData.fail(res, 'User is missing required information', 400);
         }
         if (req.body.experience) {
             const experienceData = req.body.experience;
-            const company_name = experienceData?.company_name || "null";
-            const position = experienceData?.position || "null";
-            const job_description = experienceData?.job_description || "null";
-            const job_location = experienceData?.job_location || "null";
-            const start_date = experienceData?.start_date || "null";
-            const end_date = experienceData?.end_date || "null";
+            const company_name = experienceData?.company_name;
+            const position = experienceData?.position;
+            const job_description = experienceData?.job_description;
+            const job_location = experienceData?.job_location;
+            const start_date = experienceData?.start_date;
+            const end_date = experienceData?.end_date;
             profile.experience.push({
                 company_name,
                 position,
@@ -48,10 +48,10 @@ const freelencerProfile = async (req, userData, res) => {
 
         if (req.body.education) {
             const educationData = req.body?.education;
-            const degree_name = educationData?.degree_name || "null";
-            const institution = educationData?.institution || "null";
-            const start_date = educationData?.start_date || "null";
-            const end_date = educationData?.end_date || "null";
+            const degree_name = educationData?.degree_name || null;
+            const institution = educationData?.institution || null;
+            const start_date = educationData?.start_date || null;
+            const end_date = educationData?.end_date || null;
             profile.education.push({
                 degree_name,
                 institution,
@@ -71,11 +71,11 @@ const freelencerProfile = async (req, userData, res) => {
                     // Upload multiple files to S3 and get their access URLs
                     fileUrls = await uploadMultipleFiles(req.files);
                 }
-                let attachements = fileUrls == '' ? 'null' : fileUrls;
+                let attachements = fileUrls == '' ? null : fileUrls;
                 if (req.body.portfolio) {
                     const portfolioData = req.body?.portfolio;
-                    const project_name = portfolioData.project_name || "null";
-                    const project_description = portfolioData.project_description || "null";
+                    const project_name = portfolioData.project_name || null;
+                    const project_description = portfolioData.project_description || null;
                     const technologies = portfolioData.technologies || [];
                     // If the portfolio array is empty, push a new entry
                     profile.portfolio.push({
@@ -85,8 +85,8 @@ const freelencerProfile = async (req, userData, res) => {
                         attachements  // Store the array of file URLs in the 'attachments' field
                     });
                 } else {
-                    project_name = "null";
-                    project_description = "null";
+                    project_name = null;
+                    project_description = null;
                     technologies = [];
                     profile.portfolio.push({
                         project_name,
@@ -99,17 +99,17 @@ const freelencerProfile = async (req, userData, res) => {
         }
         profile.skills = req.body && req.body.skills !== undefined ? req.body.skills : profile.skills;
         profile.categories = req.body && req.body.categories !== undefined ? req.body.categories : profile.categories;
-        profile.professional_role = req.body?.professional_role ? req.body?.professional_role : (profile.professional_role !== 'null' ? profile.professional_role : 'null');
-        profile.title = req.body?.title ? req.body?.title : (profile.title !== 'null' ? profile.title : 'null');
-        profile.hourly_rate = req.body?.hourly_rate ? req.body?.hourly_rate : (profile.hourly_rate !== 'null' ? profile.hourly_rate : 'null');
-        profile.description = req.body?.description ? req.body?.description : (profile.description !== 'null' ? profile.description : 'null');
+        profile.professional_role = req.body?.professional_role !== undefined ? req.body?.professional_role : (profile.professional_role || null);
+        profile.title = req.body?.title !== undefined ? req.body?.title : (profile.title || null);
+        profile.hourly_rate = req.body?.hourly_rate !== undefined ? req.body?.hourly_rate : (profile.hourly_rate || null);
+        profile.description = req.body?.description !== undefined ? req.body?.description : (profile.description || null);
         await profile.save().then((result) => {
-            logger.info(`Freelencer Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
+            logger.info(`Freelancer Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
             if (req.files) {
                 const portfolio_length = result.portfolio.length - 1;
-                return responseData.success(res, profile.portfolio[portfolio_length], `Freelencer Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
+                return responseData.success(res, profile.portfolio[portfolio_length], `Freelancer Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
             } else {
-                return responseData.success(res, req.body, `Freelencer Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
+                return responseData.success(res, req.body, `Freelancer Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`);
             }
         }).catch((err) => {
             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
@@ -187,7 +187,7 @@ const getUserProfile = async (userData, res) => {
                     pipeline: [
                         {
                             $lookup: {
-                                from: 'freelencer_profiles',
+                                from: 'freelancer_profiles',
                                 localField: 'sender_id',
                                 foreignField: 'user_id',
                                 pipeline: [
@@ -236,7 +236,7 @@ const getUserProfile = async (userData, res) => {
                                             _id: 0,
                                             title: 1,
                                             description: 1,
-                                            budget: 1,
+                                            job_type: 1,
                                             status: 1,
                                         }
                                     }
@@ -269,7 +269,7 @@ const getUserProfile = async (userData, res) => {
             }
         ];
 
-        let userSchema = userData.role === 1 ? ProfileSchema : ClientProfileSchema;
+        const userSchema = userData.role === 1 ? ProfileSchema : ClientProfileSchema;
         await userSchema.aggregate(query).then(async (result) => {
             if (result?.length) {
                 result = result[0]
@@ -284,7 +284,7 @@ const getUserProfile = async (userData, res) => {
             }
         }).catch((err) => {
             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-            responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
         });
     })
 }
@@ -333,7 +333,7 @@ const getProfileImage = async (req, res) => {
     }
 }
 
-const editFreelencerProfile = async (req, userData, res) => {
+const editFreelancerProfile = async (req, userData, res) => {
     return new Promise(async () => {
         const find_profile = await ProfileSchema.findOne({ user_id: new ObjectId(userData._id) });
         if (find_profile) {
@@ -402,17 +402,17 @@ const editFreelencerProfile = async (req, userData, res) => {
                     _id: new ObjectId(find_profile._id)
                 }
             }
-            // Update data in freelencer profile
+            // Update data in freelancer profile
             await ProfileSchema.updateOne(update_condition,
                 {
                     $set: updateObject
                 }
             ).then(async (updateResult) => {
                 if (updateResult?.modifiedCount == 1) {
-                    logger.info(`Edit Freelencer profile ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
-                    return responseData.success(res, req.body, `Edit Freelencer profile ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                    logger.info(`Edit Freelancer profile ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                    return responseData.success(res, req.body, `Edit Freelancer profile ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
                 } else {
-                    logger.info(`Edit Freelencer profile ${messageConstants.PROFILE_NOT_UPDATED}`);
+                    logger.info(`Edit Freelancer profile ${messageConstants.PROFILE_NOT_UPDATED}`);
                     return responseData.fail(res, `${messageConstants.PROFILE_NOT_UPDATED}`, 200);
                 }
             })
@@ -463,10 +463,10 @@ const deleteExperience = async (req, userData, res) => {
     })
 }
 
-const searchFreelencers = async (req, userData, res) => {
+const searchFreelancers = async (req, userData, res) => {
     return new Promise(async () => {
         if (userData.role == 1) {
-            logger.info(`Search freelencers ${messageConstants.NOT_ALLOWED}`);
+            logger.info(`Search freelancers ${messageConstants.NOT_ALLOWED}`);
             return responseData.fail(res, `${messageConstants.NOT_ALLOWED}`, 404);
         } else {
             let { skills, experience, hourlyRateMin, hourlyRateMax, searchText } = req?.query;
@@ -502,8 +502,8 @@ const getClientDetails = async (profile, user_id) => {
     user_id = new ObjectId(user_id);
     job_posted = await JobSchema.find({ client_id: user_id })
     job_open = await JobSchema.find({ client_id: user_id, status: 'open' })
-    hired_freelancers = await HiredFreelancersSchema.distinct('freelencer_id', { client_id: user_id });
-    active_freelancers = await OfferSchema.distinct('freelencer_id', { client_id: user_id, status: 'accepted' });
+    hired_freelancers = await HiredFreelancersSchema.distinct('freelancer_id', { client_id: user_id });
+    active_freelancers = await OfferSchema.distinct('freelancer_id', { client_id: user_id, status: 'accepted' });
     profile.job_posted = job_posted?.length || 0;
     profile.job_open = job_open?.length || 0;
     profile.hired_freelancers = hired_freelancers?.length || 0;
@@ -516,14 +516,14 @@ const getClientDetails = async (profile, user_id) => {
 }
 
 module.exports = {
-    freelencerProfile,
+    freelancerProfile,
     clientProfile,
     getUserProfile,
     profileImageUpload,
     getProfileImage,
     deleteExperience,
-    searchFreelencers,
-    editFreelencerProfile,
+    searchFreelancers,
+    editFreelancerProfile,
     editClientProfile,
     getClientDetails
 }

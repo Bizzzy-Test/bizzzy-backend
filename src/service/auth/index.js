@@ -11,7 +11,7 @@ const StrengthsSchema = require('../../models/strengths');
 const ReasonsSchema = require('../../models/reason_for_ending_contract');
 const FeedbackOptionsSchema = require('../../models/feedback_options');
 const client_profile = require('../../models/clientProfile');
-const freelencer_profile = require('../../models/profile');
+const freelancer_profile = require('../../models/profile');
 const { getClientDetails } = require('../profile');
 
 const signUp = async (body, res) => {
@@ -424,24 +424,37 @@ const userProfile = async (body, res) => {
 
 
 const getUserProfileById = async (req, res) => {
-    try {
-        const user_id = req.query.user_id;
-        let client_user = await client_profile.findOne({ user_id: user_id });
-        const freelancer_user = await freelencer_profile.findOne({ user_id: user_id });
-        if (client_user) {
-            client_user = client_user.toObject()
-            await getClientDetails(client_user, client_user?.user_id);
-            return responseData.success(res, client_user, `User profile fetched successfully`);
-        } else if (freelancer_user) {
-            return responseData.success(res, freelancer_user, `User profile fetched successfully`);
-        } else {
-            logger.info(`User profile not found`);
-            return responseData.fail(res, `User profile not found`, 404);
-        }
-    } catch (error) {
-        console.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
-        return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`, 500);
-    }
+    return new Promise(async () => {
+        const user_id = new ObjectId(req?.query?.user_id);
+        await UserSchema.findOne({ _id: user_id }).then(async (result) => {
+            if (result) {
+                const profileSchema = result.role === 1 ? freelancer_profile : client_profile;
+                await profileSchema.findOne({ user_id }).then(async (response) => {
+                    if (response) {
+                        response = response.toObject();
+                        if (result.role === 2) {
+                            await getClientDetails(response, response?.user_id);
+                        }
+                        logger.info(`User profile fetched successfully`);
+                        return responseData.success(res, response, `User profile fetched successfully`);
+                    } else {
+                        logger.error(`Profile ${messageConstants.NOT_FOUND}`);
+                        return responseData.fail(res, `Profile ${messageConstants.NOT_FOUND}`, 401);
+                    }
+                }).catch((err) => {
+                    console.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                    return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+                })
+            } else {
+                logger.error(`User ${messageConstants.NOT_FOUND}`);
+                return responseData.fail(res, `User ${messageConstants.NOT_FOUND}`, 401);
+            }
+
+        }).catch((err) => {
+            console.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        })
+    })
 };
 
 
