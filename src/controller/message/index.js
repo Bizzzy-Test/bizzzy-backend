@@ -28,7 +28,20 @@ const getChatUserList = async (req, res) => {
     }
 }
 
+const deleteMessage = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await messageService.deleteMessage(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} deleteMessage API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`deleteMessage ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+}
+
 module.exports = {
     getMessageList,
-    getChatUserList
+    getChatUserList,
+    deleteMessage
 }

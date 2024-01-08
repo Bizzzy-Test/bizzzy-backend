@@ -2,6 +2,8 @@ const { messageConstants, responseData } = require("../../constants");
 const { logger } = require("../../utils");
 const MessageSchema = require('../../models/message');
 const { getClientDetails } = require("../profile");
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 const getMessageList = (req, user, res) => {
     return new Promise(async () => {
@@ -259,10 +261,45 @@ const getChatUserList = (req, user, res) => {
     })
 }
 
+const deleteMessage = (req, userData, res) => {
+    return new Promise(async () => {
+        const message_id = new ObjectId(req?.query?.message_id);
+        const sender_id = new ObjectId(userData?._id);
+        await MessageSchema.findOne({ _id: message_id }).then(async (result) => {
+            if (result) {
+                await MessageSchema.updateOne({ _id: message_id, sender_id }, { is_deleted: true }, { new: true }).then((result) => {
+                    if (result?.modifiedCount !== 0) {
+                        logger.info(`Message Deleted Successfully`);
+                        return responseData.success(res, result, 'Message Deleted Successfully');
+                    } else if (result?.matchedCount !== 0) {
+                        logger.info(`Message already deleted`);
+                        return responseData.success(res, result, 'Message already deleted');
+                    } else {
+                        logger.info(`You're not allowed to delete this message`);
+                        return responseData.fail(res, `You're not allowed to delete this message`, 401);
+                    }
+                }).catch((err) => {
+                    logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                    return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+                })
+            } else {
+                logger.error('Message Not Found');
+                return responseData.success(res, result, 'Message Not Found');
+            }
+
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        })
+
+    })
+}
+
 
 
 
 module.exports = {
     getMessageList,
-    getChatUserList
+    getChatUserList,
+    deleteMessage
 }
