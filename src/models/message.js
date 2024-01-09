@@ -3,11 +3,11 @@ const mongoose = require('mongoose');
 const { messageType } = require('../constants')
 const messageSchema = mongoose.Schema({
     sender_id: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true
     },
     receiver_id: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true
     },
     message: {
@@ -15,7 +15,7 @@ const messageSchema = mongoose.Schema({
         required: true
     },
     job_id:{
-        type: String
+        type: mongoose.Schema.Types.ObjectId
     },
     message_type: {
         type: Number,
