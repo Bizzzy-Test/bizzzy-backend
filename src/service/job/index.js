@@ -4,6 +4,7 @@ const JobSchema = require("../../models/job")
 const { logger } = require("../../utils");
 const jwt = require('jsonwebtoken');
 const mongoose = require("mongoose");
+const { getClientDetails } = require("../profile");
 const ObjectId = mongoose.Types.ObjectId;
 
 // ==== create job post ==== service
@@ -192,17 +193,45 @@ const searchJobPost = async (req, userData, res) => {
     })
 }
 // ==== get single job post ==== service
-const getSingleJobPost = async (jobId) => {
-    try {
-        const jobSchema = await JobSchema.findById({ _id: jobId }).populate({
-            path: 'client_id',
-            select: 'country firstName lastName',
-        });
-        return jobSchema;
-    } catch (error) {
-        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`);
-        return error
-    }
+const getSingleJobPost = async (req, res) => {
+    return new Promise(async () => {
+        const query = [
+            {
+                $match: {
+                    _id: new ObjectId(req.query.job_id)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'client_profiles',
+                    localField: 'client_id',
+                    foreignField: 'user_id',
+                    as: 'client_details'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'jobs',
+                    localField: 'client_id',
+                    foreignField: 'client_id',
+                    as: 'client_history'
+                }
+            }
+        ];
+        await JobSchema.aggregate(query).then(async (result) => {
+            if (result) {
+                result[0].client_details[0] = await getClientDetails(result[0]?.client_details[0], result[0]?.client_details[0]?.user_id);
+                logger.info(messageConstants.JOB_FETCHED_SUCCESSFULLY);
+                return responseData.success(res, result, messageConstants.JOB_FETCHED_SUCCESSFULLY);
+            } else {
+                logger.error(`Job not found`);
+                return responseData.fail(res, `Job not found`, 200);
+            }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        })
+    })
 }
 
 

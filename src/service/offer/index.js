@@ -452,8 +452,7 @@ const getJobHiredList = async (userData, req, res) => {
 
 const getUsersJobs = async (req, userData, res) => {
     return new Promise(async () => {
-        try {
-            // Query to fetch offers with client profiles and job details
+        if (userData.role == 1) {
             const offerQuery = [
                 {
                     $match: {
@@ -489,11 +488,12 @@ const getUsersJobs = async (req, userData, res) => {
                         pipeline: [
                             {
                                 $project: {
-                                    _id: 0,
+                                    _id: 1,
                                     title: 1,
                                     description: 1,
                                     amount: 1,
                                     job_type: 1,
+                                    budget: 1,
                                     experience: 1,
                                     status: 1, // Include the 'status' field in the project stage
                                 },
@@ -504,55 +504,48 @@ const getUsersJobs = async (req, userData, res) => {
                 },
             ];
 
-            // Aggregate offers using the offerQuery
-            const offers = await OfferSchema.aggregate(offerQuery);
+            await OfferSchema.aggregate(offerQuery).then(async (offers) => {
+                const jobProposals = await JobProposalSchema.find({ userId: userData._id }).populate('jobId');
+                const jobDetails = jobProposals.map((proposal) => proposal.jobId);
+                const activeJobs = [];
+                const completedJobs = [];
 
-            const jobProposals = await JobProposalSchema.find({ userId: userData._id }).populate('jobId');
-
-            // Extract job details from the populated job proposals
-            const jobDetails = jobProposals.map((proposal) => proposal.jobId);
-
-            // Fetch applied job proposals using the getAppliedJobProposals function
-
-            // Separate jobs into active and completed based on status
-            const activeJobs = [];
-            const completedJobs = [];
-
-            for (let offer of offers) {
-                if (offer.job_details.length > 0) {
-                    const job = offer.job_details[0];
-                    const client_profile = await getClientDetails(offer?.client_profile[0], offer?.client_profile[0]?.user_id);
-                    const jobWithClientProfile = {
-                        ...job, client_profile
-                    };
-                    if (offer.status === 'accepted') {
-                        activeJobs.push(jobWithClientProfile);
-                    } else if (offer.status === 'completed') {
-                        completedJobs.push(jobWithClientProfile);
+                for (let offer of offers) {
+                    if (offer.job_details.length > 0) {
+                        const job = offer.job_details[0];
+                        const client_profile = await getClientDetails(offer?.client_profile[0], offer?.client_profile[0]?.user_id);
+                        const jobWithClientProfile = {
+                            ...job, client_profile
+                        };
+                        if (offer.status === 'accepted') {
+                            activeJobs.push(jobWithClientProfile);
+                        } else if (offer.status === 'completed') {
+                            completedJobs.push(jobWithClientProfile);
+                        }
                     }
                 }
-            }
 
-            // Combine the results into a response object
-            const response = {
-                active_jobs: activeJobs,
-                completed_jobs: completedJobs,
-                applied_jobs: jobDetails,
-            };
+                const response = {
+                    active_jobs: activeJobs,
+                    completed_jobs: completedJobs,
+                    applied_jobs: jobDetails,
+                };
 
-            // Send the response
-            if (activeJobs.length > 0 || completedJobs.length > 0 || jobProposals.length > 0) {
-                logger.info(`Jobs fetched successfully`);
-                return responseData.success(res, response, `Jobs fetched successfully`);
-            } else {
-                logger.info(`No jobs found`);
-                return responseData.success(res, response, `No jobs found`);
-            }
-        } catch (error) {
-            // Handle errors and log them
-            const errorMessage = `${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`;
-            logger.error(errorMessage);
-            return responseData.fail(res, errorMessage, 500);
+                if (activeJobs.length > 0 || completedJobs.length > 0 || jobProposals.length > 0) {
+                    logger.info(`Jobs fetched successfully`);
+                    return responseData.success(res, response, `Jobs fetched successfully`);
+                } else {
+                    logger.info(`No jobs found`);
+                    return responseData.success(res, response, `No jobs found`);
+                }
+
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            });
+        } else {
+            logger.error('only freelancer can use this')
+            return responseData.fail(res, 'only freelancer can use this.', 401);
         }
     });
 };

@@ -122,20 +122,12 @@ const getJobPostByUserId = async (req, res) => {
 // ==== get single job post ==== controller
 const getSingleJobPost = async (req, res) => {
     try {
-        const jobId = req.params.id;
-        const response = await JobService.getSingleJobPost(jobId);
-        res.status(200).json({
-            data: response,
-            success: true,
-            message: messageConstants.JOB_FETCHED_SUCCESSFULLY
-        });
+        const response = await JobService.getSingleJobPost(req, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} getSingleJobPost API`, JSON.stringify(response));
+        res.send(response);
     } catch (error) {
-        logger.error(`Job ${messageConstants.API_FAILED} ${error}`);
-        res.status(500).json({
-            data: error,
-            success: false,
-            message: messageConstants.INTERNAL_SERVER_ERROR
-        })
+        logger.error(`getSingleJobPost ${messageConstants.API_FAILED} ${error}`);
+        res.send(error);
     }
 
 }
