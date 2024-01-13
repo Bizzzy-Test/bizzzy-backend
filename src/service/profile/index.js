@@ -84,16 +84,6 @@ const freelancerProfile = async (req, userData, res) => {
                         technologies,
                         attachements  // Store the array of file URLs in the 'attachments' field
                     });
-                } else {
-                    project_name = null;
-                    project_description = null;
-                    technologies = [];
-                    profile.portfolio.push({
-                        project_name,
-                        project_description,
-                        technologies,
-                        attachements  // Store the array of file URLs in the 'attachments' field
-                    });
                 }
             }
         }
@@ -120,6 +110,7 @@ const freelancerProfile = async (req, userData, res) => {
 
 // Portfolio Files Upload
 const uploadMultipleFiles = async (fileArray) => {
+    console.log(fileArray);
     const uploadedFileUrls = [];
     for (const file of fileArray) {
         const fileBuffer = file.path;

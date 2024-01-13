@@ -7,7 +7,7 @@ const jobCreateValidation = (req, res, next) => {
         experience: Joi.string().valid(experienceType.ENTRY, experienceType.INTERMEDIATE, experienceType.EXPERT).required(),
         job_type: Joi.string().valid(jobTypes.HOURLY, jobTypes.FIXED).required(),
         skills: Joi.array().required(),
-        category: Joi.array().required(),
+        // category: Joi.array().required(),
     })
     validateRequest(req, res, schema, next);
 }
