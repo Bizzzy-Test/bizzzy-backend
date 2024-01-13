@@ -36,7 +36,6 @@ const urlConstants = {
     GET_NOTIFICATION_LIST: '/notification/list',
     DELETE_NOTIFICATION: '/delete/notification',
     READ_NOTIFICATION: '/read/notification',
-    ADVISOR_CATEGRY_FILTER: '/advisors/filter',
     SEND_INVITATION: '/invitation-send',
     UPDATE_INVITATION_STATUS: '/invitation-status-update',
     CLIENT_INVITATION_DETAILS: '/client-invitation-details',
