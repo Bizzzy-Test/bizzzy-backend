@@ -15,6 +15,12 @@ const invitationStatus = Object.freeze({
     REJECT: 2
 })
 
+const gigStatus = Object.freeze({
+    PENDING: 0,
+    ACCEPT: 1,
+    REJECT: 2
+})
+
 const paymentStatus = Object.freeze({
     SUCCESS: 1,
     FAIL: 2
@@ -58,5 +64,6 @@ module.exports = {
     paymentStatus,
     budgetType,
     experienceType,
-    jobTypes
+    jobTypes,
+    gigStatus
 }
