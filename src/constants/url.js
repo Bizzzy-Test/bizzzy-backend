@@ -90,6 +90,13 @@ const urlConstants = {
     JOB_SEARCH: '/job/search',
     // = Job post url =
 
+
+    // Gig endpoints
+
+    CREATE_GIG: '/freelancer/gig/create',
+    UPLOAD_MULTIPLE_IMAGE: '/upload/multiple/images',
+    UPLOAD_VIDEO: '/upload/video'
+
 }
 
 module.exports = urlConstants;
