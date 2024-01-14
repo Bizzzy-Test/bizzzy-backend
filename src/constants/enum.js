@@ -16,9 +16,9 @@ const invitationStatus = Object.freeze({
 })
 
 const gigStatus = Object.freeze({
-    PENDING: 0,
-    ACCEPT: 1,
-    REJECT: 2
+    PENDING: 'pending',
+    ACCEPT: 'approved',
+    REJECT: 'reject'
 })
 
 const paymentStatus = Object.freeze({
