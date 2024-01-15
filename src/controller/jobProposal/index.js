@@ -47,7 +47,6 @@ const getJobProposalByJobId = async (req, res) => {
 		logger.info(`${messageConstants.RESPONSE_FROM} getJobProposalByJobId API`, JSON.stringify(response));
 		res.send(response);
 	} catch (err) {
-		logger.error(`herrrrrrrrreeeeeee`);
 		logger.error(`getJobProposalByJobId ${messageConstants.API_FAILED} ${err}`);
 		res.send(err);
 	}
