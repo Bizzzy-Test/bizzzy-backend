@@ -95,8 +95,13 @@ const urlConstants = {
 
     CREATE_GIG: '/freelancer/gig/create',
     UPLOAD_MULTIPLE_IMAGE: '/upload/multiple/images',
-    UPLOAD_VIDEO: '/upload/video'
-
+    UPLOAD_VIDEO: '/upload/video',
+    GET_ALL_GIG: '/freelancer/gig',
+    GET_GIG_BY_USER_ID: '/freelancer/gig/getbyUserId',
+    GET_GIG_BY_GIG_ID: '/freelancer/gig/getbyGigId',
+    GIG_DELETE: '/freelancer/gig/delete',
+    GIG_UPDATE: '/freelancer/gig/update',
+    GIG_UPDATE_STATUS: '/freelancer/gig/status'
 }
 
 module.exports = urlConstants;
