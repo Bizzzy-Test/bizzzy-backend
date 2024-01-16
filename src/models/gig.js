@@ -99,6 +99,7 @@ const GigSchema = mongoose.Schema({
             gigStatus.ACCEPT,
             gigStatus.REJECT
         ],
+        default: gigStatus.PENDING
     },
     services: {
         type: Boolean,
