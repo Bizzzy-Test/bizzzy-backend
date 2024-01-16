@@ -3,16 +3,20 @@ const { gigStatus } = require('../constants/enum');
 
 const PricingSchema = mongoose.Schema({
     custom_title: {
-        type: String
+        type: String,
+        required: true
     },
     custom_description: {
-        type: String
+        type: String,
+        required: true
     },
     delivery_days: {
-        type: Number
+        type: Number,
+        required: true
     },
     revisions: {
-        type: Number
+        type: Number,
+        required: true
     },
     service_options: {
         type: [String]
@@ -62,10 +66,10 @@ const GigSchema = mongoose.Schema({
         required: true
     },
     freelancer_id: {
-        type: mongoose.Schema.Types.ObjectId
+        type: mongoose.Schema.Types.ObjectId,
     },
     category: {
-        type: mongoose.Schema.Types.ObjectId
+        type: mongoose.Schema.Types.ObjectId,
     },
     skills: [
         {
@@ -75,11 +79,9 @@ const GigSchema = mongoose.Schema({
     pricing: PricingSchema,
     images: {
         type: Array,
-        required: true
     },
     video: {
         type: String,
-        required: true
     },
     requirements: {
         type: [RequirementSchema],
