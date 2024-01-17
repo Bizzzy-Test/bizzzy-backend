@@ -431,36 +431,41 @@ const deleteExperience = async (req, userData, res) => {
 
 const searchFreelancers = async (req, userData, res) => {
     return new Promise(async () => {
-        if (userData.role == 1) {
-            logger.info(`Search freelancers ${messageConstants.NOT_ALLOWED}`);
-            return responseData.fail(res, `${messageConstants.NOT_ALLOWED}`, 404);
+        // if (userData.role == 1) {
+        //     logger.info(`Search freelancers ${messageConstants.NOT_ALLOWED}`);
+        //     return responseData.fail(res, `${messageConstants.NOT_ALLOWED}`, 404);
+        // } else {
+        let { skills, experience, hourlyRateMin, hourlyRateMax, searchText } = req?.query;
+        if (skills?.length == 0 && experience?.length == 0 && !hourlyRateMin && !hourlyRateMax) {
+            result = await ProfileSchema.find({});
         } else {
-            let { skills, experience, hourlyRateMin, hourlyRateMax, searchText } = req?.query;
-            if (skills?.length == 0 && experience?.length == 0 && !hourlyRateMinPrice && !hourlyRateMaxPrice) {
-                result = await ProfileSchema.find({});
-            } else {
-                let query = {};
-                if (skills) {
-                    query.skills = { $regex: new RegExp(skills, 'i') };
-                }
-                if (hourlyRateMin && hourlyRateMax) {
-                    query.hourly_rate = { $gte: Number(hourlyRateMin), $lte: Number(hourlyRateMax) };
-                }
-                if (searchText) {
-                    query.$or = [
-                        { title: { $regex: new RegExp(searchText, 'i') } },
-                        { description: { $regex: new RegExp(searchText, 'i') } }
-                    ];
-                }
-                await ProfileSchema.find(query).then(async (result) => {
-                    logger.info('Freelancer search successfully');
-                    return responseData.success(res, result, 'Freelancer search successfully');
-                }).catch((err) => {
-                    logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-                    return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
-                })
+            let query = {};
+            if (skills) {
+                query.skills = { $regex: new RegExp(skills, 'i') };
             }
+            if (hourlyRateMin) {
+                let maxRate = hourlyRateMax ? hourlyRateMax : 5000;
+                if (maxRate) {
+                    query.hourly_rate = { $gte: Number(hourlyRateMin), $lte: Number(maxRate) };
+                }
+            }
+
+            if (searchText) {
+                query.$or = [
+                    { title: { $regex: new RegExp(searchText, 'i') } },
+                    { description: { $regex: new RegExp(searchText, 'i') } },
+                    { skills: { $regex: new RegExp(searchText, 'i') } }
+                ];
+            }
+            await ProfileSchema.find(query).then(async (result) => {
+                logger.info('Freelancer search successfully');
+                return responseData.success(res, result, 'Freelancer search successfully');
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            })
         }
+        // }
     })
 }
 

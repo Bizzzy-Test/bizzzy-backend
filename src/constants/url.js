@@ -101,7 +101,7 @@ const urlConstants = {
     GET_GIG_BY_GIG_ID: '/freelancer/gig/getbyGigId',
     GIG_DELETE: '/freelancer/gig/delete',
     GIG_UPDATE: '/freelancer/gig/update',
-    GIG_UPDATE_STATUS: '/freelancer/gig/status'
+    GIG_UPDATE_STATUS: '/freelancer/gig/update/status'
 }
 
 module.exports = urlConstants;
