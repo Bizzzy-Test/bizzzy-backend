@@ -67,13 +67,104 @@ const updateAgency = async (req, userData, res) => {
 
 const getAgencyById = async (req, userData, res) => {
     return new Promise(async () => {
-        await AgencySchema.find(
+        const query = [
             {
-                _id: new ObjectId(req.query.agency_id),
-                user_id: userData._id
+                $match: {
+                    _id: new ObjectId(req.query.agency_id),
+                    user_id: userData._id
+                }
+            },
+            {
+                $lookup: {
+                    from: 'feedbacks',
+                    localField: 'user_id',
+                    foreignField: 'reciever_id',
+                    pipeline: [
+                        {
+                            $lookup: {
+                                from: 'freelancer_profiles',
+                                localField: 'sender_id',
+                                foreignField: 'user_id',
+                                pipeline: [
+                                    {
+                                        $project: {
+                                            _id: 0,
+                                            firstName: 1,
+                                            lastName: 1,
+                                            location: 1,
+                                            professional_role: 1,
+                                            profile_image: 1
+                                        }
+                                    }
+                                ],
+                                as: 'freelancer_details'
+                            },
+                        },
+                        {
+                            $lookup: {
+                                from: 'client_profiles',
+                                localField: 'sender_id',
+                                foreignField: 'user_id',
+                                pipeline: [
+                                    {
+                                        $project: {
+                                            _id: 0,
+                                            firstName: 1,
+                                            lastName: 1,
+                                            businessName: 1,
+                                            profile_image: 1,
+                                            location: 1
+                                        }
+                                    }
+                                ],
+                                as: 'client_details'
+                            },
+                        },
+                        {
+                            $lookup: {
+                                from: 'jobs',
+                                localField: 'job_id',
+                                foreignField: '_id',
+                                pipeline: [
+                                    {
+                                        $project: {
+                                            _id: 0,
+                                            title: 1,
+                                            description: 1,
+                                            job_type: 1,
+                                            status: 1,
+                                        }
+                                    }
+                                ],
+                                as: 'job_details'
+                            }
+                        },
+                        {
+                            $addFields: {
+                                sender_details: {
+                                    $ifNull: [
+                                        { $arrayElemAt: ['$freelancer_details', 0] },
+                                        { $arrayElemAt: ['$client_details', 0] }
+                                    ]
+                                },
+                                job_details: { $ifNull: [{ $arrayElemAt: ['$job_details', 0] }, null] },
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                feedback_details: '$public_feedback',
+                                sender_details: 1,
+                                job_details: 1,
+                            }
+                        },
+                    ],
+                    as: 'work_history',
+                }
             }
-        ).then((result) => {
-            if (result.length !== 0) {
+        ]
+        await AgencySchema.aggregate(query).then(async (result) => {
+            if (result?.length !== 0) {
                 logger.info('Agency profile fetched successfully');
                 return responseData.success(res, result, 'Agency profile fetched successfully');
             } else {
