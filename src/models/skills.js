@@ -9,6 +9,10 @@ const skillsSchema = mongoose.Schema({
     category_id: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
+    },
+    sub_category_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
     }
 });
 

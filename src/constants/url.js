@@ -47,6 +47,8 @@ const urlConstants = {
     END_CONTRACT: '/contract/end',
     GET_REPORT_DATA: '/reports/freelancer',
     GET_CATEGORIES: '/category',
+    ADD_SUB_CATEGORIES: '/sub/category',
+    GET_SUB_CATEGORIES: '/get/sub/category',
     ADD_SKILLS: '/skill/add',
     GET_SKILLS: '/skills',
     // GET_INVITED_FREELANCERS_LIST: '/invited-freelancers-list',

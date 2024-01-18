@@ -2,7 +2,7 @@ const uuid = require('uuid');
 const mongoose = require('mongoose');
 
 const countrySchema = mongoose.Schema({
-    category_name: {
+    name: {
         type: String,
         required: true
     }
