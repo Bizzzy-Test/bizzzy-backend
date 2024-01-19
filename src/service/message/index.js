@@ -135,8 +135,8 @@ const getChatUserList = (req, user, res) => {
             {
                 $match: {
                     $or: [
-                        { sender_id: user._id.toString() },
-                        { receiver_id: user._id.toString() }
+                        { sender_id: user._id },
+                        { receiver_id: user._id }
                     ],
                 },
             },
