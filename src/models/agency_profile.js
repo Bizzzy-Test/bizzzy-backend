@@ -63,7 +63,7 @@ const agencyProfileSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    agency_tag: {
+    agency_tagline: {
         type: String,
         required: true
     },

@@ -46,11 +46,12 @@ const urlConstants = {
     GET_INVITED_FREELANCERS: '/freelancers/invited',
     END_CONTRACT: '/contract/end',
     GET_REPORT_DATA: '/reports/freelancer',
-    GET_CATEGORIES: '/category',
-    ADD_SUB_CATEGORIES: '/sub/category',
-    GET_SUB_CATEGORIES: '/get/sub/category',
+    GET_CATEGORIES: '/categories',
+    ADD_SUB_CATEGORIES: '/sub/categories',
+    GET_SUB_CATEGORIES: '/categories/subcategories',
     ADD_SKILLS: '/skill/add',
-    GET_SKILLS: '/skills',
+    GET_SKILLS: '/categories/skills',
+    GET_SKILL_SUBCATEGORY_CATEGORY: '/categories/subcategories/skills',
     // GET_INVITED_FREELANCERS_LIST: '/invited-freelancers-list',
 
     OFFER_SEND: '/offer/send',
@@ -106,10 +107,12 @@ const urlConstants = {
     GIG_UPDATE_STATUS: '/freelancer/gig/status',
 
     // Agency
+    GET_AGENCY:'/agency',
     CREATE_AGENCY: '/agency/create',
     UPDATE_AGENCY: '/agency/update',
     DELETE_AGENCY: '/agency/delete',
     GET_AGENCY_BY_ID: '/agencyById',
+
 }
 
 module.exports = urlConstants;

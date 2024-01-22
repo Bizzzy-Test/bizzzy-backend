@@ -1,6 +1,7 @@
 const { messageConstants } = require("../../constants");
 const responseData = require("../../constants/responses");
-const AgencySchema = require("../../models/agencyProfile")
+const AgencySchema = require("../../models/agency_profile");
+const profile = require("../../models/profile");
 const FreelancerSchema = require("../../models/profile")
 const { logger } = require("../../utils");
 const mongoose = require("mongoose");
@@ -12,8 +13,8 @@ const createAgency = async (req, userData, res) => {
             { user_id: userData._id }
         ).then(async (result) => {
             if (result?.length !== 0) {
-                logger.error('You have already create agency for this freelancer');
-                return responseData.fail(res, 'You have already create agency for this freelancer', 400);
+                logger.error('You already have an agency profile.');
+                return responseData.fail(res, 'You already have an agency profile.', 400);
             } else {
                 req.body['user_id'] = userData._id;
                 const agencyProfile = new AgencySchema(req.body);
@@ -178,6 +179,42 @@ const getAgencyById = async (req, userData, res) => {
     })
 };
 
+const getAgency = async (req, userData, res) => {
+    return new Promise(async () => {
+        const freelancerProfile = await profile.aggregate([
+            {
+                $match: {
+                    user_id: userData._id
+                }
+            },
+            {
+                $project: {
+                    agency_profile: 1
+                }
+            }
+        ]);
+
+        if (!freelancerProfile || freelancerProfile.length === 0) {
+            return reject("User not found in freelancer_profile");
+        }
+
+        const agencyId = freelancerProfile[0].agency_profile;
+        const agencyData = await AgencySchema.aggregate([
+            {
+                $match: {
+                    _id: agencyId
+                }
+            }
+        ]);
+
+        if (!agencyData || agencyData.length === 0) {
+            return reject("Agency not found");
+        }
+
+        return responseData.success(res, agencyData[0], 'Agency Details Fetch Successfully');
+    })
+}
+
 const deleteAgency = async (req, userData, res) => {
     return new Promise(async () => {
         if (userData?.role == 1) {
@@ -209,5 +246,6 @@ module.exports = {
     createAgency,
     updateAgency,
     deleteAgency,
-    getAgencyById
+    getAgencyById,
+    getAgency
 };

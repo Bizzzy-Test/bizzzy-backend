@@ -51,9 +51,21 @@ const getAgencyById = async (req, res) => {
     }
 };
 
+const getAgency = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await AgencyService.getAgency(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} get agency API`, JSON.stringify(response))
+    } catch (error) {
+        logger.error(`get agency ${messageConstants.API_FAILED} ${error}`)
+        res.send(error)
+    }
+}
+
 module.exports = {
     createAgency,
     updateAgency,
     deleteAgency,
-    getAgencyById
+    getAgencyById,
+    getAgency
 };

@@ -7,4 +7,5 @@ module.exports = (app) => {
     app.put(urlConstants.UPDATE_AGENCY, jsonWebToken.validateToken, api.updateAgency);
     app.delete(urlConstants.DELETE_AGENCY, jsonWebToken.validateToken, api.deleteAgency);
     app.get(urlConstants.GET_AGENCY_BY_ID, jsonWebToken.validateToken, api.getAgencyById);
+    app.get(urlConstants.GET_AGENCY, jsonWebToken.validateToken, api.getAgency);
 }
