@@ -181,6 +181,17 @@ const getSubCategory = async (req, res) => {
 const getSkillsOfCategory = async (req, res) => {
     return new Promise(async () => {
         await SkillSchema.find({
+            category_id: new ObjectId(req.query.category_id)
+        }).then(async (result) => {
+            logger.info('Skills list fetched successfully');
+            return responseData.success(res, result, 'Skills list fetched successfully');
+        })
+    })
+}
+
+const getSkillsOfCategorySubCategory = async (req, res) => {
+    return new Promise(async () => {
+        await SkillSchema.find({
             category_id: new ObjectId(req.query.category_id),
             sub_category_id: new ObjectId(req.query.sub_category_id)
         }).then(async (result) => {
@@ -195,5 +206,6 @@ module.exports = {
     // addSkills,
     getSkillsOfCategory,
     // addSubCategory,
-    getSubCategory
+    getSubCategory,
+    getSkillsOfCategorySubCategory
 };
