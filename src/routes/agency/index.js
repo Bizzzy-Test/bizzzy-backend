@@ -8,4 +8,8 @@ module.exports = (app) => {
     app.delete(urlConstants.DELETE_AGENCY, jsonWebToken.validateToken, api.deleteAgency);
     app.get(urlConstants.GET_AGENCY_BY_ID, jsonWebToken.validateToken, api.getAgencyById);
     app.get(urlConstants.GET_AGENCY, jsonWebToken.validateToken, api.getAgency);
+    app.post(urlConstants.SEND_AGENCY_INVITATION, jsonWebToken.validateToken, api.sendInvitationToFreelancer);
+    app.put(urlConstants.UPDATE_INVITATION_BY_FREELANCER, jsonWebToken.validateToken, api.updateInvitationByFreelancer);
+    app.put(urlConstants.UPDATE_INVITATION_BY_AGENCY, jsonWebToken.validateToken, api.updateInvitationByAgency);
+    app.get(urlConstants.GET_INVITATION_STATUS_DATA, jsonWebToken.validateToken, api.getStatusData);
 }
