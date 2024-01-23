@@ -107,12 +107,15 @@ const urlConstants = {
     GIG_UPDATE_STATUS: '/freelancer/gig/status',
 
     // Agency
-    GET_AGENCY:'/agency',
+    GET_AGENCY: '/agency',
     CREATE_AGENCY: '/agency/create',
     UPDATE_AGENCY: '/agency/update',
     DELETE_AGENCY: '/agency/delete',
     GET_AGENCY_BY_ID: '/agencyById',
-
+    SEND_AGENCY_INVITATION: '/agency/invite',
+    UPDATE_INVITATION_BY_FREELANCER: '/freelancer/invite/update',
+    UPDATE_INVITATION_BY_AGENCY: '/agency/invite/update',
+    GET_INVITATION_STATUS_DATA: '/invitation/status'
 }
 
 module.exports = urlConstants;

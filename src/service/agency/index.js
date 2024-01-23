@@ -1,6 +1,7 @@
 const { messageConstants } = require("../../constants");
 const responseData = require("../../constants/responses");
 const AgencySchema = require("../../models/agency_profile");
+const AgencyInviteSchema = require("../../models/agency_invite");
 const profile = require("../../models/profile");
 const FreelancerSchema = require("../../models/profile")
 const { logger } = require("../../utils");
@@ -242,10 +243,150 @@ const deleteAgency = async (req, userData, res) => {
     })
 }
 
+const sendInvitationToFreelancer = async (req, userData, res) => {
+    return new Promise(async () => {
+        await AgencyInviteSchema.find(
+            {
+                agency_id: new ObjectId(req.body.agency_profile),
+                freelancer_id: new ObjectId(req.body.freelancer_id)
+            }
+        ).then(async (result) => {
+            if (result.length !== 0) {
+                logger.error('Invitation already sended to this freelancer');
+                return responseData.fail(res, 'Invitation already sended to this freelancer', 400);
+            } else {
+                req.body['agency_id'] = req.body.agency_profile;
+                const agencyInviteSchema = new AgencyInviteSchema(req.body);
+                await agencyInviteSchema.save().then((result) => {
+                    logger.info('Invitation send successfully');
+                    return responseData.success(res, result, 'Invitation send successfully');
+                }).catch((err) => {
+                    logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                    return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+                })
+            }
+        })
+    })
+};
+
+const updateInvitationByFreelancer = async (req, userData, res) => {
+    console.log('ll', userData);
+    return new Promise(async () => {
+        await AgencyInviteSchema.updateOne(
+            {
+                _id: new ObjectId(req.body.invite_id),
+                freelancer_id: new ObjectId(userData._id)
+            },
+            { $set: { status: req.body.status } },
+            { new: true }
+        ).then(async (result) => {
+            if (result?.modifiedCount !== 0) {
+                logger.info(messageConstants.INVITATION_UPDATED_SUCCESSFULLY);
+                return responseData.success(res, result, messageConstants.INVITATION_UPDATED_SUCCESSFULLY);
+            } else if (result?.matchedCount !== 0) {
+                logger.info("Invitation already updated");
+                return responseData.success(res, result, "Invitation already updated");
+            } else {
+                logger.error(messageConstants.INVITATION_NOT_FOUND);
+                return responseData.success(res, result, messageConstants.INVITATION_NOT_FOUND);
+            }
+        })
+    }).catch((err) => {
+        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+        return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+    })
+};
+
+const updateInvitationByAgency = async (req, userData, res) => {
+    return new Promise(async () => {
+        await AgencyInviteSchema.updateOne(
+            {
+                _id: new ObjectId(req.body.invite_id),
+                agency_id: new ObjectId(req.body.agency_profile)
+            },
+            { $set: { status: req.body.status } },
+            { new: true }
+        ).then(async (result) => {
+            if (result?.modifiedCount !== 0) {
+                logger.info(messageConstants.INVITATION_UPDATED_SUCCESSFULLY);
+                return responseData.success(res, result, messageConstants.INVITATION_UPDATED_SUCCESSFULLY);
+            } else if (result?.matchedCount !== 0) {
+                logger.info("Invitation already updated");
+                return responseData.success(res, result, "Invitation already updated");
+            } else {
+                logger.error(messageConstants.INVITATION_NOT_FOUND);
+                return responseData.success(res, result, messageConstants.INVITATION_NOT_FOUND);
+            }
+        })
+    }).catch((err) => {
+        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+        return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+    })
+};
+
+const getStatusData = async (req, userData, res) => {
+    return new Promise(async () => {
+        const query = [
+            {
+                $match: {
+                    agency_id: new ObjectId(req.query.agency_id)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'freelancer_profiles',
+                    localField: 'freelancer_id',
+                    foreignField: 'user_id',
+                    as: 'freelancer_details'
+                }
+            }
+        ]
+        await AgencyInviteSchema.aggregate(query).then(async (results) => {
+            if (results.length !== 0) {
+                const acceptedInvitations = [];
+                const rejectedInvitations = [];
+                const pendingInvitations = [];
+                const cancelInvitations = [];
+
+                results.forEach(invitation => {
+                    if (invitation.status === "accepted") {
+                        acceptedInvitations.push(invitation);
+                    } else if (invitation.status === "rejected") {
+                        rejectedInvitations.push(invitation);
+                    } else if (invitation.status === "cancel") {
+                        cancelInvitations.push(invitation);
+                    } else if (invitation.status === "pending") {
+                        pendingInvitations.push(invitation);
+                    }
+                });
+
+                const data = {
+                    acceptedInvitations,
+                    rejectedInvitations,
+                    pendingInvitations,
+                    cancelInvitations
+                }
+                logger.info(`Invitation ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+                return responseData.success(res, data, `Invitation ${messageConstants.LIST_FETCHED_SUCCESSFULLY}`);
+            } else {
+                logger.info(`Invitation ${messageConstants.LIST_NOT_FOUND}`);
+                return responseData.success(res, [], `Invitation ${messageConstants.LIST_NOT_FOUND}`);
+            }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        })
+    })
+}
+
 module.exports = {
     createAgency,
     updateAgency,
     deleteAgency,
     getAgencyById,
-    getAgency
+    getAgency,
+    sendInvitationToFreelancer,
+    updateInvitationByFreelancer,
+    updateInvitationByAgency,
+    getStatusData
 };

@@ -62,10 +62,61 @@ const getAgency = async (req, res) => {
     }
 }
 
+const sendInvitationToFreelancer = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await AgencyService.sendInvitationToFreelancer(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} sendInvitationToFreelancer API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`sendInvitationToFreelancer ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+};
+
+const updateInvitationByFreelancer = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await AgencyService.updateInvitationByFreelancer(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} updateInvitationByFreelancer API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`updateInvitationByFreelancer ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+};
+const updateInvitationByAgency = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await AgencyService.updateInvitationByAgency(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} updateInvitationByAgency API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`updateInvitationByAgency ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+};
+
+const getStatusData = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await AgencyService.getStatusData(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} getStatusData API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`getStatusData ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+};
+
 module.exports = {
     createAgency,
     updateAgency,
     deleteAgency,
     getAgencyById,
-    getAgency
+    getAgency,
+    sendInvitationToFreelancer,
+    updateInvitationByFreelancer,
+    updateInvitationByAgency,
+    getStatusData
 };
