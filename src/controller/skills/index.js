@@ -35,6 +35,8 @@ const getSubCategory = async (req, res) => {
         res.send(err);
     }
 }
+
+
 // const addSkills = async (req, res) => {
 //     try {
 //         const response = await skillsService.addSkills(req, res);
