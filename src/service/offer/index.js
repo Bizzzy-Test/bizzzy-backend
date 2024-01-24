@@ -491,6 +491,9 @@ const getUsersJobs = async (req, userData, res) => {
                                 $project: {
                                     _id: 1,
                                     title: 1,
+                                    job_title:1,
+                                    job_id: 1,
+                                    contract_title:1,
                                     description: 1,
                                     hourly_rate: 1,
                                     weekly_limit:1,
@@ -498,6 +501,7 @@ const getUsersJobs = async (req, userData, res) => {
                                     budget: 1,
                                     experience: 1,
                                     status: 1, // Include the 'status' field in the project stage
+                                    
                                 },
                             },
                         ],
