@@ -18,6 +18,10 @@ const PricingSchema = mongoose.Schema({
         type: Number,
         required: true
     },
+    service_price: {
+        type: Number,
+        require: true
+    },
     service_options: {
         type: [String]
     }
