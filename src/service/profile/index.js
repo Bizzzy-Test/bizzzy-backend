@@ -435,21 +435,27 @@ const searchFreelancers = async (req, userData, res) => {
             logger.info(`Search freelancers ${messageConstants.NOT_ALLOWED}`);
             return responseData.fail(res, `${messageConstants.NOT_ALLOWED}`, 404);
         } else {
-            let { skills, experience, hourlyRateMin, hourlyRateMax, searchText } = req?.query;
-            if (skills?.length == 0 && experience?.length == 0 && !hourlyRateMinPrice && !hourlyRateMaxPrice) {
+            let { skills, experience, hourlyRateMin, hourlyRateMax, searchText, categoryId } = req?.query;
+            if (skills?.length == 0 && experience?.length == 0 && !hourlyRateMin && !hourlyRateMax) {
                 result = await ProfileSchema.find({});
             } else {
                 let query = {};
                 if (skills) {
                     query.skills = { $regex: new RegExp(skills, 'i') };
                 }
+                if (categoryId) {
+                    query['categories._id'] = categoryId;
+                } 
                 if (hourlyRateMin && hourlyRateMax) {
                     query.hourly_rate = { $gte: Number(hourlyRateMin), $lte: Number(hourlyRateMax) };
                 }
                 if (searchText) {
                     query.$or = [
                         { title: { $regex: new RegExp(searchText, 'i') } },
-                        { description: { $regex: new RegExp(searchText, 'i') } }
+                        { description: { $regex: new RegExp(searchText, 'i') } },
+                        { skills: { $regex: new RegExp(searchText, 'i') } },
+                        { firstName: { $regex: new RegExp(searchText, 'i') } },
+                        { lastName: { $regex: new RegExp(searchText, 'i') } },
                     ];
                 }
                 await ProfileSchema.find(query).then(async (result) => {
