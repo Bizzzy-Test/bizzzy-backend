@@ -106,6 +106,7 @@ const signIn = async (body, res) => {
                     email: user.email,
                     role: user.role,
                     name: `${user.firstName} ${user.lastName}`,
+                    agency_profile: userProfile ? userProfile.agency_profile : null,
                     professional_role: userProfile ? userProfile.professional_role : null,
                     business_name: userProfile ? userProfile.businessName : null,
                     profile_image: userProfile ? userProfile.profile_image : null,
