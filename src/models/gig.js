@@ -70,6 +70,11 @@ const GigSchema = mongoose.Schema({
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
+    sub_category: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
     },
     skills: [
         {

@@ -47,13 +47,13 @@ const updateAgency = async (req, userData, res) => {
     return new Promise(async () => {
         await AgencySchema.findOneAndUpdate(
             {
-                _id: new ObjectId(req.query.agency_id),
-                user_id: userData._id
+                _id: new ObjectId(req?.query?.agency_id),
+                user_id: userData?._id
             },
             req.body,
             { new: true }
         ).then((result) => {
-            if (result.length !== 0) {
+            if (result?.length !== 0) {
                 logger.info('Agency profile updated successfully');
                 return responseData.success(res, result, 'Agency profile updated successfully');
             } else {
@@ -72,8 +72,8 @@ const getAgencyById = async (req, userData, res) => {
         const query = [
             {
                 $match: {
-                    _id: new ObjectId(req.query.agency_id),
-                    user_id: userData._id
+                    _id: new ObjectId(req?.query?.agency_id),
+                    user_id: userData?._id
                 }
             },
             {
@@ -221,8 +221,8 @@ const deleteAgency = async (req, userData, res) => {
         if (userData?.role == 1) {
             await AgencySchema.deleteOne(
                 {
-                    _id: new ObjectId(req.query.agency_id),
-                    user_id: userData._id
+                    _id: new ObjectId(req?.query?.agency_id),
+                    user_id: userData?._id
                 }
             ).then(async (result) => {
                 if (result?.deletedCount !== 0) {
@@ -247,15 +247,15 @@ const sendInvitationToFreelancer = async (req, userData, res) => {
     return new Promise(async () => {
         await AgencyInviteSchema.find(
             {
-                agency_id: new ObjectId(req.body.agency_profile),
-                freelancer_id: new ObjectId(req.body.freelancer_id)
+                agency_id: new ObjectId(req?.body?.agency_profile),
+                freelancer_id: new ObjectId(req?.body?.freelancer_id)
             }
         ).then(async (result) => {
-            if (result.length !== 0) {
+            if (result?.length !== 0) {
                 logger.error('Invitation already sended to this freelancer');
                 return responseData.fail(res, 'Invitation already sended to this freelancer', 400);
             } else {
-                req.body['agency_id'] = req.body.agency_profile;
+                req.body['agency_id'] = req?.body?.agency_profile;
                 const agencyInviteSchema = new AgencyInviteSchema(req.body);
                 await agencyInviteSchema.save().then((result) => {
                     logger.info('Invitation send successfully');
@@ -270,7 +270,6 @@ const sendInvitationToFreelancer = async (req, userData, res) => {
 };
 
 const updateInvitationByFreelancer = async (req, userData, res) => {
-    console.log('ll', userData);
     return new Promise(async () => {
         await AgencyInviteSchema.updateOne(
             {
