@@ -51,6 +51,30 @@ const getAgencyById = async (req, res) => {
     }
 };
 
+const getAllAgency = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await AgencyService.getAllAgency(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} getAllAgency API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`getAllAgency ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+};
+
+const searchAgency = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await AgencyService.searchAgency(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} searchAgency API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`searchAgency ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+};
+
 const getAgency = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
@@ -118,5 +142,7 @@ module.exports = {
     sendInvitationToFreelancer,
     updateInvitationByFreelancer,
     updateInvitationByAgency,
-    getStatusData
+    getStatusData,
+    getAllAgency,
+    searchAgency
 };

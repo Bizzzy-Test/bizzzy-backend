@@ -180,6 +180,58 @@ const getAgencyById = async (req, userData, res) => {
     })
 };
 
+const getAllAgency = async (req, userData, res) => {
+    return new Promise(async () => {
+        await AgencySchema.find().then(async (result) => {
+            if (result?.length !== 0) {
+                logger.info('Agency list fetched successfully');
+                return responseData.success(res, result, 'Agency list fetched successfully');
+            } else {
+                logger.info('Agency list not found');
+                return responseData.success(res, result, 'Agency list not found');
+            }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        })
+    })
+};
+
+const searchAgency = async (req, userData, res) => {
+    return new Promise(async () => {
+        let { skills, experience, hourlyRateMin, hourlyRateMax, searchText, categoryId } = req?.query;
+        if (skills?.length == 0 && experience?.length == 0 && !hourlyRateMin && !hourlyRateMax) {
+            result = await ProfileSchema.find({});
+        } else {
+            let query = {};
+            if (skills) {
+                query.agency_skills = { $regex: new RegExp(skills, 'i') };
+            }
+            if (categoryId) {
+                query['agency_services.category'] = categoryId;
+            }
+            if (hourlyRateMin && hourlyRateMax) {
+                query.agency_hourlyRate = { $gte: Number(hourlyRateMin), $lte: Number(hourlyRateMax) };
+            }
+            if (searchText) {
+                query.$or = [
+                    { agency_tagline: { $regex: new RegExp(searchText, 'i') } },
+                    { agency_overview: { $regex: new RegExp(searchText, 'i') } },
+                    { agency_skills: { $regex: new RegExp(searchText, 'i') } },
+                    { agency_name: { $regex: new RegExp(searchText, 'i') } },
+                ];
+            }
+            await AgencySchema.find(query).then(async (result) => {
+                logger.info('Agency search successfully');
+                return responseData.success(res, result, 'Agency search successfully');
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+            })
+        }
+    })
+}
+
 const getAgency = async (req, userData, res) => {
     return new Promise(async () => {
         const freelancerProfile = await profile.aggregate([
@@ -387,5 +439,7 @@ module.exports = {
     sendInvitationToFreelancer,
     updateInvitationByFreelancer,
     updateInvitationByAgency,
-    getStatusData
+    getStatusData,
+    getAllAgency,
+    searchAgency
 };
