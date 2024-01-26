@@ -21,19 +21,19 @@ const createAgencyValidation = (req, res, next) => {
             project_description: Joi.string().required(),
             technologies: Joi.array().items(Joi.string()).required(),
             project_images: Joi.array().items(Joi.string()).required(),
-        })).required(),
+        })),
         agency_officeLocation: Joi.object({
             country: Joi.string().required(),
             state: Joi.string().required(),
             street: Joi.string().required(),
             address: Joi.string().required(),
-        }).required(),
+        }),
         agency_companyInfo: Joi.object({
             agency_size: Joi.string().required(),
             agency_foundedYear: Joi.string().required(),
             agency_focus: Joi.array().items(Joi.string()).required(),
             agency_language: Joi.string().required(),
-        }).required()
+        })
     })
     validateRequest(req, res, schema, next);
 }
