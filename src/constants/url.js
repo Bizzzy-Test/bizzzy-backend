@@ -112,7 +112,7 @@ const urlConstants = {
     UPDATE_AGENCY: '/agency/update',
     DELETE_AGENCY: '/agency/delete',
     GET_AGENCY_BY_ID: '/agencyById',
-    GET_AGENCIES: '/agency',
+    GET_AGENCIES: '/all/agency',
     SEARCH_AGENCY: '/search/agency',
     SEND_AGENCY_INVITATION: '/agency/invite',
     UPDATE_INVITATION_BY_FREELANCER: '/freelancer/invite/update',
