@@ -263,7 +263,7 @@ const getAgency = async (req, userData, res) => {
         if (!agencyData || agencyData.length === 0) {
             return reject("Agency not found");
         }
-
+        console.log({ "++++": agencyData });
         return responseData.success(res, agencyData[0], 'Agency Details Fetch Successfully');
     })
 }
