@@ -55,6 +55,7 @@ const getAllAgency = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
         const response = await AgencyService.getAllAgency(req, userData, res);
+        console.log({ response });
         logger.info(`${messageConstants.RESPONSE_FROM} getAllAgency API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
