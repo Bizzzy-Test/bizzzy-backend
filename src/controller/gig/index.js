@@ -1,8 +1,11 @@
 const GigService = require("../../service/gig");
+const GigSchema = require("../../models/gig")
 const { messageConstants } = require('../../constants/index.js');
 const { logger } = require('../../utils/index.js');
 const { getUserData, getMultipleFileUrls, uploadVideo } = require("../../middleware/index.js");
 const responseData = require("../../constants/responses.js");
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 
 // ==== create job post ==== controller
 
@@ -90,6 +93,24 @@ const gigStatusUpdate = async (req, res) => {
 
 const uploadMultipleImage = async (req, res) => {
     try {
+        let gig_data;
+        if (req.body.ref == 'gig') {
+            await GigSchema.find(
+                {
+                    _id: new ObjectId(req.body.gig_id)
+                }
+            ).then((result) => {
+                if (result) {
+                    gig_data = result
+                } else {
+                    logger.error('Gig not found');
+                    return responseData.fail(res, 'Internal Server Error', 400);
+                }
+            }).catch((err) => {
+                logger.error('Internal Server Error');
+                return responseData.fail(res, 'Internal Server Error', 500);
+            })
+        }
         const MAX_IMAGE_SIZE_MB = 10;
         const invalidImages = req.files.filter(file => file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024);
         if (req.files.length > 3) {
@@ -100,8 +121,9 @@ const uploadMultipleImage = async (req, res) => {
             return responseData.fail(res, `Image(s) exceed the maximum size of ${MAX_IMAGE_SIZE_MB}MB`, 400);
         } else {
             const imageUrls = await getMultipleFileUrls(req.files, 'Gig Folder');
+            gig_data[0].images = imageUrls
             logger.info('Image File uploaded successfully');
-            return responseData.success(res, imageUrls, 'Image File uploaded successfully');
+            return responseData.success(res, gig_data, 'Image File uploaded successfully');
         }
     } catch (err) {
         logger.error('Internal Server Error');
@@ -110,6 +132,24 @@ const uploadMultipleImage = async (req, res) => {
 };
 const uploadVideoController = async (req, res) => {
     try {
+        let gig_data;
+        if (req.body.ref == 'gig') {
+            await GigSchema.find(
+                {
+                    _id: new ObjectId(req.body.gig_id)
+                }
+            ).then((result) => {
+                if (result) {
+                    gig_data = result
+                } else {
+                    logger.error('Gig not found');
+                    return responseData.fail(res, 'Internal Server Error', 400);
+                }
+            }).catch((err) => {
+                logger.error('Internal Server Error');
+                return responseData.fail(res, 'Internal Server Error', 500);
+            })
+        }
         const videoSize = req?.file?.size;
         const MAX_VIDEO_SIZE_MB = 100;
         if (videoSize > MAX_VIDEO_SIZE_MB * 1024 * 1024) {
@@ -117,8 +157,9 @@ const uploadVideoController = async (req, res) => {
             return responseData.fail(res, `Video exceeds the maximum size of ${MAX_VIDEO_SIZE_MB}MB`, 400);
         } else {
             const videoUrl = await uploadVideo(req.file, 'Gig Folder');
+            gig_data[0].video = videoUrl
             logger.info('Video File uploaded successfully');
-            return responseData.success(res, videoUrl, 'Video File uploaded successfully');
+            return responseData.success(res, gig_data, 'Video File uploaded successfully');
         }
     } catch (err) {
         logger.error('Internal Server Error');
