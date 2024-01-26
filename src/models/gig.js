@@ -23,8 +23,8 @@ const PricingSchema = mongoose.Schema({
         require: true
     },
     service_options: {
-      type: String,
-      required: true
+        type: Object,
+        required: true
     }
 });
 const RequirementSchema = mongoose.Schema({
@@ -113,11 +113,11 @@ const GigSchema = mongoose.Schema({
         ],
         default: gigStatus.PENDING
     },
-    services: {
+    terms: {
         type: Boolean,
         default: false
     },
-    
+
     privacy_notice: {
         type: Boolean,
         default: false
