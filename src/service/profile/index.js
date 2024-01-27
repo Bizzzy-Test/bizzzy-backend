@@ -89,6 +89,7 @@ const freelancerProfile = async (req, userData, res) => {
         }
         profile.skills = req.body && req.body.skills !== undefined ? req.body.skills : profile.skills;
         profile.categories = req.body && req.body.categories !== undefined ? req.body.categories : profile.categories;
+        profile.sub_categories = req.body && req.body.sub_categories !== undefined ? req.body.sub_categories : profile.sub_categories;
         profile.professional_role = req.body?.professional_role !== undefined ? req.body?.professional_role : (profile.professional_role || null);
         profile.title = req.body?.title !== undefined ? req.body?.title : (profile.title || null);
         profile.hourly_rate = req.body?.hourly_rate !== undefined ? req.body?.hourly_rate : (profile.hourly_rate || null);
@@ -371,6 +372,7 @@ const editFreelancerProfile = async (req, userData, res) => {
                 updateObject.description = req.body?.description;
                 updateObject.skills = req.body?.skills;
                 updateObject.categories = req.body?.categories;
+                updateObject.sub_categories = req.body?.sub_categories;
                 update_condition = {
                     _id: new ObjectId(find_profile._id)
                 }
@@ -429,46 +431,111 @@ const deleteExperience = async (req, userData, res) => {
     })
 }
 
+// const searchFreelancers = async (req, userData, res) => {
+//     return new Promise(async () => {
+//         if (userData.role == 1) {
+//             logger.info(`Search freelancers ${messageConstants.NOT_ALLOWED}`);
+//             return responseData.fail(res, `${messageConstants.NOT_ALLOWED}`, 404);
+//         } else {
+//             let { skills, experience, hourlyRateMin, hourlyRateMax, searchText, categoryId } = req?.query;
+//             if (skills?.length == 0 && experience?.length == 0 && !hourlyRateMin && !hourlyRateMax) {
+//                 result = await ProfileSchema.find({});
+//             } else {
+//                 let query = {};
+//                 if (skills) {
+//                     query.skills = { $regex: new RegExp(skills, 'i') };
+//                 }
+//                 if (categoryId) {
+//                     query['categories._id'] = categoryId;
+//                 } 
+//                 if (hourlyRateMin && hourlyRateMax) {
+//                     query.hourly_rate = { $gte: Number(hourlyRateMin), $lte: Number(hourlyRateMax) };
+//                 }
+//                 if (searchText) {
+//                     query.$or = [
+//                         { title: { $regex: new RegExp(searchText, 'i') } },
+//                         { description: { $regex: new RegExp(searchText, 'i') } },
+//                         { skills: { $regex: new RegExp(searchText, 'i') } },
+//                         { firstName: { $regex: new RegExp(searchText, 'i') } },
+//                         { lastName: { $regex: new RegExp(searchText, 'i') } },
+//                     ];
+//                 }
+//                 await ProfileSchema.find(query).then(async (result) => {
+//                     logger.info('Freelancer search successfully');
+//                     return responseData.success(res, result, 'Freelancer search successfully');
+//                 }).catch((err) => {
+//                     logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+//                     return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+//                 })
+//             }
+//         }
+//     })
+// }
+
 const searchFreelancers = async (req, userData, res) => {
     return new Promise(async () => {
         if (userData.role == 1) {
             logger.info(`Search freelancers ${messageConstants.NOT_ALLOWED}`);
             return responseData.fail(res, `${messageConstants.NOT_ALLOWED}`, 404);
         } else {
-            let { skills, experience, hourlyRateMin, hourlyRateMax, searchText, categoryId } = req?.query;
-            if (skills?.length == 0 && experience?.length == 0 && !hourlyRateMin && !hourlyRateMax) {
-                result = await ProfileSchema.find({});
-            } else {
-                let query = {};
-                if (skills) {
-                    query.skills = { $regex: new RegExp(skills, 'i') };
+            let { skills, experience, hourlyRateMin, hourlyRateMax, searchText, categoryId, subCategoryId } = req?.query;
+            let query = {};
+
+            if (skills) {
+                query.skills = { $regex: new RegExp(skills, 'i') };
+            }
+
+            if (categoryId) {
+                query['categories._id'] = categoryId;
+            }
+
+            if (subCategoryId) {
+                query['sub_categories._id'] = subCategoryId;
+            }
+
+            if (hourlyRateMin && hourlyRateMax) {
+                query.hourly_rate = { $gte: Number(hourlyRateMin), $lte: Number(hourlyRateMax) };
+            }
+
+            if (experience) {
+                query.experience = { $gte: Number(experience) };
+            }
+
+            if (searchText) {
+                query.$or = [
+                    { title: { $regex: new RegExp(searchText, 'i') } },
+                    { description: { $regex: new RegExp(searchText, 'i') } },
+                    { skills: { $regex: new RegExp(searchText, 'i') } },
+                    { firstName: { $regex: new RegExp(searchText, 'i') } },
+                    { lastName: { $regex: new RegExp(searchText, 'i') } },
+                ];
+            }
+
+            try {
+                let result;
+
+                if (Object.keys(query).length === 0) {
+                    // If no filters selected, return all freelancers
+                    result = await ProfileSchema.find();
+                } else if (subCategoryId) {
+                    // If subcategory is selected, update the query to include it
+                    query['sub_categories._id'] = subCategoryId;
+                    result = await ProfileSchema.find(query);
+                } else {
+                    // If no subcategory, consider all freelancers
+                    result = await ProfileSchema.find(query);
                 }
-                if (categoryId) {
-                    query['categories._id'] = categoryId;
-                } 
-                if (hourlyRateMin && hourlyRateMax) {
-                    query.hourly_rate = { $gte: Number(hourlyRateMin), $lte: Number(hourlyRateMax) };
-                }
-                if (searchText) {
-                    query.$or = [
-                        { title: { $regex: new RegExp(searchText, 'i') } },
-                        { description: { $regex: new RegExp(searchText, 'i') } },
-                        { skills: { $regex: new RegExp(searchText, 'i') } },
-                        { firstName: { $regex: new RegExp(searchText, 'i') } },
-                        { lastName: { $regex: new RegExp(searchText, 'i') } },
-                    ];
-                }
-                await ProfileSchema.find(query).then(async (result) => {
-                    logger.info('Freelancer search successfully');
-                    return responseData.success(res, result, 'Freelancer search successfully');
-                }).catch((err) => {
-                    logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-                    return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
-                })
+
+                logger.info('Freelancer search successfully');
+                return responseData.success(res, result, 'Freelancer search successfully');
+            } catch (err) {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
             }
         }
-    })
-}
+    });
+};
+
 
 const getClientDetails = async (profile, user_id) => {
     user_id = new ObjectId(user_id);
