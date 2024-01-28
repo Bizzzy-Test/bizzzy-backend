@@ -125,6 +125,10 @@ const profileSchema = mongoose.Schema({
         type: Array,
         default: []
     },
+    sub_categories: {
+        type: Array,
+        default: []
+    },
     created_at: {
         type: Date,
         default: Date.now,

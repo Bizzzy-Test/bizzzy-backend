@@ -93,6 +93,7 @@ const urlConstants = {
     JOB_SEARCH: '/job/search',
     // = Job post url =
 
+    
 
     // Gig endpoints
 
