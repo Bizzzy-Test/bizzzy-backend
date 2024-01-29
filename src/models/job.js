@@ -50,6 +50,10 @@ const JobSchema = mongoose.Schema({
             type: String
         }
     ],
+    categories: {
+        type: Array,
+        default: []
+    },
     created_at: {
         type: Date,
         default: Date.now
