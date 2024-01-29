@@ -15,6 +15,18 @@ const getReportData = async (req, res) => {
     }
 }
 
+const getAgencyData = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await offerService.getAgencyData(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} getAgencyData API`, JSON.stringify(response))
+    } catch (error) {
+        logger.error(`getAgencyData ${messageConstants.API_FAILED} ${error}`)
+        res.send(error)
+    }
+}
+
 module.exports = {
-    getReportData
+    getReportData,
+    getAgencyData
 }

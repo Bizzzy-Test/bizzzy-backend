@@ -109,6 +109,7 @@ const urlConstants = {
 
     // Agency
     GET_AGENCY: '/agency',
+    GET_AGENCY_DATA: '/data/agency',
     CREATE_AGENCY: '/agency/create',
     UPDATE_AGENCY: '/agency/update',
     DELETE_AGENCY: '/agency/delete',
