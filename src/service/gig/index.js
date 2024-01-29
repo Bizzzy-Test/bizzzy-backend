@@ -1,11 +1,11 @@
 const { messageConstants } = require("../../constants");
+const { gigStatus } = require("../../constants/enum");
 const responseData = require("../../constants/responses");
 const GigSchema = require("../../models/gig")
 const { logger } = require("../../utils");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
-// ==== create job post ==== service
 const createGig = async (req, userData, res) => {
     return new Promise(async () => {
         req.body['freelancer_id'] = userData._id
@@ -25,9 +25,11 @@ const createGig = async (req, userData, res) => {
     })
 };
 
-const getGig = async (req, res) => {
+const getGig = async (req, userData, res) => {
     return new Promise(async () => {
-        await GigSchema.find({}).then((result) => {
+        await GigSchema.find({
+            freelancer_id: new ObjectId(userData._id)
+        }).then((result) => {
             if (result?.length == 0) {
                 logger.info('Gigs list not found');
                 return responseData.success(res, result, 'Gigs list not found');
@@ -42,9 +44,9 @@ const getGig = async (req, res) => {
     })
 };
 
-const getGigByUserId = async (req, userData, res) => {
+const getAllApprovedGig = async (req, res) => {
     return new Promise(async () => {
-        await GigSchema.find({ freelancer_id: new ObjectId(userData?._id) }).then((result) => {
+        await GigSchema.find({ status: gigStatus.ACCEPT }).then((result) => {
             if (result?.length == 0) {
                 logger.info('Gigs list not found');
                 return responseData.success(res, result, 'Gigs list not found');
@@ -56,6 +58,32 @@ const getGigByUserId = async (req, userData, res) => {
             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
             return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
         })
+    })
+};
+
+const getGigByUserId = async (req, res) => {
+    return new Promise(async () => {
+        if (req?.query?.user_id) {
+            await GigSchema.find(
+                {
+                    freelancer_id: new ObjectId(req?.query?.user_id),
+                    status: gigStatus.ACCEPT
+                }).then((result) => {
+                    if (result?.length == 0) {
+                        logger.info('Gigs list not found');
+                        return responseData.success(res, result, 'Gigs list not found');
+                    } else {
+                        logger.info('Gigs list retrived successfully');
+                        return responseData.success(res, result, 'Gigs list retrived successfully');
+                    }
+                }).catch((err) => {
+                    logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+                    return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+                })
+        } else {
+            logger.error('Please pass user_id in the query params');
+            return responseData.fail(res, 'Please pass user_id in the query params', 400);
+        }
     })
 };
 
@@ -178,6 +206,7 @@ const gigStatusUpdate = async (req, userData, res) => {
 module.exports = {
     createGig,
     getGig,
+    getAllApprovedGig,
     getGigByUserId,
     getGigByGigId,
     gigDelete,
