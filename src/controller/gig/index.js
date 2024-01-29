@@ -104,11 +104,11 @@ const uploadMultipleImage = async (req, res) => {
                     gig_data = result
                 } else {
                     logger.error('Gig not found');
-                    return responseData.fail(res, 'Internal Server Error', 400);
+                    return responseData.fail(res, 'Gig not found', 400);
                 }
             }).catch((err) => {
-                logger.error('Internal Server Error');
-                return responseData.fail(res, 'Internal Server Error', 500);
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}.${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}.${err}`, 500);
             })
         }
         const MAX_IMAGE_SIZE_MB = 10;
@@ -122,12 +122,28 @@ const uploadMultipleImage = async (req, res) => {
         } else {
             const imageUrls = await getMultipleFileUrls(req.files, 'Gig Folder');
             gig_data[0].images = imageUrls
-            logger.info('Image File uploaded successfully');
-            return responseData.success(res, gig_data, 'Image File uploaded successfully');
+            await GigSchema.findOneAndUpdate(
+                {
+                    _id: new ObjectId(req?.body?.gig_id)
+                },
+                gig_data[0],
+                { new: true }
+            ).then((result) => {
+                if (result) {
+                    logger.info('Image File uploaded successfully');
+                    return responseData.success(res, result, 'Image File uploaded successfully');
+                } else {
+                    logger.error('Gig not found');
+                    return responseData.fail(res, 'Gig not found', 400);
+                }
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}.${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}.${err}`, 500);
+            })
         }
     } catch (err) {
-        logger.error('Internal Server Error');
-        return responseData.fail(res, 'Internal Server Error', 500);
+        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}.${err}`);
+        return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}.${err}`, 500);
     }
 };
 const uploadVideoController = async (req, res) => {
@@ -143,11 +159,11 @@ const uploadVideoController = async (req, res) => {
                     gig_data = result
                 } else {
                     logger.error('Gig not found');
-                    return responseData.fail(res, 'Internal Server Error', 400);
+                    return responseData.fail(res, 'Gig not found', 400);
                 }
             }).catch((err) => {
-                logger.error('Internal Server Error');
-                return responseData.fail(res, 'Internal Server Error', 500);
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}.${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}.${err}`, 500);
             })
         }
         const videoSize = req?.file?.size;
@@ -158,12 +174,29 @@ const uploadVideoController = async (req, res) => {
         } else {
             const videoUrl = await uploadVideo(req.file, 'Gig Folder');
             gig_data[0].video = videoUrl
-            logger.info('Video File uploaded successfully');
-            return responseData.success(res, gig_data, 'Video File uploaded successfully');
+            await GigSchema.findOneAndUpdate(
+                {
+                    _id: new ObjectId(req?.body?.gig_id)
+                },
+                gig_data[0],
+                { new: true }
+            ).then((result) => {
+                if (result) {
+                    logger.info('Video File uploaded successfully');
+                    return responseData.success(res, result, 'Video File uploaded successfully');
+                } else {
+                    logger.error('Gig not found');
+                    return responseData.fail(res, 'Gig not found', 400);
+                }
+            }).catch((err) => {
+                logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}.${err}`);
+                return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}.${err}`, 500);
+            })
+
         }
     } catch (err) {
-        logger.error('Internal Server Error');
-        return responseData.fail(res, 'Internal Server Error', 500);
+        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}.${err}`);
+        return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}.${err}`, 500);
     }
 };
 
