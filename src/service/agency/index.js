@@ -47,7 +47,6 @@ const updateAgency = async (req, userData, res) => {
     return new Promise(async () => {
         await AgencySchema.findOneAndUpdate(
             {
-                _id: new ObjectId(req?.query?.agency_id),
                 user_id: userData?._id
             },
             req.body,
@@ -66,6 +65,33 @@ const updateAgency = async (req, userData, res) => {
         })
     })
 }
+
+const createProject = async (req, userData, res) => {
+    return new Promise(async () => {
+        const agencyProfile = await AgencySchema.findOne({ user_id: userData?._id });
+        if (!agencyProfile) {
+            return res.status(404).json({ error: 'Agency profile not found for the user' });
+        }
+        const { project_name, project_description, technologies, project_images } = req.body;
+        const newProject = {
+            project_name,
+            project_description,
+            technologies,
+            project_images,
+        };
+        agencyProfile.agency_portfolio.push(newProject);
+        await agencyProfile.save().then(async (result) => {
+            logger.info('Project Created Successfully');
+            return responseData.success(res, result, 'Project Created Successfully');
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        });
+        return res.status(201).json({ success: true, message: 'Project created successfully', project: newProject });
+    })
+};
+
+
 
 const getAgencyById = async (req, userData, res) => {
     return new Promise(async () => {
@@ -441,5 +467,6 @@ module.exports = {
     updateInvitationByAgency,
     getStatusData,
     getAllAgency,
-    searchAgency
+    searchAgency,
+    createProject
 };
