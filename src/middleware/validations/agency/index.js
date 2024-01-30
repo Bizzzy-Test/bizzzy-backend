@@ -43,6 +43,7 @@ const sendInvitationToFreelancerValidation = (req, res, next) => {
         agency_profile: Joi.string().required(),
         message: Joi.string().required(),
         freelancer_id: Joi.string().required(),
+        member_position:Joi.string().required()
     })
     validateRequest(req, res, schema, next);
 }

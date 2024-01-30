@@ -1,12 +1,10 @@
 const urlConstants = {
     USER_REGISTER: '/register',
-    VERIFY_EMAIL: '/email/verification',
-
-    //==
-    RESEND_VERIFY_EMAIL: '/email/resend-verification',
-    // ===
-    USER_PROFILE: '/profile',
     USER_LOGIN: '/login',
+    VERIFY_EMAIL: '/email/verification',
+    RESEND_VERIFY_EMAIL: '/email/resend-verification',
+ 
+    USER_PROFILE: '/profile',
     GET_USER_PROFILE: '/get-user-profile',
     GET_USER_BY_ID: '/user',
     USER_PROFILE_IMAGE: '/user-profile-image',
@@ -101,7 +99,8 @@ const urlConstants = {
     CREATE_GIG: '/freelancer/gig/create',
     UPLOAD_MULTIPLE_IMAGE: '/upload/multiple/images',
     UPLOAD_VIDEO: '/upload/video',
-    GET_ALL_GIG: '/freelancer/gig',
+    GET_ALL_APPROVED_GIG: '/freelancer/approved/gigs',
+    GET_ALL_GIG: '/freelancer/all/gig',
     GET_GIG_BY_USER_ID: '/freelancer/gig/getbyUserId',
     GET_GIG_BY_GIG_ID: '/freelancer/gig/getbyGigId',
     GIG_DELETE: '/freelancer/gig/delete',
@@ -112,6 +111,7 @@ const urlConstants = {
     GET_AGENCY: '/agency',
     GET_AGENCY_DATA: '/data/agency',
     CREATE_AGENCY: '/agency/create',
+    CREATE_PROJECT_AGENCY: '/agency/project',
     UPDATE_AGENCY: '/agency/update',
     DELETE_AGENCY: '/agency/delete',
     GET_AGENCY_BY_ID: '/agencyById',

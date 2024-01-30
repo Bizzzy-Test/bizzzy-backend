@@ -7,8 +7,6 @@ const responseData = require("../../constants/responses.js");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
-// ==== create job post ==== controller
-
 const createGig = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
@@ -23,7 +21,8 @@ const createGig = async (req, res) => {
 
 const getGig = async (req, res) => {
     try {
-        const response = await GigService.getGig(req, res);
+        const userData = await getUserData(req, res);
+        const response = await GigService.getGig(req, userData, res);
         logger.info(`${messageConstants.RESPONSE_FROM} getGig API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
@@ -31,11 +30,20 @@ const getGig = async (req, res) => {
         res.send(err);
     }
 };
+const getAllApprovedGig = async (req, res) => {
+    try {
+        const response = await GigService.getAllApprovedGig(req, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} getAllApprovedGig API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`getAllApprovedGig ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+};
 
 const getGigByUserId = async (req, res) => {
     try {
-        const userData = await getUserData(req, res);
-        const response = await GigService.getGigByUserId(req, userData, res);
+        const response = await GigService.getGigByUserId(req, res);
         logger.info(`${messageConstants.RESPONSE_FROM} getGigByUserId API`, JSON.stringify(response));
         res.send(response);
     } catch (err) {
@@ -205,6 +213,7 @@ module.exports = {
     uploadMultipleImage,
     uploadVideoController,
     getGig,
+    getAllApprovedGig,
     getGigByUserId,
     getGigByGigId,
     gigDelete,
