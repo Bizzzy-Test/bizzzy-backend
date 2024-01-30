@@ -18,8 +18,13 @@ const PricingSchema = mongoose.Schema({
         type: Number,
         required: true
     },
+    service_price: {
+        type: Number,
+        require: true
+    },
     service_options: {
-        type: [String]
+        type: Object,
+        required: true
     }
 });
 const RequirementSchema = mongoose.Schema({
@@ -70,6 +75,11 @@ const GigSchema = mongoose.Schema({
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
+    sub_category: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
     },
     skills: [
         {
@@ -103,10 +113,11 @@ const GigSchema = mongoose.Schema({
         ],
         default: gigStatus.PENDING
     },
-    services: {
+    terms: {
         type: Boolean,
         default: false
     },
+
     privacy_notice: {
         type: Boolean,
         default: false

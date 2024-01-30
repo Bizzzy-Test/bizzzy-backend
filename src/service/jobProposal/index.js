@@ -1,16 +1,30 @@
 const { responseData, messageConstants } = require('../../constants');
 const JobProposalSchema = require('../../models/jobProposal');
+const FreelancerProfileSchema = require('../../models/profile');
 const { logger } = require('../../utils');
-const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
 const createJobProposal = async (req, userData, taskFile, res) => {
 	return new Promise(async () => {
-		req.body['userId'] = userData._id
+		const agency_id = req.body['agency_id'] ? req.body['agency_id'] : null;
+		const is_agency = agency_id == userData._id ? true : false;
+		if (is_agency) {
+			req.body['userId'] = userData._id
+		} else {
+			await FreelancerProfileSchema.find(
+				{ user_id: new ObjectId(userData._id) }
+			).then((result) => {
+				if (result?.agency_profile == req.body['agency_id']) {
+					req.body['userId'] = agency_id
+				} else {
+					req.body['userId'] = userData._id
+				}
+			})
+		}
 		req.body['file'] = taskFile
 		await JobProposalSchema.find({
-			userId: new ObjectId(userData._id),
+			userId: agency_id ? new ObjectId(agency_id) : new ObjectId(userData._id),
 			jobId: new ObjectId(req.body.jobId)
 		}).then(async (result) => {
 			if (result?.length !== 0) {
@@ -27,7 +41,6 @@ const createJobProposal = async (req, userData, taskFile, res) => {
 				})
 			}
 		})
-
 	})
 }
 
@@ -48,10 +61,10 @@ const getAppliedJobPropasals = async (userData, res) => {
 // 	return new Promise(async () => {
 // 	  try {
 // 		const jobProposals = await JobProposalSchema.find({ userId: userData._id }).populate('jobId');
-  
+
 // 		// Modify the response to send job details instead of just the jobId
 // 		const jobDetails = jobProposals.map((proposal) => proposal.jobId);
-  
+
 // 		return responseData.success(res, jobDetails, 'Job proposals fetched successfully');
 // 	  } catch (error) {
 // 		const errorMessage = `${messageConstants.INTERNAL_SERVER_ERROR}. ${error}`;
@@ -60,7 +73,7 @@ const getAppliedJobPropasals = async (userData, res) => {
 // 	  }
 // 	});
 //   };
-  
+
 
 // const getAppliedJobPropasals = async (userToken, res) => {
 //     return new Promise(async () => {

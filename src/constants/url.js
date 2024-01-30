@@ -46,9 +46,12 @@ const urlConstants = {
     GET_INVITED_FREELANCERS: '/freelancers/invited',
     END_CONTRACT: '/contract/end',
     GET_REPORT_DATA: '/reports/freelancer',
-    GET_CATEGORIES: '/category',
+    GET_CATEGORIES: '/categories',
+    ADD_SUB_CATEGORIES: '/sub/categories',
+    GET_SUB_CATEGORIES: '/categories/subcategories',
     ADD_SKILLS: '/skill/add',
-    GET_SKILLS: '/skills',
+    GET_SKILLS: '/categories/skills',
+    GET_SKILL_SUBCATEGORY_CATEGORY: '/categories/subcategories/skills',
     // GET_INVITED_FREELANCERS_LIST: '/invited-freelancers-list',
 
     OFFER_SEND: '/offer/send',
@@ -90,18 +93,34 @@ const urlConstants = {
     JOB_SEARCH: '/job/search',
     // = Job post url =
 
+    
 
     // Gig endpoints
 
     CREATE_GIG: '/freelancer/gig/create',
     UPLOAD_MULTIPLE_IMAGE: '/upload/multiple/images',
     UPLOAD_VIDEO: '/upload/video',
-    GET_ALL_GIG: '/freelancer/gig',
+    GET_ALL_APPROVED_GIG: '/freelancer/approved/gigs',
+    GET_ALL_GIG: '/freelancer/all/gig',
     GET_GIG_BY_USER_ID: '/freelancer/gig/getbyUserId',
     GET_GIG_BY_GIG_ID: '/freelancer/gig/getbyGigId',
     GIG_DELETE: '/freelancer/gig/delete',
     GIG_UPDATE: '/freelancer/gig/update',
-    GIG_UPDATE_STATUS: '/freelancer/gig/update/status'
+    GIG_UPDATE_STATUS: '/freelancer/gig/status',
+
+    // Agency
+    GET_AGENCY: '/agency',
+    GET_AGENCY_DATA: '/data/agency',
+    CREATE_AGENCY: '/agency/create',
+    UPDATE_AGENCY: '/agency/update',
+    DELETE_AGENCY: '/agency/delete',
+    GET_AGENCY_BY_ID: '/agencyById',
+    GET_AGENCIES: '/all/agency',
+    SEARCH_AGENCY: '/search/agency',
+    SEND_AGENCY_INVITATION: '/agency/invite',
+    UPDATE_INVITATION_BY_FREELANCER: '/freelancer/invite/update',
+    UPDATE_INVITATION_BY_AGENCY: '/agency/invite/update',
+    GET_INVITATION_STATUS_DATA: '/invitation/status'
 }
 
 module.exports = urlConstants;

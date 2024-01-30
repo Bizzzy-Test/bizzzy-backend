@@ -13,6 +13,30 @@ const getAllCategories = async (req, res) => {
         res.send(err);
     }
 }
+
+// const addSubCategory = async (req, res) => {
+//     try {
+//         const response = await skillsService.addSubCategory(req, res);
+//         logger.info(`${messageConstants.RESPONSE_FROM} addSubCategory API`, JSON.stringify(response));
+//         res.send(response);
+//     } catch (err) {
+//         logger.error(`addSubCategory API ${messageConstants.API_FAILED} ${err}`);
+//         res.send(err);
+//     }
+// }
+
+const getSubCategory = async (req, res) => {
+    try {
+        const response = await skillsService.getSubCategory(req, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} getSubCategory API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`getSubCategory API ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+}
+
+
 // const addSkills = async (req, res) => {
 //     try {
 //         const response = await skillsService.addSkills(req, res);
@@ -37,5 +61,7 @@ const getSkillsOfCategory = async (req, res) => {
 module.exports = {
     getAllCategories,
     // addSkills,
-    getSkillsOfCategory
+    getSkillsOfCategory,
+    // addSubCategory,
+    getSubCategory
 }

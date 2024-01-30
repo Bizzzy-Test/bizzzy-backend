@@ -42,6 +42,10 @@ const OfferSchema = mongoose.Schema({
         enum: [jobTypes.HOURLY, jobTypes.FIXED],
         required: true
     },
+    experience: {
+        type: String,
+        enum: [experienceType.ENTRY, experienceType.EXPERT, experienceType.INTERMEDIATE]
+    },
     hourly_rate: {
         type: Number,
         required: function () {
@@ -81,3 +85,4 @@ const OfferSchema = mongoose.Schema({
 });
 
 module.exports = mongoose.model('offers', OfferSchema);
+

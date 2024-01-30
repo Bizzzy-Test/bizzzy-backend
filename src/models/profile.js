@@ -69,6 +69,10 @@ const profileSchema = mongoose.Schema({
         ref: 'user',
         required: true,
     },
+    agency_profile: {
+        type: mongoose.Schema.Types.ObjectId,
+        default: null
+    },
     firstName: {
         type: String,
         required: true,
@@ -118,6 +122,10 @@ const profileSchema = mongoose.Schema({
         default: []
     },
     categories: {
+        type: Array,
+        default: []
+    },
+    sub_categories: {
         type: Array,
         default: []
     },

@@ -12,6 +12,7 @@ const { getClientDetails } = require('../profile');
 const ObjectId = mongoose.Types.ObjectId;
 const JobProposalSchema = require('../../models/jobProposal');
 
+
 // Send user invite
 const sendOffer = async (body, userData, res) => {
     return new Promise(async () => {
@@ -482,20 +483,25 @@ const getUsersJobs = async (req, userData, res) => {
                 },
                 {
                     $lookup: {
-                        from: 'jobs',
+                        from: 'offers',
                         localField: 'job_id',
-                        foreignField: '_id',
+                        foreignField: 'job_id',
                         pipeline: [
                             {
                                 $project: {
                                     _id: 1,
                                     title: 1,
+                                    job_title:1,
+                                    job_id: 1,
+                                    contract_title:1,
                                     description: 1,
-                                    amount: 1,
+                                    hourly_rate: 1,
+                                    weekly_limit:1,
                                     job_type: 1,
                                     budget: 1,
                                     experience: 1,
                                     status: 1, // Include the 'status' field in the project stage
+                                    
                                 },
                             },
                         ],
