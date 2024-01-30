@@ -15,6 +15,18 @@ const createAgency = async (req, res) => {
     }
 };
 
+const createAgencyProject = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await AgencyService.createProject(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} Create Project API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`createAgency ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+};
+
 const updateAgency = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
@@ -136,6 +148,7 @@ const getStatusData = async (req, res) => {
 
 module.exports = {
     createAgency,
+    createAgencyProject,
     updateAgency,
     deleteAgency,
     getAgencyById,

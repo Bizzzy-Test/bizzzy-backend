@@ -1,12 +1,10 @@
 const urlConstants = {
     USER_REGISTER: '/register',
-    VERIFY_EMAIL: '/email/verification',
-
-    //==
-    RESEND_VERIFY_EMAIL: '/email/resend-verification',
-    // ===
-    USER_PROFILE: '/profile',
     USER_LOGIN: '/login',
+    VERIFY_EMAIL: '/email/verification',
+    RESEND_VERIFY_EMAIL: '/email/resend-verification',
+ 
+    USER_PROFILE: '/profile',
     GET_USER_PROFILE: '/get-user-profile',
     GET_USER_BY_ID: '/user',
     USER_PROFILE_IMAGE: '/user-profile-image',
@@ -111,6 +109,7 @@ const urlConstants = {
     GET_AGENCY: '/agency',
     GET_AGENCY_DATA: '/data/agency',
     CREATE_AGENCY: '/agency/create',
+    CREATE_PROJECT_AGENCY: '/agency/project',
     UPDATE_AGENCY: '/agency/update',
     DELETE_AGENCY: '/agency/delete',
     GET_AGENCY_BY_ID: '/agencyById',
