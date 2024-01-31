@@ -1,11 +1,13 @@
 const { messageConstants } = require("../../constants");
 const responseData = require("../../constants/responses");
 const AgencySchema = require("../../models/agency_profile");
+const UserSchema = require("../../models/users");
 const AgencyInviteSchema = require("../../models/agency_invite");
 const profile = require("../../models/profile");
 const FreelancerSchema = require("../../models/profile")
-const { logger } = require("../../utils");
+const { logger, mail } = require("../../utils");
 const mongoose = require("mongoose");
+const { mailTemplateConstants } = require("../../constants/mail");
 const ObjectId = mongoose.Types.ObjectId;
 
 const createAgency = async (req, userData, res) => {
@@ -348,7 +350,21 @@ const sendInvitationToFreelancer = async (req, userData, res) => {
             } else {
                 req.body['agency_id'] = req?.body?.agency_profile;
                 const agencyInviteSchema = new AgencyInviteSchema(req.body);
-                await agencyInviteSchema.save().then((result) => {
+                const agency_data = await AgencySchema.findOne({ _id: new ObjectId(req?.body?.agency_profile) })
+                const receiver_data = await UserSchema.findOne({ _id: new ObjectId(req?.body?.freelancer_id) })
+                await agencyInviteSchema.save().then(async (result) => {
+                    const link = `${process.env.BASE_URL}/agency/invitation?agency_id=${req?.body?.agency_profile}&user_id=${userData?._id}`;
+                    const mailContent = {
+                        name: receiver_data.firstName ?? "",
+                        client_name: userData.firstName,
+                        job_title: agency_data.agency_tagline,
+                        business_name: agency_data.agency_name,
+                        email: receiver_data.email ?? "",
+                        message: result.message,
+                        link: link,
+                    };
+                    console.log('kkkk', mailContent);
+                    await mail.sendMailtoUser(mailTemplateConstants.INVITATION_TEMPLATE, receiver_data.email, "Invitation", res, mailContent);
                     logger.info('Invitation send successfully');
                     return responseData.success(res, result, 'Invitation send successfully');
                 }).catch((err) => {
