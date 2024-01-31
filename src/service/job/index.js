@@ -90,183 +90,175 @@ const getAllJobPost = async () => {
   }
 };
 
+// ===== search jobs ===========
+ 
 // const searchJobPost = async (req, userData, res) => {
 //   return new Promise(async () => {
-//     if (userData.role == 1) {
-//       logger.info(`Search Job Post ${messageConstants.NOT_ALLOWED}`);
-//       return responseData.fail(res, `${messageConstants.NOT_ALLOWED}`, 404);
-//     } else {
-//       const body = req.body;
-//       let result;
-//       if (
-//         body?.experience == "" &&
-//         body?.job_type == "" &&
-//         body?.category?.length == 0 &&
-//         body?.skills?.length == 0 &&
-//         body?.title == "" &&
-//         body?.description == ""
-//       ) {
-//         result = await JobSchema.find({});
-//       } else {
-//         result = await JobSchema.find({
-//           $or: [
-//             // {experience: body?.experience},
-//             // {budget: body?.budget},
-//             {
-//               tags: {
-//                 $in: body?.category?.map(
-//                   (category) => new RegExp(category, "i")
-//                 ),
-//               },
-//             },
-//             {
-//               skills: {
-//                 $in: body?.skills?.map((skills) => new RegExp(skills, "i")),
-//               },
-//             },
-//             { experience: body?.experience },
-//             { job_type: body?.job_type },
-//             { title: { $regex: body?.title, $options: "i" } },
-//             { description: { $regex: body?.description, $options: "i" } },
-//           ],
-//         });
+//     try {
+//       let { category, searchTerm, experience, job_type, rate_min, rate_max } =
+//         req?.query;
+//       let query = {};
+
+//       if (searchTerm) {
+//         query.$or = [
+//           { tags: { $in: [new RegExp(searchTerm, "i")] } },
+//           { skills: { $in: [new RegExp(searchTerm, "i")] } },
+//           { experience: new RegExp(searchTerm, "i") },
+//           { job_type: new RegExp(searchTerm, "i") },
+//           { title: new RegExp(searchTerm, "i") },
+//           { description: new RegExp(searchTerm, "i") },
+//         ];
 //       }
-//       if (result.length > 0) {
-//         logger.info(`Search Job Post ${messageConstants.DATA_FOUND}`);
-//         return responseData.success(
+
+//       if (category) {
+//         category = category.split(",");
+//         query["categories._id"] = { $in: category };
+//       }
+
+//       if (experience) {
+//         query.experience = { $in: experience.split(",") };
+//       }
+
+//       if (job_type) {
+//         query.job_type = { $in: job_type.split(",") };
+//       }
+
+//       if (rate_min && rate_max) {
+//         query.amount = { $gte: Number(rate_min), $lte: Number(rate_max) };
+//       }
+
+//       try {
+//         let result;
+
+//         if (category && category.length > 0) {
+//           query["categories._id"] = { $in: category };
+//         }
+
+//         result = await JobSchema.find(query);
+
+//         if (result.length === 0) {
+//           // Return a response indicating no jobs were found
+//           return responseData.success(
+//             res,
+//             [],
+//             "No jobs found for the selected options"
+//           );
+//         }
+
+//         logger.info("Jobs search successfully");
+//         return responseData.success(res, result, "Jobs search successfully");
+//       } catch (err) {
+//         logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+//         return responseData.fail(
 //           res,
-//           result,
-//           `Search Job Post ${messageConstants.DATA_FOUND}`
-//         );
-//       } else {
-//         logger.info(`Search Job Post ${messageConstants.LIST_NOT_FOUND}`);
-//         return responseData.success(
-//           res,
-//           [],
-//           `${messageConstants.LIST_NOT_FOUND}`,
-//           200
+//           `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`,
+//           500
 //         );
 //       }
+//     } catch (error) {
+//       console.error("Error searching for jobs:", error);
+//       return responseData.fail(res, "Error searching for jobs", 500);
 //     }
 //   });
 // };
 
-
-// const searchJobPost = async (req, userData, res) => {
-//     return new Promise(async () => {
-//         try {
-//             let {  category, searchTerm, experience, job_type } = req?.query;
-//             let query = {};
-
-//             if (searchTerm) {
-//                 query.$or = [
-//                     { tags: { $in: [new RegExp(searchTerm, "i")] } },
-//                     { skills: { $in: [new RegExp(searchTerm, "i")] } },
-//                     { experience: new RegExp(searchTerm, "i") },
-//                     { job_type: new RegExp(searchTerm, "i") },
-//                     { title: new RegExp(searchTerm, "i") }, 
-//                     { description: new RegExp(searchTerm, "i") },
-
-//                 ];
-//             }
-
-//             if (category) {
-//               category = category.split(",");
-//               query['categories._id'] = { $in: category };
-//           }
-
-//             if (experience) {
-//                 query.experience = { $in: experience.split(",") }; 
-//             }
-
-//             if (job_type) {
-//               query.job_type = { $in: job_type.split(",") }; 
-//           }
- 
-//             try {
-//                 let result;
-            
-//                 if (category && category.length > 0) {
-//                     query['categories._id'] = { $in: category };
-//                 }
-            
-//                 result = await JobSchema.find(query);
-            
-//                 logger.info('Jobs search successfully');
-//                 return responseData.success(res, result, 'Jobs search successfully');
-//             } catch (err) {
-//                 logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-//                 return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
-//             }
-            
-//         } catch (error) {
-//             console.error('Error searching for jobs:', error);
-//             return responseData.fail(res, 'Error searching for jobs', 500);
-//         }
-//     });
-// };
-
-
 const searchJobPost = async (req, userData, res) => {
   return new Promise(async () => {
-      try {
-          let { category, searchTerm, experience, job_type } = req?.query;
-          let query = {};
+    try {
+      let { category, searchTerm, experience, job_type, hourly_rate_min, hourly_rate_max, fixed_rate_min, fixed_rate_max, contractType } = req?.query;
+      let query = {};
 
-          if (searchTerm) {
-              query.$or = [
-                  { tags: { $in: [new RegExp(searchTerm, "i")] } },
-                  { skills: { $in: [new RegExp(searchTerm, "i")] } },
-                  { experience: new RegExp(searchTerm, "i") },
-                  { job_type: new RegExp(searchTerm, "i") },
-                  { title: new RegExp(searchTerm, "i") },
-                  { description: new RegExp(searchTerm, "i") },
-              ];
-          }
-
-          if (category) {
-              category = category.split(",");
-              query['categories._id'] = { $in: category };
-          }
-
-          if (experience) {
-              query.experience = { $in: experience.split(",") };
-          }
-
-          if (job_type) {
-              query.job_type = { $in: job_type.split(",") };
-          }
-
-          try {
-              let result;
-
-              if (category && category.length > 0) {
-                  query['categories._id'] = { $in: category };
-              }
-
-              result = await JobSchema.find(query);
-
-              if (result.length === 0) {
-                  // Return a response indicating no jobs were found
-                  return responseData.success(res, [], 'No jobs found for the selected options');
-              }
-
-              logger.info('Jobs search successfully');
-              return responseData.success(res, result, 'Jobs search successfully');
-          } catch (err) {
-              logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-              return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
-          }
-
-      } catch (error) {
-          console.error('Error searching for jobs:', error);
-          return responseData.fail(res, 'Error searching for jobs', 500);
+      if (searchTerm) {
+        query.$or = [
+          { tags: { $in: [new RegExp(searchTerm, "i")] } },
+          { skills: { $in: [new RegExp(searchTerm, "i")] } },
+          { experience: new RegExp(searchTerm, "i") },
+          { job_type: new RegExp(searchTerm, "i") },
+          { title: new RegExp(searchTerm, "i") },
+          { description: new RegExp(searchTerm, "i") },
+        ];
       }
+
+      if (category) {
+        category = category.split(",");
+        query["categories._id"] = { $in: category };
+      }
+
+      if (experience) {
+        query.experience = { $in: experience.split(",") };
+      }
+
+      if (job_type) {
+        query.job_type = { $in: job_type.split(",") };
+      }
+
+      // Handle hourly rate filter
+      if (hourly_rate_min && hourly_rate_max) {
+        const minHourlyRate = Number(hourly_rate_min);
+        const maxHourlyRate = Number(hourly_rate_max);
+
+        if (!isNaN(minHourlyRate) && !isNaN(maxHourlyRate)) {
+          query.amount= { $gte: minHourlyRate, $lte: maxHourlyRate };
+        } else {
+          return responseData.fail(res, "Invalid input for hourly rate", 400);
+        }
+      }
+
+      // Handle fixed rate filter
+      if (fixed_rate_min && fixed_rate_max) {
+        const minFixedRate = Number(fixed_rate_min);
+        const maxFixedRate = Number(fixed_rate_max);
+
+        if (!isNaN(minFixedRate) && !isNaN(maxFixedRate)) {
+          query.amount = { $gte: minFixedRate, $lte: maxFixedRate };
+        } else {
+          return responseData.fail(res, "Invalid input for fixed rate", 400);
+        }
+      }
+
+      try {
+        let result;
+
+        if (category && category.length > 0) {
+          query["categories._id"] = { $in: category };
+        }
+
+        // If no new filters are provided, return previous data
+        if (!searchTerm && !category && !experience && !job_type && !hourly_rate_min && !hourly_rate_max && !fixed_rate_min && !fixed_rate_max) {
+          // Retrieve and return previous data
+          const previousData = await JobSchema.find(/* add your criteria for previous data retrieval */);
+          return responseData.success(res, previousData, "Previous data retrieved successfully");
+        }
+
+        // Apply filters and retrieve new data
+        result = await JobSchema.find(query);
+
+        if (result.length === 0) {
+          // If no new data is found, return previous data
+          const previousData = await JobSchema.find(/* add your criteria for previous data retrieval */);
+          return responseData.success(res, previousData, "No new jobs found; showing previous data");
+        }
+
+        logger.info("Jobs search successfully");
+        return responseData.success(res, result, "Jobs search successfully");
+      } catch (err) {
+        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+        return responseData.fail(
+          res,
+          `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`,
+          500
+        );
+      }
+    } catch (error) {
+      console.error("Error searching for jobs:", error);
+      return responseData.fail(res, "Error searching for jobs", 500);
+    }
   });
 };
 
-
-
+ 
+ 
+ 
 // ==== get single job post ==== service
 const getSingleJobPost = async (req, res) => {
   return new Promise(async () => {
