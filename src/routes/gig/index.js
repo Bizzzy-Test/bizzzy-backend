@@ -5,8 +5,6 @@ const upload = require("../../middleware/image_upload");
 
 module.exports = (app) => {
     app.post(urlConstants.CREATE_GIG, jsonWebToken.validateToken, api.createGig);
-    app.post(urlConstants.UPLOAD_MULTIPLE_IMAGE, jsonWebToken.validateToken, upload.array('imageFiles'), api.uploadMultipleImage);
-    app.post(urlConstants.UPLOAD_VIDEO, jsonWebToken.validateToken, upload.single('videoFile'), api.uploadVideoController);
     app.get(urlConstants.GET_ALL_GIG, jsonWebToken.validateToken, api.getGig);
     app.get(urlConstants.GET_ALL_APPROVED_GIG, jsonWebToken.validateToken, api.getAllApprovedGig);
     app.get(urlConstants.GET_GIG_BY_USER_ID, api.getGigByUserId);

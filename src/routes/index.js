@@ -16,7 +16,8 @@ const routes = [
     `reports`,
     `skills`,
     `gig`,
-    `agency`
+    `agency`,
+    `uploadFile`
 ];
 
 routes.forEach((route) => require(`./${route}`)(api))
