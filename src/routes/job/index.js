@@ -11,5 +11,5 @@ module.exports = (app) => {
     app.patch(urlConstants.UPDATE_JOB, jsonWebToken.validateToken, upload.single("file"), api.updateJobPost);
     app.delete(urlConstants.DELETE_JOB, jsonWebToken.validateToken, api.deleteJobPost);
     app.get(urlConstants.GET_SINGEL_JOB, jsonWebToken.validateToken, api.getSingleJobPost);
-    app.post(urlConstants.JOB_SEARCH, jsonWebToken.validateToken, jobValidation.jobSerachValidation, api.searchJobPost);
+    app.get(urlConstants.JOB_SEARCH, jsonWebToken.validateToken, jobValidation.jobSerachValidation, api.searchJobPost);
 }

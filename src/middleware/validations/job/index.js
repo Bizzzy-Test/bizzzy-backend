@@ -15,9 +15,9 @@ const jobCreateValidation = (req, res, next) => {
 const jobSerachValidation = (req, res, next) => {
     const schema = Joi.object({
         experience: Joi.string().valid(experienceType.ENTRY, experienceType.INTERMEDIATE, experienceType.EXPERT),
-        job_type: Joi.string().valid(jobTypes.HOURLY, jobTypes.FIXED).required(),
-        skills: Joi.array().required(),
-        category: Joi.array().required(),
+        job_type: Joi.string().valid(jobTypes.HOURLY, jobTypes.FIXED).optional,
+        skills: Joi.array().optional(),
+        category: Joi.array().optional(),
     })
     validateRequest(req, res, schema, next);
 }

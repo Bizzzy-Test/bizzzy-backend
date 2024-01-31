@@ -89,6 +89,7 @@ const urlConstants = {
     DELETE_JOB: '/job/delete/:id',
     UPDATE_JOB: '/job/update/:id',
     JOB_SEARCH: '/job/search',
+
     // = Job post url =
 
     
