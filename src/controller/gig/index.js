@@ -154,6 +154,7 @@ const uploadMultipleImage = async (req, res) => {
         return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}.${err}`, 500);
     }
 };
+
 const uploadVideoController = async (req, res) => {
     try {
         let gig_data;
