@@ -68,26 +68,39 @@ const updateAgency = async (req, userData, res) => {
 
 const createProject = async (req, userData, res) => {
     return new Promise(async () => {
-        const agencyProfile = await AgencySchema.findOne({ user_id: userData?._id });
-        if (!agencyProfile) {
-            return res.status(404).json({ error: 'Agency profile not found for the user' });
-        }
-        const { project_name, project_description, technologies, project_images } = req.body;
-        const newProject = {
-            project_name,
-            project_description,
-            technologies,
-            project_images,
-        };
-        agencyProfile.agency_portfolio.push(newProject);
-        await agencyProfile.save().then(async (result) => {
-            logger.info('Project Created Successfully');
-            return responseData.success(res, result, 'Project Created Successfully');
+        await AgencySchema.findOne(
+            {
+                user_id: new ObjectId(userData?._id)
+            }
+        ).then(async (result) => {
+            if (result) {
+                result.agency_portfolio.push(req.body)
+                await AgencySchema.findOneAndUpdate(
+                    {
+                        user_id: new ObjectId(userData?._id)
+                    },
+                    result,
+                    { new: true }
+                ).then((result) => {
+                    if (result) {
+                        logger.info('Agency portfolio uploaded successfully');
+                        return responseData.success(res, result, 'Agency portfolio uploaded successfully');
+                    } else {
+                        logger.info('Agency profile not found');
+                        return responseData.fail(res, 'Agency profile not found', 400);
+                    }
+                }).catch((err) => {
+                    logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}.${err}`);
+                    return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}.${err}`, 500);
+                })
+            } else {
+                logger.info('Agency profile not found');
+                return responseData.fail(res, 'Agency profile not found', 400);
+            }
         }).catch((err) => {
             logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
             return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
         });
-        return res.status(201).json({ success: true, message: 'Project created successfully', project: newProject });
     })
 };
 
