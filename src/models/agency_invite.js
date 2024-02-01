@@ -10,6 +10,10 @@ const inviteSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
+    member_position: {
+        type: String,
+        require: true
+    },
     message: {
         type: String,
         required: true
