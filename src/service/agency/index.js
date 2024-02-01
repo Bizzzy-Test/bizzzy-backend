@@ -289,7 +289,7 @@ const getAgency = async (req, userData, res) => {
         ]);
 
         if (!freelancerProfile || freelancerProfile.length === 0) {
-            return reject("User not found in freelancer_profile");
+            return responseData.fail(res, "You must be a client", 404);
         }
 
         const agencyId = freelancerProfile[0].agency_profile;
