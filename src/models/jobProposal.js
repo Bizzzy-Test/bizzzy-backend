@@ -13,7 +13,6 @@ const jobProposalSchema = mongoose.Schema(
 		userId: {
 			// user_id of the client who is applying for the job
 			type: mongoose.Schema.Types.ObjectId,
-			required: true,
 			ref:'users'
 		},
 		desiredPrice: {

@@ -289,7 +289,7 @@ const getAgency = async (req, userData, res) => {
         ]);
 
         if (!freelancerProfile || freelancerProfile.length === 0) {
-            return reject("User not found in freelancer_profile");
+            return responseData.fail(res, "You must be a client", 404);
         }
 
         const agencyId = freelancerProfile[0].agency_profile;
@@ -304,7 +304,6 @@ const getAgency = async (req, userData, res) => {
         if (!agencyData || agencyData.length === 0) {
             return responseData.fail(res, "Agency not found", 404);
         }
-        console.log({ "++++": agencyData });
         return responseData.success(res, agencyData[0], 'Agency Details Fetch Successfully');
     })
 }
@@ -363,8 +362,7 @@ const sendInvitationToFreelancer = async (req, userData, res) => {
                         message: result.message,
                         link: link,
                     };
-                    console.log('kkkk', mailContent);
-                    await mail.sendMailtoUser(mailTemplateConstants.INVITATION_TEMPLATE, receiver_data.email, "Invitation", res, mailContent);
+                    mail.sendMailtoUser(mailTemplateConstants.INVITATION_TEMPLATE, receiver_data.email, "Invitation", res, mailContent);
                     logger.info('Invitation send successfully');
                     return responseData.success(res, result, 'Invitation send successfully');
                 }).catch((err) => {

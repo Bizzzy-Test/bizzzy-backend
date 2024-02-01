@@ -33,7 +33,6 @@ const getMultipleFileUrls = async (fileArray, folderName='Default Folder') => {
 };
 
 const uploadVideo = async (videoFile, folderName = 'Default Folder') => {
-    console.log('videoFiel', videoFile)
     return new Promise(async (resolve, reject) => {
         let videoUrl = "";
         if (videoFile) {

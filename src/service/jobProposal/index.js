@@ -8,19 +8,10 @@ const ObjectId = mongoose.Types.ObjectId;
 const createJobProposal = async (req, userData, taskFile, res) => {
 	return new Promise(async () => {
 		const agency_id = req.body['agency_id'] ? req.body['agency_id'] : null;
-		const is_agency = agency_id == userData._id ? true : false;
-		if (is_agency) {
-			req.body['userId'] = userData._id
+		if (agency_id) {
+			req.body['userId'] = agency_id
 		} else {
-			await FreelancerProfileSchema.find(
-				{ user_id: new ObjectId(userData._id) }
-			).then((result) => {
-				if (result?.agency_profile == req.body['agency_id']) {
-					req.body['userId'] = agency_id
-				} else {
-					req.body['userId'] = userData._id
-				}
-			})
+			req.body['userId'] = userData._id
 		}
 		req.body['file'] = taskFile
 		await JobProposalSchema.find({
