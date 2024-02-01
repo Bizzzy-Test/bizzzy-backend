@@ -83,8 +83,8 @@ const searchJobPosts = async (req, res) => {
 
 const searchJobPost = async (req, res) => {
     try {
-        const userData = await getUserData(req, res);
-        const response = await JobService.searchJobPost(req, userData, res);
+        // const userData = await getUserData(req, res);
+        const response = await JobService.searchJobPost(req, res);
         if (response != null) {
             res.sendFile(response);
         }

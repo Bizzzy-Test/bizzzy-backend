@@ -80,8 +80,8 @@ const editProfile = async (req, res) => {
 
 const searchFreelancers = async (req, res) => {
     try {
-        const userData = await getUserData(req, res);
-        const response = await profileService.searchFreelancers(req, userData, res);
+        // const userData = await getUserData(req, res);
+        const response = await profileService.searchFreelancers(req, res);
         if (response != null){
             res.sendFile(response);
         }

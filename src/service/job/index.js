@@ -162,7 +162,7 @@ const getAllJobPost = async () => {
 //   });
 // };
 
-const searchJobPost = async (req, userData, res) => {
+const searchJobPost = async (req, res) => {
   return new Promise(async () => {
     try {
       let { category, searchTerm, experience, job_type, hourly_rate_min, hourly_rate_max, fixed_rate_min, fixed_rate_max, contractType } = req?.query;
