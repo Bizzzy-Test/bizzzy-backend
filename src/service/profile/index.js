@@ -621,7 +621,7 @@ const deleteExperience = async (req, userData, res) => {
 
 
 
-const searchFreelancers = async (req, userData, res) => {
+const searchFreelancers = async (req, res) => {
     return new Promise(async () => {
 
         let { skills, experience, hourlyRateMin, hourlyRateMax, searchText, categoryId, subCategoryId } = req?.query;

@@ -17,7 +17,7 @@ module.exports = (app) => {
     // app.put(urlConstants.EDIT_PROFILE, jsonWebToken.validateToken, upload.array("file"), profileAPI.editProfile);
     // app.delete(urlConstants.DELETE_EXPERIENCE, jsonWebToken.validateToken, authValidator.experienceValidation, profileAPI.deleteExperience);
     // app.post(urlConstants.USER_PROFILE_IMAGE, jsonWebToken.validateToken, upload.single('file'), profileAPI.profileImageUpload);
-    app.get(urlConstants.SEARCH_FREELANCERS, jsonWebToken.validateToken, profileAPI.searchFreelancers);
+    app.get(urlConstants.SEARCH_FREELANCERS, profileAPI.searchFreelancers);
     // app.get(urlConstants.GET_SKILLS, jsonWebToken.validateToken, profileAPI.getAllSkills);
 
     // app.post(urlConstants.UPLOAD_IMAGE + "/:user_id", upload.single('image'), userAPI.uploadImage);
