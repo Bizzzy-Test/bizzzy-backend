@@ -352,7 +352,7 @@ const sendInvitationToFreelancer = async (req, userData, res) => {
                 const agency_data = await AgencySchema.findOne({ _id: new ObjectId(req?.body?.agency_profile) })
                 const receiver_data = await UserSchema.findOne({ _id: new ObjectId(req?.body?.freelancer_id) })
                 await agencyInviteSchema.save().then(async (result) => {
-                    const link = `${process.env.BASE_URL}/agency/invitation?agency_id=${req?.body?.agency_profile}&user_id=${userData?._id}`;
+                    const link = `${process.env.BASE_URL}/agency/invitation?agency_id=${req?.body?.agency_profile}&invitation_id=${result?._id}`;
                     const mailContent = {
                         name: receiver_data.firstName ?? "",
                         client_name: userData.firstName,
