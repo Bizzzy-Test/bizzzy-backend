@@ -8,6 +8,9 @@ const ObjectId = mongoose.Types.ObjectId;
 const getMessageList = (req, user, res) => {
     return new Promise(async () => {
         logger.info(`Message ${messageConstants.LIST_API_CALL_SUCCESSFULLY}`);
+        const receiverId = new mongoose.Types.ObjectId(req.query.receiver_id);
+        const userId = new mongoose.Types.ObjectId(user._id);
+
         const pipeline = [
             {
                 $project: {
@@ -25,12 +28,12 @@ const getMessageList = (req, user, res) => {
                 $match: {
                     $or: [
                         {
-                            sender_id: user._id.toString(),
-                            receiver_id: req.query.receiver_id,
+                            sender_id: userId,
+                            receiver_id: receiverId,
                         },
                         {
-                            sender_id: req.query.receiver_id,
-                            receiver_id: user._id.toString(),
+                            sender_id: receiverId,
+                            receiver_id: userId,
                         }
                     ]
                 }
