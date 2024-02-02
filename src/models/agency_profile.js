@@ -94,7 +94,7 @@ const agencyProfileSchema = mongoose.Schema({
         }
     },
     agency_location: {
-        type: String,
+        type: Object,
         required: true
     },
     agency_skills: {

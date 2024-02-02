@@ -131,7 +131,7 @@ const freelancerProfile = async (req, userData, res) => {
                     const portfolio_length = result.portfolio.length - 1;
                     return responseData.success(
                         res,
-                        profile.portfolio[portfolio_length],
+                        result,
                         `Freelancer Profile Details ${messageConstants.PROFILE_CREATED_SUCCESSFULLY}`
                     );
                 } else {
