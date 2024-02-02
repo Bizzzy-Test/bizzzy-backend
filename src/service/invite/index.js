@@ -273,6 +273,7 @@ const getInvitationDetailForFreelancer = async (req, res,) => {
     })
 }
 
+
 module.exports = {
     sendInvitation,
     updateInvitationStatus,
