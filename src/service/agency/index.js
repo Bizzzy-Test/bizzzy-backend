@@ -348,18 +348,22 @@ const sendInvitationToFreelancer = async (req, userData, res) => {
                 return responseData.fail(res, 'Invitation already sended to this freelancer', 400);
             } else {
                 req.body['agency_id'] = req?.body?.agency_profile;
+                if (req?.body?.agency_profile == req?.body?.freelancer_id) {
+                    logger.error('Agency can not send invitation to itself');
+                    return responseData.fail(res, 'Agency can not send invitation to itself', 400);
+                }
                 const agencyInviteSchema = new AgencyInviteSchema(req.body);
                 const agency_data = await AgencySchema.findOne({ _id: new ObjectId(req?.body?.agency_profile) })
                 const receiver_data = await UserSchema.findOne({ _id: new ObjectId(req?.body?.freelancer_id) })
                 await agencyInviteSchema.save().then(async (result) => {
                     const link = `${process.env.BASE_URL}/agency/invitation?agency_id=${req?.body?.agency_profile}&user_id=${userData?._id}`;
                     const mailContent = {
-                        name: receiver_data.firstName ?? "",
-                        client_name: userData.firstName,
-                        job_title: agency_data.agency_tagline,
-                        business_name: agency_data.agency_name,
-                        email: receiver_data.email ?? "",
-                        message: result.message,
+                        name: receiver_data?.firstName ?? "",
+                        client_name: userData?.firstName,
+                        job_title: agency_data?.agency_tagline,
+                        business_name: agency_data?.agency_name,
+                        email: receiver_data?.email ?? "",
+                        message: result?.message,
                         link: link,
                     };
                     mail.sendMailtoUser(mailTemplateConstants.INVITATION_TEMPLATE, receiver_data.email, "Invitation", res, mailContent);
