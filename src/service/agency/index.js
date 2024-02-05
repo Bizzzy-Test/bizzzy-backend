@@ -348,18 +348,22 @@ const sendInvitationToFreelancer = async (req, userData, res) => {
                 return responseData.fail(res, 'Invitation already sended to this freelancer', 400);
             } else {
                 req.body['agency_id'] = req?.body?.agency_profile;
+                if (req?.body?.agency_profile == req?.body?.freelancer_id) {
+                    logger.error('Agency can not send invitation to itself');
+                    return responseData.fail(res, 'Agency can not send invitation to itself', 400);
+                }
                 const agencyInviteSchema = new AgencyInviteSchema(req.body);
                 const agency_data = await AgencySchema.findOne({ _id: new ObjectId(req?.body?.agency_profile) })
                 const receiver_data = await UserSchema.findOne({ _id: new ObjectId(req?.body?.freelancer_id) })
                 await agencyInviteSchema.save().then(async (result) => {
                     const link = `${process.env.BASE_URL}/agency/invitation?agency_id=${req?.body?.agency_profile}&user_id=${userData?._id}`;
                     const mailContent = {
-                        name: receiver_data.firstName ?? "",
-                        client_name: userData.firstName,
-                        job_title: agency_data.agency_tagline,
-                        business_name: agency_data.agency_name,
-                        email: receiver_data.email ?? "",
-                        message: result.message,
+                        name: receiver_data?.firstName ?? "",
+                        client_name: userData?.firstName,
+                        job_title: agency_data?.agency_tagline,
+                        business_name: agency_data?.agency_name,
+                        email: receiver_data?.email ?? "",
+                        message: result?.message,
                         link: link,
                     };
                     mail.sendMailtoUser(mailTemplateConstants.INVITATION_TEMPLATE, receiver_data.email, "Invitation", res, mailContent);
@@ -376,28 +380,41 @@ const sendInvitationToFreelancer = async (req, userData, res) => {
 
 const updateInvitationByFreelancer = async (req, userData, res) => {
     return new Promise(async () => {
-        await AgencyInviteSchema.updateOne(
+        await AgencyInviteSchema.find(
             {
                 _id: new ObjectId(req.body.invite_id),
-                freelancer_id: new ObjectId(userData._id)
-            },
-            { $set: { status: req.body.status } },
-            { new: true }
-        ).then(async (result) => {
-            if (result?.modifiedCount !== 0) {
-                logger.info(messageConstants.INVITATION_UPDATED_SUCCESSFULLY);
-                return responseData.success(res, result, messageConstants.INVITATION_UPDATED_SUCCESSFULLY);
-            } else if (result?.matchedCount !== 0) {
-                logger.info("Invitation already updated");
-                return responseData.success(res, result, "Invitation already updated");
-            } else {
-                logger.error(messageConstants.INVITATION_NOT_FOUND);
-                return responseData.success(res, result, messageConstants.INVITATION_NOT_FOUND);
+                freelancer_id: new ObjectId(userData._id),
+                status: 'accepted' || 'rejected'
             }
+        ).then(async (result) => {
+            if (result.length !== 0) {
+                logger.info(`You have already ${result[0].status} invitation. You can not change the status.`);
+                return responseData.success(res, [], `You have already ${result[0].status} invitation. You can not change the status.`);
+            } else {
+                await AgencyInviteSchema.updateOne(
+                    {
+                        _id: new ObjectId(req.body.invite_id),
+                        freelancer_id: new ObjectId(userData._id)
+                    },
+                    { $set: { status: req.body.status } },
+                    { new: true }
+                ).then(async (result) => {
+                    if (result?.modifiedCount !== 0) {
+                        logger.info(messageConstants.INVITATION_UPDATED_SUCCESSFULLY);
+                        return responseData.success(res, result, messageConstants.INVITATION_UPDATED_SUCCESSFULLY);
+                    } else if (result?.matchedCount !== 0) {
+                        logger.info("Invitation already updated");
+                        return responseData.success(res, result, "Invitation already updated");
+                    } else {
+                        logger.error(messageConstants.INVITATION_NOT_FOUND);
+                        return responseData.success(res, result, messageConstants.INVITATION_NOT_FOUND);
+                    }
+                })
+            }
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
         })
-    }).catch((err) => {
-        logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
-        return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
     })
 };
 
