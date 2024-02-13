@@ -9,6 +9,8 @@ const { logger, mail } = require("../../utils");
 const mongoose = require("mongoose");
 const { mailTemplateConstants } = require("../../constants/mail");
 const ObjectId = mongoose.Types.ObjectId;
+const OfferSchema = require('../../models/offers');
+const JobProposalSchema = require('../../models/jobProposal');
 
 const createAgency = async (req, userData, res) => {
     return new Promise(async () => {
@@ -499,6 +501,111 @@ const getStatusData = async (req, userData, res) => {
         })
     })
 }
+
+const getAgencyJobs = async (req, userData, res) => {
+    return new Promise(async () => {
+        let agency_profile;
+        await FreelancerSchema.findOne({
+            user_id: new ObjectId(userData._id)
+        }).then(async(result) => {
+            agency_profile = result?.agency_profile
+        })
+        const query = [
+            {
+                $match: {
+                    freelancer_id: agency_profile,
+                }
+            },
+            {
+                $lookup: {
+                    from: 'client_profiles',
+                    localField: 'client_id',
+                    foreignField: 'user_id',
+                    pipeline: [
+                        {
+                            $project: {
+                                _id: 0,
+                                user_id: 1,
+                                firstName: 1,
+                                lastName: 1,
+                                location: 1,
+                                profile_image: 1,
+                                businessName: 1,
+                            },
+                        },
+                    ],
+                    as: 'client_profile',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'offers',
+                    localField: 'job_id',
+                    foreignField: 'job_id',
+                    pipeline: [
+                        {
+                            $project: {
+                                _id: 1,
+                                title: 1,
+                                job_title: 1,
+                                job_id: 1,
+                                contract_title: 1,
+                                description: 1,
+                                hourly_rate: 1,
+                                weekly_limit: 1,
+                                job_type: 1,
+                                budget: 1,
+                                experience: 1,
+                                status: 1, // Include the 'status' field in the project stage
+
+                            },
+                        },
+                    ],
+                    as: 'job_details',
+                },
+            },
+        ]
+        await OfferSchema.aggregate(query).then(async (offers) => {
+            const jobProposals = await JobProposalSchema.find({ userId: agency_profile }).populate('jobId');
+            const jobDetails = jobProposals.map((proposal) => proposal.jobId);
+            const activeJobs = [];
+            const completedJobs = [];
+
+            for (let offer of offers) {
+                if (offer.job_details.length > 0) {
+                    const job = offer.job_details[0];
+                    const client_profile = await getClientDetails(offer?.client_profile[0], offer?.client_profile[0]?.user_id);
+                    const jobWithClientProfile = {
+                        ...job, client_profile
+                    };
+                    if (offer.status === 'accepted') {
+                        activeJobs.push(jobWithClientProfile);
+                    } else if (offer.status === 'completed') {
+                        completedJobs.push(jobWithClientProfile);
+                    }
+                }
+            }
+
+            const response = {
+                active_jobs: activeJobs,
+                completed_jobs: completedJobs,
+                applied_jobs: jobDetails,
+            };
+
+            if (activeJobs.length > 0 || completedJobs.length > 0 || jobProposals.length > 0) {
+                logger.info(`Jobs fetched successfully`);
+                return responseData.success(res, response, `Jobs fetched successfully`);
+            } else {
+                logger.info(`No jobs found`);
+                return responseData.success(res, response, `No jobs found`);
+            }
+
+        }).catch((err) => {
+            logger.error(`${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`);
+            return responseData.fail(res, `${messageConstants.INTERNAL_SERVER_ERROR}. ${err}`, 500);
+        });
+    })
+}
 // 
 module.exports = {
     createAgency,
@@ -512,5 +619,6 @@ module.exports = {
     getStatusData,
     getAllAgency,
     searchAgency,
-    createProject
+    createProject,
+    getAgencyJobs
 };

@@ -122,7 +122,8 @@ const urlConstants = {
     UPDATE_INVITATION_BY_FREELANCER: '/freelancer/invite/update',
     UPDATE_INVITATION_BY_AGENCY: '/agency/invite/update',
     GET_INVITATION_STATUS_DATA: '/invitation/status',
-    GET_INVITATION_DETAILS:'/agency/invitation-details' 
+    GET_INVITATION_DETAILS:'/agency/invitation-details',
+    GET_AGENCY_JOBS: '/agency/jobs/data'
 }
 
 module.exports = urlConstants;
