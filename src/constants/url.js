@@ -98,6 +98,7 @@ const urlConstants = {
 
     CREATE_GIG: '/freelancer/gig/create',
     UPLOAD_MULTIPLE_IMAGE: '/upload/multiple/images',
+    UPLOAD_SINGLE_IMAGE: '/upload/single/image',
     UPLOAD_VIDEO: '/upload/video',
     GET_ALL_APPROVED_GIG: '/freelancer/approved/gigs',
     GET_ALL_GIG: '/freelancer/all/gig',

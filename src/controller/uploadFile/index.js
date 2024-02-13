@@ -2,7 +2,7 @@ const GigSchema = require("../../models/gig")
 const AgencySchema = require("../../models/agency_profile.js")
 const { messageConstants } = require('../../constants/index.js');
 const { logger } = require('../../utils/index.js');
-const { getMultipleFileUrls, uploadVideo } = require("../../middleware/index.js");
+const { getMultipleFileUrls, uploadVideo, getFileUrl } = require("../../middleware/index.js");
 const responseData = require("../../constants/responses.js");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
@@ -159,7 +159,19 @@ const uploadVideoController = async (req, res) => {
     }
 };
 
+const uploadSingleImage = async (req, res) => {
+    return new Promise(async () => {
+        const imageUrl = await getFileUrl(req.file, 'images');
+        const result = {
+            imageUrl
+        }
+        logger.info('Image uploaded successfully');
+        return responseData.success(res, result, 'Image uploaded successfully');
+    })
+}
+
 module.exports = {
     uploadMultipleImage,
-    uploadVideoController
+    uploadVideoController,
+    uploadSingleImage
 };
