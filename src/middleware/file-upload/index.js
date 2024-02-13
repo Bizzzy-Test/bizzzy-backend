@@ -1,15 +1,15 @@
 const { uploadFile } = require('../aws/aws');
 
-const getFileUrl = async (req) => {
+const getFileUrl = async (file, folderName='Default Folder') => {
     return new Promise(async (resolve, reject) => {
         let fileUrl = "";
-        if (req.file) {
-            const fileBuffer = req.file.path;
-            const folderName = "job_files";
-            const originalFileName = req.file.originalname;
-            const sanitizedFileName = originalFileName.replace(/\s+/g, '_'); // Replaces spaces with underscores
+        if (file) {
+            const fileBuffer = file.path;
+            const originalFileName = file.originalname;
+            const sanitizedFileName = originalFileName.replace(/\s+/g, '_');
+            const sanitizedFolderName = folderName.replace(/\s+/g, '_');
             // Upload the file buffer to S3 and get its access URL
-            fileUrl = await uploadFile(fileBuffer, sanitizedFileName, req.file.mimetype, folderName);
+            fileUrl = await uploadFile(fileBuffer, sanitizedFileName, file.mimetype, sanitizedFolderName);
         }
         return resolve(fileUrl);
     })

@@ -36,24 +36,6 @@ const agencyOfficeLocationSchema = mongoose.Schema({
         required: true,
     },
 });
-const agencyCompanyInfoSchema = mongoose.Schema({
-    agency_size: {
-        type: String,
-        required: true,
-    },
-    agency_foundedYear: {
-        type: String,
-        required: true,
-    },
-    agency_focus: {
-        type: [String],
-        required: true,
-    },
-    agency_language: {
-        type: String,
-        required: true,
-    },
-});
 const agencyProfileSchema = mongoose.Schema({
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -107,7 +89,22 @@ const agencyProfileSchema = mongoose.Schema({
     },
     agency_portfolio: [agencyPortfolioSchema],
     agency_officeLocation: agencyOfficeLocationSchema,
-    agency_companyInfo: agencyCompanyInfoSchema,
+    agency_size: {
+        type: String,
+        required: true,
+    },
+    agency_foundedYear: {
+        type: String,
+        required: true,
+    },
+    agency_focus: {
+        type: [String],
+        required: true,
+    },
+    agency_language: {
+        type: String,
+        required: true,
+    },
     created_at: {
         type: Date,
         default: Date.now,

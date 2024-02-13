@@ -5,5 +5,6 @@ const upload = require("../../middleware/image_upload");
 
 module.exports = (app) => {
     app.post(urlConstants.UPLOAD_MULTIPLE_IMAGE, jsonWebToken.validateToken, upload.array('imageFiles'), api.uploadMultipleImage);
+    app.post(urlConstants.UPLOAD_SINGLE_IMAGE, jsonWebToken.validateToken, upload.single('imageFile'), api.uploadSingleImage);
     app.post(urlConstants.UPLOAD_VIDEO, jsonWebToken.validateToken, upload.single('videoFile'), api.uploadVideoController);
 }
