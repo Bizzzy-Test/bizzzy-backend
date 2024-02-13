@@ -90,7 +90,7 @@ const getUserJobs = async (req, res) => {
 const submitOfferTask = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
-        const taskFile = await getFileUrl(req);
+        const taskFile = await getFileUrl(req.file, 'images');
         const response = await offerService.submitOfferTask(req, userData, taskFile, res);
         logger.info(`${messageConstants.RESPONSE_FROM} submitOfferTask API`, JSON.stringify(response));
         res.send(response);

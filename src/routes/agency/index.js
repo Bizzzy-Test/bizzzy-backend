@@ -15,4 +15,5 @@ module.exports = (app) => {
     app.put(urlConstants.UPDATE_INVITATION_BY_FREELANCER, jsonWebToken.validateToken, api.updateInvitationByFreelancer);
     app.put(urlConstants.UPDATE_INVITATION_BY_AGENCY, jsonWebToken.validateToken, api.updateInvitationByAgency);
     app.get(urlConstants.GET_INVITATION_STATUS_DATA, jsonWebToken.validateToken, api.getStatusData);
+    app.get(urlConstants.GET_AGENCY_JOBS, jsonWebToken.validateToken, api.getAgencyJobs);
 }

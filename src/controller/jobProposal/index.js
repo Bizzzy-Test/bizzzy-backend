@@ -6,7 +6,7 @@ const { getFileUrl, getUserData } = require('../../middleware');
 const createJobProposal = async (req, res) => {
 	try {
 		const userData = await getUserData(req, res);
-		const taskFile = await getFileUrl(req);
+		const taskFile = await getFileUrl(req.file, 'images');
 		const response = await jobProposalService.createJobProposal(req, userData, taskFile, res);
 		logger.info(`${messageConstants.RESPONSE_FROM} createJobProposal API`, JSON.stringify(response));
 		res.send(response);

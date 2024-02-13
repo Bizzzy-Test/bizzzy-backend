@@ -145,6 +145,18 @@ const getStatusData = async (req, res) => {
     }
 };
 
+const getAgencyJobs = async (req, res) => {
+    try {
+        const userData = await getUserData(req, res);
+        const response = await AgencyService.getAgencyJobs(req, userData, res);
+        logger.info(`${messageConstants.RESPONSE_FROM} getAgencyJobs API`, JSON.stringify(response));
+        res.send(response);
+    } catch (err) {
+        logger.error(`getAgencyJobs ${messageConstants.API_FAILED} ${err}`);
+        res.send(err);
+    }
+};
+
 module.exports = {
     createAgency,
     createAgencyProject,
@@ -157,5 +169,6 @@ module.exports = {
     updateInvitationByAgency,
     getStatusData,
     getAllAgency,
-    searchAgency
+    searchAgency,
+    getAgencyJobs
 };
