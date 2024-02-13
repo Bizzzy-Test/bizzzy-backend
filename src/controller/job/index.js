@@ -9,7 +9,7 @@ const { getUserData, getFileUrl } = require("../../middleware/index.js");
 const createJobPost = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
-        const taskFile = await getFileUrl(req);
+        const taskFile = await getFileUrl(req.file, 'images');
         const response = await JobService.createJobPost(req, userData, taskFile, res);
         logger.info(`${messageConstants.RESPONSE_FROM} createJobPost API`, JSON.stringify(response));
         res.send(response);
@@ -137,7 +137,7 @@ const getSingleJobPost = async (req, res) => {
 const updateJobPost = async (req, res) => {
     try {
         const userData = await getUserData(req, res);
-        const fileUrl = await getFileUrl(req, res);
+        const fileUrl = await getFileUrl(req.file, 'images');
         const response = await JobService.updateJobPost(req, userData, fileUrl, res);
         logger.info(`${messageConstants.RESPONSE_FROM} updateJobPost API`, JSON.stringify(response));
         res.send(response);
