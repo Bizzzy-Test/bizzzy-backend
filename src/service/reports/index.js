@@ -116,7 +116,6 @@ const getAgencyData = async (req, userData, res) => {
         await FreelancerSchemaProfileSchema.find({ user_id: userData._id }).then((result) => {
             agency_profile = result[0].agency_profile
         })
-        console.log('ll', agency_profile)
         await JobProposalSchema.find(
             {
                 userId: new ObjectId(agency_profile),
@@ -135,7 +134,7 @@ const getAgencyData = async (req, userData, res) => {
         })
         await OfferSchema.find(
             {
-                ...query,
+                freelancer_id: userData._id,
                 created_at: { $gte: thirtyDaysAgo }
             }
         ).then((userReport) => {
