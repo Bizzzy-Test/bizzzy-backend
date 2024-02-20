@@ -13,7 +13,7 @@ const uploadMultipleImage = async (req, res) => {
         if (req.body.ref == 'create_gig') {
             await GigSchema.find(
                 {
-                    _id: new ObjectId(req.body.gig_id)
+                    _id: new ObjectId(req.body.ref_id)
                 }
             ).then((result) => {
                 if (result) {
@@ -29,7 +29,7 @@ const uploadMultipleImage = async (req, res) => {
         } else if (req.body.ref == 'agency_project_portfolio') {
             await AgencySchema.find(
                 {
-                    _id: new ObjectId(req.body.agency_id)
+                    _id: new ObjectId(req.body.ref_id)
                 }
             ).then((result) => {
                 if (result.length) {
@@ -57,7 +57,7 @@ const uploadMultipleImage = async (req, res) => {
                 gig_data[0].images = imageUrls
                 await GigSchema.findOneAndUpdate(
                     {
-                        _id: new ObjectId(req?.body?.gig_id)
+                        _id: new ObjectId(req?.body?.ref_id)
                     },
                     gig_data[0],
                     { new: true }
@@ -81,7 +81,7 @@ const uploadMultipleImage = async (req, res) => {
                 agency_data.agency_portfolio[index].project_images = imageUrls;
                 await AgencySchema.findOneAndUpdate(
                     {
-                        _id: new ObjectId(req?.body?.agency_id)
+                        _id: new ObjectId(req?.body?.ref_id)
                     },
                     agency_data,
                     { new: true }
@@ -111,7 +111,7 @@ const uploadVideoController = async (req, res) => {
         if (req.body.ref == 'gig') {
             await GigSchema.find(
                 {
-                    _id: new ObjectId(req.body.gig_id)
+                    _id: new ObjectId(req.body.ref_id)
                 }
             ).then((result) => {
                 if (result) {
@@ -135,7 +135,7 @@ const uploadVideoController = async (req, res) => {
             gig_data[0].video = videoUrl
             await GigSchema.findOneAndUpdate(
                 {
-                    _id: new ObjectId(req?.body?.gig_id)
+                    _id: new ObjectId(req?.body?.ref_id)
                 },
                 gig_data[0],
                 { new: true }

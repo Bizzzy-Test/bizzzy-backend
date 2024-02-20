@@ -3,7 +3,7 @@ const { urlConstants } = require("../../constants");
 const { jsonWebToken, agencyValidation } = require("../../middleware");
 
 module.exports = (app) => {
-    app.post(urlConstants.CREATE_AGENCY, jsonWebToken.validateToken, agencyValidation.createAgencyValidation, api.createAgency);
+    app.post(urlConstants.CREATE_AGENCY, jsonWebToken.validateToken, api.createAgency);
     app.post(urlConstants.CREATE_PROJECT_AGENCY, jsonWebToken.validateToken, api.createAgencyProject);
     app.put(urlConstants.UPDATE_AGENCY, jsonWebToken.validateToken, api.updateAgency);
     app.delete(urlConstants.DELETE_AGENCY, jsonWebToken.validateToken, api.deleteAgency);
