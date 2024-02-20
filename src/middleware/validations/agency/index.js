@@ -13,7 +13,7 @@ const createAgencyValidation = (req, res, next) => {
             category: Joi.string().required(),
             subCategory: Joi.string().required(),
         }).required(),
-        agency_location: Joi.string().required(),
+        agency_location: Joi.object().required(),
         // agency_skills: Joi.array().items(Joi.string()),
         agency_totalJob: Joi.number().default(0),
         agency_portfolio: Joi.array().items(Joi.object({
