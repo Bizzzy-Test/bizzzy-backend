@@ -144,7 +144,7 @@ const updateOfferStatus = async (req, userData, res) => {
                     {
                         _id: req?.body?.offer_id ? new ObjectId(req?.body?.offer_id) : new ObjectId(req?.query?.offer_id)
                     },
-                    { $set: { status: 'accepted' } },
+                    { $set: { status: req.body.status } },
                     { new: true }
                 ).then(async (result) => {
                     if (result?.modifiedCount !== 0) {
